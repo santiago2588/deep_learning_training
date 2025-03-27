@@ -69,16 +69,23 @@ deactivate
 Install the necessary packages after activating your virtual environment:
 
 ```bash
-pip install torch torchvision torchaudio matplotlib numpy pandas scikit-learn jupyter
+pip install matplotlib numpy pandas scikit-learn jupyter urllib3 requests tqdm 
 ```
 
 For GPU support (NVIDIA GPUs only):
 
 ```bash
-# Check if CUDA is available
-python -c "import torch; print('CUDA Available:', torch.cuda.is_available())"
+# Install the latest version of PyTorch with CUDA support
 
-# Install PyTorch with CUDA support if needed (visit pytorch.org for the command specific to your system)
+pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu118
+
+# Note: Replace 'cu118' with the appropriate CUDA version for your system.
+```
+
+No GPU? No problem! PyTorch will automatically fall back to CPU. Install the CPU version of PyTorch using the command below:
+
+```bash
+pip install torch torchvision torchaudio
 ```
 
 ## Workshop Schedule ⏰
