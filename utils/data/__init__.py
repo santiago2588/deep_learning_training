@@ -1,3 +1,2 @@
-from .download import  download_dataset, extract_files, DATA_URLS
-
-__all__ = ['download_dataset', 'extract_files', 'DATA_URLS']
+from .download import  download_dataset, extract_files
+__all__ = ['download_dataset', 'extract_files',]

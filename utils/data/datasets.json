@@ -1,0 +1,50 @@
+{
+    "air quality": {
+        "url": "https://archive.ics.uci.edu/static/public/360/air+quality.zip",
+        "description": "Air Quality dataset from an Italian city with hourly averaged responses from gas sensors",
+        "website": "https://archive.ics.uci.edu/dataset/360/air+quality",
+        "authors": ["Save De Vito", "Ettore Massera", "Marco Piga"],
+        "year": 2008,
+        "category": "regression"
+    },
+    "steel plates faults": {
+        "url": "https://archive.ics.uci.edu/static/public/198/steel+plates+faults.zip",
+        "description": "Dataset for classifying steel plates faults into 7 different types",
+        "website": "https://archive.ics.uci.edu/dataset/198/steel+plates+faults",
+        "authors": ["Mykola Pechenizkiy", "Alexey Tsymbal"],
+        "year": 2009,
+        "category": "classification"
+    },
+    "ARKOMA": {
+        "url": "https://prod-dcd-datasets-cache-zipfiles.s3.eu-west-1.amazonaws.com/brg4dz8nbb-1.zip",
+        "description": "ARKOMA: The Dataset to Build Neural Networks-Based Inverse Kinematics for NAO Robot Arms",
+        "website": "https://www.sciencedirect.com/science/article/pii/S2352340923007989",
+        "authors": ["Arif Nugroho", "Eko Mulyanto Yuniarno", "Mauridhi Hery Purnomo"],
+        "year": 2020,
+        "category": "regression"
+    },
+    "alphonso mangoes": {
+        "url": "https://prod-dcd-datasets-cache-zipfiles.s3.eu-west-1.amazonaws.com/8sjny373pz-1.zip",
+        "description": "AMDPWE: Alphonso Mango Dataset for Precision Weight Estimation",
+        "website": "https://www.sciencedirect.com/science/article/pii/S2352340923008429",
+        "authors": ["Akshatha Prabhu,N.", "Shobha Rani"],
+        "year": 2023,
+        "category": "image classification and regression"
+    },
+    "mango leaves": {
+        "url": "https://prod-dcd-datasets-cache-zipfiles.s3.eu-west-1.amazonaws.com/nnh69sng8p-5.zip",
+        "description": "MangoLeafBD: A comprehensive image dataset to classify diseased and healthy mango leaves",
+        "website": "https://www.sciencedirect.com/science/article/pii/S2352340923000598",
+        "authors": ["Sarder Iftekhar Ahmed","Muhammad Ibrahim", "Md. Nadim"],
+        "year": 2023,
+        "category": "image classification"
+    },
+    "clinical cultures": {
+        "url": "https://prod-dcd-datasets-cache-zipfiles.s3.eu-west-1.amazonaws.com/xrbtd74pfj-3.zip",
+        "description": "Image dataset of urine test results on petri dishes for deep learning classification",
+        "website": "https://www.sciencedirect.com/science/article/pii/S235234092300152X",
+        "authors": ["Gabriel Rodrigues da Silva","Igor Batista Rosmaninho","Eduardo Zancul"],
+        "year": 2023,
+        "category": "image classification"
+    }
+}

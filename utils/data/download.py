@@ -3,18 +3,10 @@ from tqdm import tqdm
 import requests
 import tarfile
 import zipfile
-
-DATA_URLS = {'air quality': 'https://archive.ics.uci.edu/static/public/360/air+quality.zip',
-             'steel plates faults': 'https://archive.ics.uci.edu/static/public/198/steel+plates+faults.zip',
-             'ARKOMA': 'https://prod-dcd-datasets-cache-zipfiles.s3.eu-west-1.amazonaws.com/brg4dz8nbb-1.zip',
-             'alphonso mangoes': 'https://prod-dcd-datasets-cache-zipfiles.s3.eu-west-1.amazonaws.com/8sjny373pz-1.zip',
-             'guava fruits': 'https://prod-dcd-datasets-cache-zipfiles.s3.eu-west-1.amazonaws.com/fspx44mwfp-1.zip',
-             'mango leaves': 'https://prod-dcd-datasets-cache-zipfiles.s3.eu-west-1.amazonaws.com/nnh69sng8p-5.zip',
-             'spot welding': 'https://prod-dcd-datasets-cache-zipfiles.s3.eu-west-1.amazonaws.com/rwh8kjzdch-2.zip'
-             }
+import json
 
 
-def download_dataset(url: str, dest_path: str, extract: bool = False, remove_compressed: bool = False) -> Path:
+def download_dataset(dataset_name:str, dest_path: str, extract: bool = False, remove_compressed: bool = False) -> Path:
     """"
     Download a dataset from a URL and extract it to a specified path"
     Args:
@@ -25,6 +17,25 @@ def download_dataset(url: str, dest_path: str, extract: bool = False, remove_com
     Returns:
         Path: Path to the extracted dataset
     """
+    # Load the dataset URL from a JSON file
+    json_path = Path('utils/data/datasets.json')
+    if not json_path.exists():
+        print('ERROR: datasets.json file not found')
+        return None
+    with open(json_path, 'r') as f:
+        datasets = json.load(f)
+    if dataset_name not in datasets:
+        raise ValueError(f"Dataset {dataset_name} not found in datasets.json")
+    url = datasets[dataset_name]['url']
+    desc = datasets[dataset_name]['description']
+    authors = " ".join(datasets[dataset_name]['authors'])
+    year = datasets[dataset_name]['year']
+    website = datasets[dataset_name]['website']
+    print(f'Downloading:\n{desc}')
+    print(f'> Authors: {authors}')
+    print(f'> Year: {year}')
+    print(f'> Website: {website}\n')
+
     dest_path = Path(dest_path) if dest_path else Path.cwd()
     f_path = dest_path / Path(url).name
 
