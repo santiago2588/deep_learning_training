@@ -1,7 +1,7 @@
 from .data.download import download_dataset, extract_files
 from .plotting.fonts import load_font, FONTS_URLS
 from .plotting.formatting import make_fig_pretty, PATTERNS
-from .ml.scaling import CustomScaler
+from .ml.scaling import CustomScaler, resize_images_in_folder
 from .ml.training import train_model
 from .ml.metrics import r2_score, accuracy_score
 from .__version__ import __version__
@@ -14,6 +14,7 @@ __all__ = [
     'make_fig_pretty',
     'PATTERNS',
     'CustomScaler',
+    'resize_images_in_folder',
     'train_model',
     'r2_score',
     'accuracy_score',

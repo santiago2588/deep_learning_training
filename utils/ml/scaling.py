@@ -1,4 +1,6 @@
 import torch
+import tqdm
+from PIL import Image
 
 class CustomScaler:
     def __init__(self, method: str = 'standard'):
@@ -38,3 +40,23 @@ class CustomScaler:
     def fit_transform(self, data:torch.Tensor):
         self.fit(data)
         return self.transform(data)
+
+def resize_images_in_folder(imgs_location:list, target_size:tuple):
+    """
+    Resize images in a folder to a target size.
+    :param imgs_location: List of image file paths.
+    :param target_size: Tuple of target width and height (width, height).
+    :return: List of resized images.
+    """
+    
+    total_images = len(imgs_location)
+
+    for img_path in tqdm.tqdm(imgs_location, desc="Resizing images", total=total_images):
+        try:
+            img = Image.open(img_path)
+            if img.size != target_size:
+                img = img.resize(target_size)
+                img.save(img_path)
+        except Exception as e:
+            print(f"Error processing image {img_path}: {e}")
+            continue

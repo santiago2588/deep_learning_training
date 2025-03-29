@@ -22,15 +22,18 @@ def download_dataset(dataset_name:str, dest_path: str, extract: bool = False, re
     if not json_path.exists():
         print('ERROR: datasets.json file not found')
         return None
-    with open(json_path, 'r') as f:
+   
+    with open(json_path, 'r', encoding='utf-8') as f:
         datasets = json.load(f)
     if dataset_name not in datasets:
         raise ValueError(f"Dataset {dataset_name} not found in datasets.json")
+    
     url = datasets[dataset_name]['url']
     desc = datasets[dataset_name]['description']
-    authors = " ".join(datasets[dataset_name]['authors'])
+    authors = ", ".join(datasets[dataset_name]['authors'])
     year = datasets[dataset_name]['year']
     website = datasets[dataset_name]['website']
+
     print(f'Downloading:\n{desc}')
     print(f'> Authors: {authors}')
     print(f'> Year: {year}')
