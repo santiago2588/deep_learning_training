@@ -46,5 +46,13 @@
         "authors": ["Gabriel Rodrigues da Silva","Igor Batista Rosmaninho","Eduardo Zancul"],
         "year": 2023,
         "category": "image classification"
+    },
+    "cotton fabrics":{
+        "url": "https://prod-dcd-datasets-cache-zipfiles.s3.eu-west-1.amazonaws.com/3vc56ddjhw-2.zip",
+        "description": "CottonFabricImageBD: An image dataset characterized by the percentage of cotton in a fabric for computer vision-based garment recycling",
+        "website": "https://www.sciencedirect.com/science/article/pii/S2352340924006796#refdata001",
+        "authors": ["Nishat Tasnim Niloy","Md. Rayhan Ahmed","Sinthia Sarkar Ananna"],
+        "year": 2024,
+        "category": "image classification"
     }
 }
