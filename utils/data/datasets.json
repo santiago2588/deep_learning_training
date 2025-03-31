@@ -54,5 +54,13 @@
         "authors": ["Nishat Tasnim Niloy","Md. Rayhan Ahmed","Sinthia Sarkar Ananna"],
         "year": 2024,
         "category": "image classification"
+    },
+    "historical cracks":{
+        "url": "https://prod-dcd-datasets-cache-zipfiles.s3.eu-west-1.amazonaws.com/xfk99kpmj9-1.zip",
+        "description": "Historical-crack18-19: A dataset of annotated images for non-invasive surface crack detection in historical buildings",
+        "website": "https://www.sciencedirect.com/science/article/pii/S2352340922000774#fig0001",
+        "authors": ["Esraa Elhariri","Nashwa El-Bendary","Shereen Taie"],
+        "year": 2020,
+        "category": "image classification"
     }
 }
