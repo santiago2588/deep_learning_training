@@ -168,21 +168,26 @@ def train_model(
             val_losses.append(val_loss)
             val_iter.close()
 
+            # Track best validation loss regardless of early stopping
+            if val_loss < best_val_loss:
+                best_val_loss = val_loss
+                if config['save_path']:
+                    torch.save(model.state_dict(), config['save_path'])
+                    best_model = model
+
+
             # Update epoch progress bar with both losses
             if config['verbose']:
                 epoch_pbar.set_postfix({
                     'train_loss': f'{train_loss:.4f}',
-                    'val_loss': f'{val_loss:.4f}'
+                    'val_loss': f'{val_loss:.4f}',
+                    'best_val_loss': f'{best_val_loss:.4f}'
                 })
 
             # Early stopping logic
             if config['early_stopping']:
-                if (best_val_loss - val_loss) > config['tolerance']:
-                    best_val_loss = val_loss
+                if (val_loss - config['tolerance'] < best_val_loss) or (val_loss < train_loss):
                     epochs_no_improve = 0
-                    if config['save_path']:
-                        torch.save(model.state_dict(), config['save_path'])
-                        best_model = model
                 else:
                     epochs_no_improve += 1
                     if epochs_no_improve >= config['patience']:
