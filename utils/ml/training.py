@@ -53,6 +53,7 @@ def train_model(
         'verbose': kwargs.get('verbose', True),
         'batch_size': kwargs.get('batch_size', 32),
         'plot_loss': kwargs.get('plot_loss', False),
+        'return_best_model': kwargs.get('return_best_model', False)
     }
 
     # Determine data input mode
@@ -202,9 +203,13 @@ def train_model(
     epoch_pbar.close()
     
     if config['save_path'] and best_model and has_validation:
-        model.load_state_dict(torch.load(config['save_path']))
-        if config['verbose']:
-            print(f'Loaded best model from {config["save_path"]}')
+        if config['return_best_model']:
+            model.load_state_dict(torch.load(config['save_path']))
+            if config['verbose']:
+                print(f'Loaded best model from {config["save_path"]}')
+        else:
+            if config['verbose']:
+                print(f'Best model saved at {config["save_path"]}')
     
     if config['plot_loss']:
         plot_loss(train_losses, val_losses)
