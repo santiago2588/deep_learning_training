@@ -1,3 +1,4 @@
+![](.\figs\banner.png)
 ## Workshop Overview 📋
 
 This hands-on workshop will guide participants through the fundamentals of deep learning with PyTorch, covering:
