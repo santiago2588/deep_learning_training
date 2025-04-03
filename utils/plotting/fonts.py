@@ -2,6 +2,8 @@ from tempfile import NamedTemporaryFile
 import urllib3
 import matplotlib.font_manager as fm
 
+__all__ = ['load_font', 'FONTS_URLS']
+
 FONTS_URLS = {
     "Roboto Mono": 'https://github.com/google/fonts/blob/main/ofl/spacemono/SpaceMono-Regular.ttf',
     "Share Tech": 'https://github.com/google/fonts/blob/main/ofl/sharetech/ShareTech-Regular.ttf'

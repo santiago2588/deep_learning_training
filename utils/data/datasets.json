@@ -62,5 +62,13 @@
         "authors": ["Esraa Elhariri","Nashwa El-Bendary","Shereen Taie"],
         "year": 2020,
         "category": "image classification"
+    },
+    "UCSD birds":{
+        "url": "https://data.caltech.edu/records/65de6-vp158/files/CUB_200_2011.tgz",
+        "description": "UCSD Birds 200: A dataset of 200 bird species with images and annotations",
+        "website": "https://www.vision.caltech.edu/datasets/cub_200_2011/",
+        "authors": ["Wah, C. and Branson", "S. and Welinder", "P. and Perona", "P. and Belongie"],
+        "year": 2011,
+        "category": "object detection and classification"
     }
 }

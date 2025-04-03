@@ -2,6 +2,13 @@ from typing import List, Optional
 from matplotlib.axes import Axes
 from utils.plotting.fonts import load_font
 
+__all__ = [
+    'format_tick_label',
+    'format_axis_ticks',
+    'format_spines',
+    'make_fig_pretty'
+]
+
 PATTERNS = [
     "/", "\\", "|", "-", "o", "O", ".", "*", "+", "x", "X", ":", "=", " ", " "
 ]

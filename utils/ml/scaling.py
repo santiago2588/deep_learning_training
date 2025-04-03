@@ -2,6 +2,8 @@ import torch
 import tqdm
 from PIL import Image
 
+__all__ = ['CustomScaler', 'resize_images_in_folder']
+
 class CustomScaler:
     def __init__(self, method: str = 'standard'):
         self.method = method

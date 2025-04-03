@@ -2,6 +2,8 @@ from typing import Optional, List
 import matplotlib.pyplot as plt
 from .formatting import make_fig_pretty
 
+__all__ = ["plot_loss"]
+
 def plot_loss(
     train_loss: List[float],
     val_loss: Optional[List[float]] = None,

@@ -5,6 +5,7 @@ import tarfile
 import zipfile
 import json
 
+__all__ = ['download_dataset', 'extract_files']
 
 def download_dataset(dataset_name:str, dest_path: str, extract: bool = False, remove_compressed: bool = False) -> Path:
     """"
@@ -104,6 +105,9 @@ def extract_files(f_path: str, dest_path: str, recursive: bool = False, remove_c
     if f_path.suffix == '.tar':
         f = tarfile.open(f_path, 'r')
         members = f.getmembers()
+    elif f_path.suffix == '.tar.gz' or f_path.suffix == '.tgz':
+        f = tarfile.open(f_path, 'r:gz')
+        members = f.getmembers()
     elif f_path.suffix == '.zip':
         f = zipfile.ZipFile(f_path, 'r')
         members = f.namelist()
@@ -131,6 +135,9 @@ def extract_files(f_path: str, dest_path: str, recursive: bool = False, remove_c
                 if file.suffix == '.tar':
                     extract_files(file, dest_path, recursive=True,
                                   remove_compressed=remove_compressed)
+                elif file.suffix == '.tar.gz' or file.suffix == '.tgz':
+                    extract_files(file, dest_path, recursive=True,
+                                remove_compressed=remove_compressed)
                 elif file.suffix == '.zip':
                     extract_files(file, dest_path, recursive=True,
                                   remove_compressed=remove_compressed)

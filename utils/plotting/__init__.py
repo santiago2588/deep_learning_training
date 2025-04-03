@@ -1,4 +1,11 @@
-from .fonts import load_font, FONTS_URLS
-from .formatting import make_fig_pretty, PATTERNS
+__all__ = []
 
-__all__ = ['load_font', 'make_fig_pretty', 'FONTS_URLS', 'PATTERNS']
+from .fonts import *
+from .formatting import *
+
+from .fonts import __all__ as fonts_all
+from .formatting import __all__ as formatting_all
+
+__all__.extend(fonts_all)
+__all__.extend(formatting_all)
+

@@ -3,6 +3,8 @@ from tqdm.auto import tqdm
 from typing import Dict, Any
 from ..plotting.plots import plot_loss
 
+__all__ = ['train_model']
+
 def train_model(
     model: torch.nn.Module,
     criterion: torch.nn.Module,

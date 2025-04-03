@@ -1,5 +1,8 @@
 import torch
 
+__all__ = ['r2_score', 'accuracy_score']
+
+
 def r2_score(y_true: torch.Tensor, y_pred: torch.Tensor) -> float:
     """
     Calculate R^2 score.
