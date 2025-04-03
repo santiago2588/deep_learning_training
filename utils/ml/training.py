@@ -58,6 +58,13 @@ def train_model(
         'return_best_model': kwargs.get('return_best_model', False)
     }
 
+    if config['save_path']:
+        try:
+            config['save_path'].parent.mkdir(parents=True, exist_ok=True)
+        except AttributeError:
+            raise ValueError("save_path must be a pathlib.Path object")
+
+
     # Determine data input mode
     using_train_loader = 'train_loader' in kwargs
     using_train_tensors = all(k in kwargs for k in ['train_inputs', 'train_targets'])
