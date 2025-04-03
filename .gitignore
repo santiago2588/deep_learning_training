@@ -1,3 +1,4 @@
 datasets/
 torch_fse/
 *__pycache__/
+*models
