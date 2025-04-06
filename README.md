@@ -122,6 +122,70 @@ By the end of the workshop, participants will be able to:
 - Train and optimize models for sequential data using RNNs
 - Work with real-world datasets to solve classification and regression problems
 
+## Workshop Materials Structure 📁
+
+### Repository Organization
+```
+UoM_fse_dl_workshop/
+├── datasets/                  # Dataset storage
+├── figs/                     # Workshop images and icons
+├── utils/                    # Utility functions and checkers
+│   ├── core.py              # Exercise checker implementation
+│   ├── data.py              # Data loading utilities
+│   ├── ml/                  # ML helper functions
+│   └── solutions.json       # Exercise solutions and hints
+└── SE01_CA_Intro_to_pytorch.ipynb    # Workshop notebooks
+```
+
+### Using the Exercise Checker 📝
+
+Each workshop notebook contains exercises marked with 🎯. The exercise checker helps you verify your solutions and provides hints when needed.
+
+#### Checking Your Solutions
+```python
+# At the end of each exercise, there will be a check block:
+answer = {
+    'your_solution': your_tensor,
+    'another_part': another_result
+}
+checker.check_exercise(exercise_number, answer)
+```
+
+#### Getting Hints
+If you're stuck, you can get hints for any exercise:
+```python
+# Display hints for exercise 1
+checker.display_hints(1)
+```
+
+#### Exercise Feedback
+The checker provides immediate feedback:
+- ✅ Correct solutions are marked with a green checkmark
+- ❌ Incorrect solutions show what went wrong
+- 💡 Helpful hints appear when needed
+
+### Common Workflows
+
+1. **Starting an Exercise**:
+   - Read the exercise description carefully
+   - Implement your solution in the provided code cell
+   - Run the cell to see if it works
+
+2. **Checking Your Work**:
+   - The checker automatically validates your solution
+   - Multiple aspects may be checked (values, shapes, types)
+   - All parts must be correct to pass
+
+3. **Getting Help**:
+   - Use `checker.display_hints()` for guidance
+   - Hints are context-aware and specific to each exercise
+   - Multiple hints may be available per exercise
+
+4. **Learning from Mistakes**:
+   - Pay attention to error messages
+   - Check tensor shapes and types when debugging
+   - Use print statements to understand intermediate results
+
 ## Getting Started 🚀
 
 1. Clone this repository
