@@ -18,6 +18,38 @@
         },
         "exercise_2": {
             "answers": {
+                "random_tensor": {
+                    "shape": [3, 3],
+                    "dtype": "torch.int64",
+                    "min_val": 1,
+                    "max_val": 10
+                },
+                "identity_matrix": {
+                    "shape": [3, 3],
+                    "dtype": "torch.float32",
+                    "diagonal": 1.0
+                },
+                "spaced_tensor": {
+                    "shape": [5],
+                    "dtype": "torch.float32",
+                    "min_val": 0.0,
+                    "max_val": 1.0
+                },
+                "zero_tensor": {
+                    "shape": [2, 3],
+                    "dtype": "torch.float32",
+                    "value": 0.0
+                }
+            },
+            "hints": [
+                "Use torch.randint() for random integers",
+                "Use torch.eye() for identity matrix",
+                "Use torch.linspace() for evenly spaced numbers",
+                "Use torch.zeros() for zero tensor"
+            ]
+        },
+        "exercise_3": {
+            "answers": {
                 "addition": {
                     "value": [[6, 8], [10, 12]],
                     "dtype": "torch.int64"
@@ -36,7 +68,8 @@
                 }
             },
             "hints": [
-                "Use + for addition, * for element-wise multiplication",
+                "Use + for addition",
+                "Use * for element-wise multiplication",
                 "Use @ for matrix multiplication",
                 "Use torch.sqrt() or ** 0.5 for square root"
             ]
