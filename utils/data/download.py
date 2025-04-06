@@ -1,19 +1,12 @@
 from pathlib import Path
 from tqdm import tqdm
+from utils.core import find_project_root
 import requests
 import tarfile
 import zipfile
 import json
 
 __all__ = ['download_dataset', 'extract_files']
-
-def find_project_root() -> Path:
-    current_path = Path(__file__).resolve()
-    while current_path != current_path.root:
-        if (current_path / 'utils').exists():  # Check if 'utils' directory exists
-            return current_path
-        current_path = current_path.parent
-    raise FileNotFoundError("Project root not found")
 
 def download_dataset(dataset_name:str, dest_path: str, extract: bool = False, remove_compressed: bool = False) -> Path:
     """"
