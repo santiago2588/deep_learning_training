@@ -245,5 +245,73 @@
                 "Check tensor shapes with .shape attribute"
             ]
         }
+    },
+    "SE02": {
+        "exercise_1": {
+            "answers": {
+                "sigmoid": {
+                    "value": "function implementation",
+                    "test_inputs": [[0.0], [1.0], [2.0]],
+                    "test_outputs": [[0.5], [0.731], [0.881]]
+                },
+                "neuron_output": {
+                    "input": [1.0, 2.0],
+                    "expected": 0.924
+                }
+            },
+            "hints": [
+                "Sigmoid formula is 1 / (1 + e^(-x))",
+                "Use torch.exp(-x) for the exponential",
+                "Test your sigmoid with simple values first"
+            ]
+        },
+        "exercise_2": {
+            "answers": {
+                "layer": {
+                    "in_features": 2,
+                    "out_features": 1
+                },
+                "output": {
+                    "shape": [1],
+                    "dtype": "torch.float32",
+                    "expected": 0.924
+                }
+            },
+            "hints": [
+                "Use torch.nn.Linear(2, 1) for the layer",
+                "Set weights using torch.nn.Parameter",
+                "Apply sigmoid activation after linear layer"
+            ]
+        },
+        "exercise_3": {
+            "answers": {
+                "tensors": {
+                    "train": {"shape": [6000, 6], "dtype": "torch.float32"},
+                    "val": {"shape": [2000, 6], "dtype": "torch.float32"}, 
+                    "test": {"shape": [2000, 6], "dtype": "torch.float32"}
+                }
+            },
+            "hints": [
+                "Convert DataFrames using .values and torch.tensor()",
+                "Specify dtype=torch.float32",
+                "Check shapes after conversion"
+            ]
+        },
+        "exercise_4": {
+            "answers": {
+                "model": {
+                    "input_size": 6,
+                    "hidden_units": 32,
+                    "output_size": 5,
+                    "activation": "sigmoid"
+                }
+            },
+            "hints": [
+                "Use torch.nn.Linear for layers",
+                "Add sigmoid activation between layers",
+                "Forward should chain: linear -> sigmoid -> linear",
+                "Check layer shapes match specifications"
+            ]
+        }
     }
 }
