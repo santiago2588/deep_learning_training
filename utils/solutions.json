@@ -200,16 +200,49 @@
         "exercise_8": {
             "answers": {
                 "grad_value": {
-                    "value": 4.0,
+                    "value": 39.0,
                     "dtype": "torch.float32"
                 },
-                "requires_grad": true
+                "requires_grad": {
+                    "value": true
+                    }
             },
             "hints": [
                 "Set requires_grad=True when creating tensor",
                 "Use backward() to compute gradients",
                 "Access gradients with .grad attribute",
-                "Remember derivative of x^2 is 2x"
+                "Derivative of y = 3x^3 + 2x^2 - 5x + 1 is dy/dx = 9x^2 + 4x - 5",
+                "At x=2: dy/dx = 9(4) + 4(2) - 5 = 36 + 8 - 5 = 39"
+            ]
+        },
+        "exercise_9": {
+            "answers": {
+                "px_tensor": {
+                    "shape": [6000],
+                    "dtype": "torch.float64",
+                    "column": "Px"
+                },
+                "py_tensor": {
+                    "shape": [6000],
+                    "dtype": "torch.float64",
+                    "column": "Py"
+                },
+                "pos_tensor": {
+                    "shape": [6000, 3],
+                    "dtype": "torch.float64",
+                    "columns": ["Px", "Py", "Pz"]
+                },
+                "all_data": {
+                    "shape": [6000, 6],
+                    "dtype": "torch.float32"
+                }
+            },
+            "hints": [
+                "Use df.column_name.values to get NumPy array",
+                "Use torch.tensor() to convert to tensor",
+                "Use df[['col1', 'col2']].values for multiple columns",
+                "Use .to(device) to move tensor to GPU",
+                "Check tensor shapes with .shape attribute"
             ]
         }
     }
