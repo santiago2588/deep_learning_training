@@ -23,7 +23,7 @@ def import_all_modules(package_name):
 modules = import_all_modules(__package__)
 
 # Collect all public members (those not starting with _)
-__all__ = []
+__all__ = ['find_project_root', 'ExerciseChecker']
 for module in modules.values():
     if hasattr(module, '__all__'):
         __all__.extend(module.__all__)

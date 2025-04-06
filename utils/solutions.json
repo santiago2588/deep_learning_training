@@ -1,0 +1,45 @@
+{
+    "SE01": {
+        "exercise_1": {
+            "answers": {
+                "scalar_tensor": {
+                    "value": 42,
+                    "dtype": "torch.int64"
+                },
+                "float_tensor": {
+                    "value": 3.14,
+                    "dtype": "torch.float32"
+                }
+            },
+            "hints": [
+                "Remember to use torch.tensor() and specify dtype=torch.float32 for the float tensor",
+                "The scalar tensor should be created with just the value 42"
+            ]
+        },
+        "exercise_2": {
+            "answers": {
+                "addition": {
+                    "value": [[6, 8], [10, 12]],
+                    "dtype": "torch.int64"
+                },
+                "multiplication": {
+                    "value": [[5, 12], [21, 32]],
+                    "dtype": "torch.int64"
+                },
+                "matrix_mult": {
+                    "value": [[19, 22], [43, 50]],
+                    "dtype": "torch.int64"
+                },
+                "sqrt_a": {
+                    "value": [[1.0, 1.4142], [1.7321, 2.0]],
+                    "dtype": "torch.float32"
+                }
+            },
+            "hints": [
+                "Use + for addition, * for element-wise multiplication",
+                "Use @ for matrix multiplication",
+                "Use torch.sqrt() or ** 0.5 for square root"
+            ]
+        }
+    }
+}
