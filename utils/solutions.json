@@ -250,19 +250,25 @@
         "exercise_1": {
             "answers": {
                 "sigmoid": {
-                    "value": "function implementation",
-                    "test_inputs": [[0.0], [1.0], [2.0]],
-                    "test_outputs": [[0.5], [0.731], [0.881]]
+                    "test_cases": [
+                        {"input": [0.0], "expected": 0.5},
+                        {"input": [1.0], "expected": 0.7311},
+                        {"input": [2.0], "expected": 0.8808},
+                        {"input": [-1.0], "expected": 0.2689},
+                        {"input": [-2.0], "expected": 0.1192}
+                    ],
+                    "tolerance": 1e-4
                 },
                 "neuron_output": {
-                    "input": [1.0, 2.0],
-                    "expected": 0.924
+                    "expected": 0.9241,
+                    "tolerance": 1e-4
                 }
             },
             "hints": [
                 "Sigmoid formula is 1 / (1 + e^(-x))",
                 "Use torch.exp(-x) for the exponential",
-                "Test your sigmoid with simple values first"
+                "Test with both positive and negative values",
+                "Make sure to handle tensor inputs properly"
             ]
         },
         "exercise_2": {
