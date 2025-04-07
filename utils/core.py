@@ -73,22 +73,56 @@ class ExerciseChecker:
     def _check_value(self, student_value, expected, key: str, exercise_data: dict) -> bool:
         """Check a single value against expected solution"""
         
-        # Handle PyTorch tensors
-        if expected.get("dtype", "").startswith("torch."):
+        # Handle functions (like sigmoid)
+        if "test_cases" in expected:
+            return self._check_function(student_value, expected, key, exercise_data)
+            
+        # Handle regular tensors
+        elif expected.get("dtype", "").startswith("torch."):
             return self._check_tensor(student_value, expected, key, exercise_data)
             
         # Handle PyTorch models
         elif isinstance(student_value, torch.nn.Module):
             return self._check_model(student_value, expected, key, exercise_data)
             
-        # Handle metrics (like loss, accuracy)
-        elif "metrics" in expected:
-            return self._check_metrics(student_value, expected, key, exercise_data)
+        # Handle metrics with tolerance
+        elif "expected" in expected:
+            tolerance = expected.get("tolerance", 1e-4)
+            if abs(student_value - expected["expected"]) > tolerance:
+                self._print_error(
+                    f"{key} has incorrect value. "
+                    f"Expected {expected['expected']:.4f}, got {student_value:.4f}"
+                )
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+            return True
+
+        return True
+
+    def _check_function(self, student_func, expected, key: str, exercise_data: dict) -> bool:
+        """Validate function implementation using test cases"""
+        if not callable(student_func):
+            self._print_error(f"{key} should be a function")
+            return False
+
+        test_cases = expected.get("test_cases", [])
+        tolerance = expected.get("tolerance", 1e-4)
+
+        for case in test_cases:
+            input_val = torch.tensor(case["input"], dtype=torch.float32)
+            expected_val = case["expected"]
             
-        # Handle regular values
-        elif "value" in expected:
-            if student_value != expected["value"]:
-                self._print_error(f"{key} has incorrect value")
+            try:
+                result = student_func(input_val).item()
+                if abs(result - expected_val) > tolerance:
+                    self._print_error(
+                        f"{key} failed for input {case['input']}: "
+                        f"expected {expected_val:.4f}, got {result:.4f}"
+                    )
+                    self._show_relevant_hint(exercise_data["hints"], key)
+                    return False
+            except Exception as e:
+                self._print_error(f"Error testing {key}: {str(e)}")
                 self._show_relevant_hint(exercise_data["hints"], key)
                 return False
         
