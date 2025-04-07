@@ -1,8 +1,11 @@
-from typing import Optional, List
+import scipy
 import matplotlib.pyplot as plt
+import numpy as np
+from typing import Optional, List
 from .formatting import make_fig_pretty
 
-__all__ = ["plot_loss"]
+
+__all__ = ["plot_loss", "plot_distribution"]
 
 def plot_loss(
     train_loss: List[float],
@@ -42,3 +45,39 @@ def plot_loss(
     
     plt.tight_layout()
     return fig, ax
+
+def plot_distribution(
+    data: List[float],
+    ax: plt.axes,
+    title: str = "Distribution Plot",
+    xlabel: str = "Value",
+    ylabel: str = "Frequency",
+    bins: int = 30,
+    kdensity: bool = False,
+    make_pretty: bool = True,):
+
+    kernel = scipy.stats.gaussian_kde(data)
+    x_range = np.linspace(min(data), max(data), 1000)
+    kde = kernel(x_range)
+
+    ax.hist(data, bins=bins, density=True, alpha=0.5, color='skyblue')
+
+    if kdensity:
+        ax.plot(x_range, kde, color='red', linewidth=2, label='KDE')
+    
+    if make_pretty:
+        make_fig_pretty(
+            ax=ax,
+            title=title,
+            xlabel=xlabel,
+            ylabel=ylabel,
+            legend=True,
+            legd_loc='upper right',
+            grid=False,
+        )
+        return
+    else:
+        ax.set_title(title)
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel)
+        return ax
