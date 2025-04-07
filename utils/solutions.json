@@ -281,12 +281,40 @@
                     "shape": [1],
                     "dtype": "torch.float32",
                     "expected": 0.924
+                },
+                "initialized_weights": {
+                    "Xavier Uniform": {
+                        "std": {
+                            "min": 0.15,
+                            "max": 0.25
+                        }
+                    },
+                    "Xavier Normal": {
+                        "std": {
+                            "min": 0.15,
+                            "max": 0.25
+                        }
+                    },
+                    "Kaiming Uniform": {
+                        "std": {
+                            "min": 0.15,
+                            "max": 0.25
+                        }
+                    },
+                    "Kaiming Normal": {
+                        "std": {
+                            "min": 0.15,
+                            "max": 0.25
+                        }
+                    }
                 }
             },
             "hints": [
-                "Use torch.nn.Linear(2, 1) for the layer",
-                "Set weights using torch.nn.Parameter",
-                "Apply sigmoid activation after linear layer"
+                "Use torch.nn.init functions for initialization",
+                "Make sure to create empty tensors before initialization",
+                "Check that distributions match theoretical expectations",
+                "Xavier/Glorot initialization scales with 1/sqrt(n_in + n_out)",
+                "Kaiming initialization scales with 1/sqrt(n_in)"
             ]
         },
         "exercise_3": {
@@ -317,6 +345,62 @@
                 "Add sigmoid activation between layers",
                 "Forward should chain: linear -> sigmoid -> linear",
                 "Check layer shapes match specifications"
+            ]
+        },
+        "exercise_5": {
+            "answers": {
+                "l1_reg": {
+                    "lambda": 0.01,
+                    "norm_type": "L1",
+                    "expected_loss_range": [0.1, 1.0]
+                },
+                "l2_reg": {
+                    "lambda": 0.01,
+                    "norm_type": "L2",
+                    "expected_loss_range": [0.1, 1.0]
+                },
+                "dropout": {
+                    "rate": 0.2,
+                    "training_mode": true
+                }
+            },
+            "hints": [
+                "Use model.train() to enable dropout during training",
+                "Add L1/L2 regularization terms to the loss function",
+                "Experiment with different regularization strengths",
+                "Monitor validation loss to prevent overfitting"
+            ]
+        },
+        "exercise_6": {
+            "answers": {
+                "optimizer_comparison": {
+                    "optimizers": ["SGD", "Adam", "RMSprop"],
+                    "learning_rate": 0.01,
+                    "expected_convergence": true
+                }
+            },
+            "hints": [
+                "Compare convergence speed of different optimizers",
+                "Plot loss curves to visualize performance",
+                "Try different learning rates for each optimizer",
+                "Monitor training stability"
+            ]
+        },
+        "exercise_7": {
+            "answers": {
+                "backprop_check": {
+                    "gradients": {
+                        "x": {"min": -10.0, "max": 10.0},
+                        "y": {"min": -10.0, "max": 10.0}
+                    },
+                    "requires_grad": true
+                }
+            },
+            "hints": [
+                "Enable gradient tracking with requires_grad=True",
+                "Use backward() to compute gradients",
+                "Check gradient values with .grad attribute",
+                "Remember to zero gradients before next backward pass"
             ]
         }
     }
