@@ -19,24 +19,35 @@
         "exercise_2": {
             "answers": {
                 "random_tensor": {
-                    "shape": [3, 3],
+                    "shape": [
+                        3,
+                        3
+                    ],
                     "dtype": "torch.int64",
                     "min_val": 1,
                     "max_val": 10
                 },
                 "identity_matrix": {
-                    "shape": [3, 3],
+                    "shape": [
+                        3,
+                        3
+                    ],
                     "dtype": "torch.float32",
                     "diagonal": 1.0
                 },
                 "spaced_tensor": {
-                    "shape": [5],
+                    "shape": [
+                        5
+                    ],
                     "dtype": "torch.float32",
                     "min_val": 0.0,
                     "max_val": 1.0
                 },
                 "zero_tensor": {
-                    "shape": [2, 3],
+                    "shape": [
+                        2,
+                        3
+                    ],
                     "dtype": "torch.float32",
                     "value": 0.0
                 }
@@ -55,27 +66,67 @@
                     "dtype": "torch.int64"
                 },
                 "second_row": {
-                    "value": [5, 6, 7, 8],
+                    "value": [
+                        5,
+                        6,
+                        7,
+                        8
+                    ],
                     "dtype": "torch.int64"
                 },
                 "last_column": {
-                    "value": [4, 8, 12, 16],
+                    "value": [
+                        4,
+                        8,
+                        12,
+                        16
+                    ],
                     "dtype": "torch.int64"
                 },
                 "bottom_right": {
-                    "value": [[11, 12], [15, 16]],
+                    "value": [
+                        [
+                            11,
+                            12
+                        ],
+                        [
+                            15,
+                            16
+                        ]
+                    ],
                     "dtype": "torch.int64"
                 },
                 "even_elements": {
-                    "value": [2, 4],
+                    "value": [
+                        2,
+                        4
+                    ],
                     "dtype": "torch.int64"
                 },
                 "all_corners": {
-                    "value": [[1, 4], [13, 16]],
+                    "value": [
+                        [
+                            1,
+                            4
+                        ],
+                        [
+                            13,
+                            16
+                        ]
+                    ],
                     "dtype": "torch.int64"
                 },
                 "middle_block": {
-                    "value": [[6, 7], [10, 11]],
+                    "value": [
+                        [
+                            6,
+                            7
+                        ],
+                        [
+                            10,
+                            11
+                        ]
+                    ],
                     "dtype": "torch.int64"
                 }
             },
@@ -92,19 +143,55 @@
         "exercise_4": {
             "answers": {
                 "addition": {
-                    "value": [[6, 8], [10, 12]],
+                    "value": [
+                        [
+                            6,
+                            8
+                        ],
+                        [
+                            10,
+                            12
+                        ]
+                    ],
                     "dtype": "torch.int64"
                 },
                 "multiplication": {
-                    "value": [[5, 12], [21, 32]],
+                    "value": [
+                        [
+                            5,
+                            12
+                        ],
+                        [
+                            21,
+                            32
+                        ]
+                    ],
                     "dtype": "torch.int64"
                 },
                 "matrix_mult": {
-                    "value": [[19, 22], [43, 50]],
+                    "value": [
+                        [
+                            19,
+                            22
+                        ],
+                        [
+                            43,
+                            50
+                        ]
+                    ],
                     "dtype": "torch.int64"
                 },
                 "sqrt_a": {
-                    "value": [[1.0, 1.4142], [1.7321, 2.0]],
+                    "value": [
+                        [
+                            1.0,
+                            1.4142
+                        ],
+                        [
+                            1.7321,
+                            2.0
+                        ]
+                    ],
                     "dtype": "torch.float32"
                 }
             },
@@ -118,11 +205,29 @@
         "exercise_5": {
             "answers": {
                 "matrix_mult": {
-                    "value": [[7, 10], [15, 22]],
+                    "value": [
+                        [
+                            7,
+                            10
+                        ],
+                        [
+                            15,
+                            22
+                        ]
+                    ],
                     "dtype": "torch.float32"
                 },
                 "transpose": {
-                    "value": [[1, 3], [2, 4]],
+                    "value": [
+                        [
+                            1,
+                            3
+                        ],
+                        [
+                            2,
+                            4
+                        ]
+                    ],
                     "dtype": "torch.float32"
                 },
                 "determinant": {
@@ -130,8 +235,17 @@
                     "dtype": "torch.float32"
                 },
                 "inverse": {
-                    "value": [[-2.0, 1.0], [1.5, -0.5]],
-                    "dtype": "torch.float32" 
+                    "value": [
+                        [
+                            -2.0,
+                            1.0
+                        ],
+                        [
+                            1.5,
+                            -0.5
+                        ]
+                    ],
+                    "dtype": "torch.float32"
                 }
             },
             "hints": [
@@ -144,30 +258,87 @@
         "exercise_6": {
             "answers": {
                 "broadcast_add": {
-                    "value": [[3, 4], [5, 6]],
+                    "value": [
+                        [
+                            3,
+                            4
+                        ],
+                        [
+                            5,
+                            6
+                        ]
+                    ],
                     "dtype": "torch.int64"
                 },
                 "broadcast_mult": {
-                    "value": [[2, 4], [6, 8]],
+                    "value": [
+                        [
+                            2,
+                            4
+                        ],
+                        [
+                            6,
+                            8
+                        ]
+                    ],
                     "dtype": "torch.int64"
                 },
                 "row_add": {
-                    "value": [[2, 3], [4, 5]],
+                    "value": [
+                        [
+                            2,
+                            3
+                        ],
+                        [
+                            4,
+                            5
+                        ]
+                    ],
                     "dtype": "torch.int64"
                 },
                 "col_mult": {
-                    "value": [[2, 4], [9, 12]],
+                    "value": [
+                        [
+                            2,
+                            4
+                        ],
+                        [
+                            9,
+                            12
+                        ]
+                    ],
                     "dtype": "torch.int64"
                 },
                 "batch_scale": {
-                    "value": [[[2, 4], [6, 8]], [[10, 12], [14, 16]]],
+                    "value": [
+                        [
+                            [
+                                2,
+                                4
+                            ],
+                            [
+                                6,
+                                8
+                            ]
+                        ],
+                        [
+                            [
+                                10,
+                                12
+                            ],
+                            [
+                                14,
+                                16
+                            ]
+                        ]
+                    ],
                     "dtype": "torch.int64"
                 }
             },
             "hints": [
                 "Scalar broadcasting adds/multiplies the scalar to all elements",
                 "Row broadcasting applies operation across columns",
-                "Column broadcasting applies operation across rows", 
+                "Column broadcasting applies operation across rows",
                 "Batch broadcasting applies operation to all batches",
                 "Check shapes with .shape after broadcasting"
             ]
@@ -175,18 +346,60 @@
         "exercise_7": {
             "answers": {
                 "reshaped": {
-                    "value": [[1, 2], [3, 4], [5, 6]],
-                    "shape": [3, 2],
+                    "value": [
+                        [
+                            1,
+                            2
+                        ],
+                        [
+                            3,
+                            4
+                        ],
+                        [
+                            5,
+                            6
+                        ]
+                    ],
+                    "shape": [
+                        3,
+                        2
+                    ],
                     "dtype": "torch.int64"
                 },
                 "expanded": {
-                    "value": [[1], [1], [1]],
-                    "shape": [3, 1],
+                    "value": [
+                        [
+                            1
+                        ],
+                        [
+                            1
+                        ],
+                        [
+                            1
+                        ]
+                    ],
+                    "shape": [
+                        3,
+                        1
+                    ],
                     "dtype": "torch.float32"
                 },
                 "broadcast_ready": {
-                    "value": [[1], [2], [3]],
-                    "shape": [3, 1],
+                    "value": [
+                        [
+                            1
+                        ],
+                        [
+                            2
+                        ],
+                        [
+                            3
+                        ]
+                    ],
+                    "shape": [
+                        3,
+                        1
+                    ],
                     "dtype": "torch.int64"
                 }
             },
@@ -205,7 +418,7 @@
                 },
                 "requires_grad": {
                     "value": true
-                    }
+                }
             },
             "hints": [
                 "Set requires_grad=True when creating tensor",
@@ -218,22 +431,36 @@
         "exercise_9": {
             "answers": {
                 "px_tensor": {
-                    "shape": [6000],
+                    "shape": [
+                        6000
+                    ],
                     "dtype": "torch.float64",
                     "column": "Px"
                 },
                 "py_tensor": {
-                    "shape": [6000],
+                    "shape": [
+                        6000
+                    ],
                     "dtype": "torch.float64",
                     "column": "Py"
                 },
                 "pos_tensor": {
-                    "shape": [6000, 3],
+                    "shape": [
+                        6000,
+                        3
+                    ],
                     "dtype": "torch.float64",
-                    "columns": ["Px", "Py", "Pz"]
+                    "columns": [
+                        "Px",
+                        "Py",
+                        "Pz"
+                    ]
                 },
                 "all_data": {
-                    "shape": [6000, 6],
+                    "shape": [
+                        6000,
+                        6
+                    ],
                     "dtype": "torch.float32"
                 }
             },
@@ -251,11 +478,36 @@
             "answers": {
                 "sigmoid": {
                     "test_cases": [
-                        {"input": [0.0], "expected": 0.5},
-                        {"input": [1.0], "expected": 0.7311},
-                        {"input": [2.0], "expected": 0.8808},
-                        {"input": [-1.0], "expected": 0.2689},
-                        {"input": [-2.0], "expected": 0.1192}
+                        {
+                            "input": [
+                                0.0
+                            ],
+                            "expected": 0.5
+                        },
+                        {
+                            "input": [
+                                1.0
+                            ],
+                            "expected": 0.7311
+                        },
+                        {
+                            "input": [
+                                2.0
+                            ],
+                            "expected": 0.8808
+                        },
+                        {
+                            "input": [
+                                -1.0
+                            ],
+                            "expected": 0.2689
+                        },
+                        {
+                            "input": [
+                                -2.0
+                            ],
+                            "expected": 0.1192
+                        }
                     ],
                     "tolerance": 1e-4
                 },
@@ -273,125 +525,43 @@
         },
         "exercise_2": {
             "answers": {
-                "initialized_weights": {
-                    "Xavier Uniform": {
-                        "std": {
-                            "min": 0.15,
-                            "max": 0.25
+                "mse_loss": {
+                    "test_cases": [
+                        {
+                            "input": {
+                                "y_pred": [2.0, 3.0, 4.0],
+                                "y_true": [2.0, 3.0, 4.0]
+                            },
+                            "expected": 0.0
+                        },
+                        {
+                            "input": {
+                                "y_pred": [1.0, 2.0, 3.0],
+                                "y_true": [2.0, 3.0, 4.0]
+                            },
+                            "expected": 1.0
                         }
-                    },
-                    "Xavier Normal": {
-                        "std": {
-                            "min": 0.15,
-                            "max": 0.25
-                        }
-                    },
-                    "Kaiming Uniform": {
-                        "std": {
-                            "min": 0.15,
-                            "max": 0.25
-                        }
-                    },
-                    "Kaiming Normal": {
-                        "std": {
-                            "min": 0.15,
-                            "max": 0.25
-                        }
-                    }
-                }
-            },
-            "hints": [
-                "Use torch.nn.init functions for initialization",
-                "Make sure to create empty tensors before initialization",
-                "Check that distributions match theoretical expectations",
-                "Xavier/Glorot initialization scales with 1/sqrt(n_in + n_out)",
-                "Kaiming initialization scales with 1/sqrt(n_in)"
-            ]
-        },
-        "exercise_3": {
-            "answers": {
-                "tensors": {
-                    "train": {"shape": [6000, 6], "dtype": "torch.float32"},
-                    "val": {"shape": [2000, 6], "dtype": "torch.float32"}, 
-                    "test": {"shape": [2000, 6], "dtype": "torch.float32"}
-                }
-            },
-            "hints": [
-                "Convert DataFrames using .values and torch.tensor()",
-                "Specify dtype=torch.float32",
-                "Check shapes after conversion"
-            ]
-        },
-        "exercise_4": {
-            "answers": {
-                "model": {
-                    "input_size": 6,
-                    "hidden_units": 32,
-                    "output_size": 5,
-                    "activation": "sigmoid"
-                }
-            },
-            "hints": [
-                "Use torch.nn.Linear for layers",
-                "Add sigmoid activation between layers",
-                "Forward should chain: linear -> sigmoid -> linear",
-                "Check layer shapes match specifications"
-            ]
-        },
-        "exercise_5": {
-            "answers": {
-                "l1_reg": {
-                    "lambda": 0.01,
-                    "norm_type": "L1",
-                    "expected_loss_range": [0.1, 1.0]
+                    ],
+                    "tolerance": 1e-4
                 },
-                "l2_reg": {
-                    "lambda": 0.01,
-                    "norm_type": "L2",
-                    "expected_loss_range": [0.1, 1.0]
+                "final_weight": {
+                    "expected": 2.0,
+                    "tolerance": 0.1
                 },
-                "dropout": {
-                    "rate": 0.2,
-                    "training_mode": true
+                "final_bias": {
+                    "expected": 1.0,
+                    "tolerance": 0.1
+                },
+                "final_loss": {
+                    "expected": 0.01,
+                    "tolerance": 0.01
                 }
             },
             "hints": [
-                "Use model.train() to enable dropout during training",
-                "Add L1/L2 regularization terms to the loss function",
-                "Experiment with different regularization strengths",
-                "Monitor validation loss to prevent overfitting"
-            ]
-        },
-        "exercise_6": {
-            "answers": {
-                "optimizer_comparison": {
-                    "optimizers": ["SGD", "Adam", "RMSprop"],
-                    "learning_rate": 0.01,
-                    "expected_convergence": true
-                }
-            },
-            "hints": [
-                "Compare convergence speed of different optimizers",
-                "Plot loss curves to visualize performance",
-                "Try different learning rates for each optimizer",
-                "Monitor training stability"
-            ]
-        },
-        "exercise_7": {
-            "answers": {
-                "backprop_check": {
-                    "gradients": {
-                        "x": {"min": -10.0, "max": 10.0},
-                        "y": {"min": -10.0, "max": 10.0}
-                    },
-                    "requires_grad": true
-                }
-            },
-            "hints": [
-                "Enable gradient tracking with requires_grad=True",
-                "Use backward() to compute gradients",
-                "Check gradient values with .grad attribute",
-                "Remember to zero gradients before next backward pass"
+                "MSE loss is calculated as the mean of squared differences between predictions and true values",
+                "For a linear model, try weight=2.0 and bias=1.0 as they are the true parameters",
+                "Watch how the error decreases as your parameters get closer to the true values",
+                "The learning rate controls how quickly parameters are updated - too high might cause overshooting"
             ]
         }
     }

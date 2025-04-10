@@ -7,7 +7,7 @@ from typing import Optional, List
 from .formatting import make_fig_pretty
 
 
-__all__ = ["plot_loss", "plot_distribution"]
+__all__ = ["plot_loss", "plot_distribution", "visualize_network"]
 
 
 def plot_loss(
@@ -97,39 +97,115 @@ def plot_distribution(
         ax.set_ylabel(ylabel)
         return ax
 
-def visualize_neuron(weight1, weight2, bias):
-    # Create a neuron with user-specified parameters
-    weights = torch.tensor([weight1, weight2])
-    bias = torch.tensor([bias])
+# Helper function to visualize the network
+def visualize_network(model: torch.nn.Module) -> None:
+    """
+    Visualize the architecture of a neural network.
     
-    # Generate a grid of input values
-    x1 = torch.linspace(-5, 5, 100)
-    x2 = torch.linspace(-5, 5, 100)
-    X1, X2 = torch.meshgrid(x1, x2)
+    Args:
+        model: PyTorch neural network model
+    """
+    # Extract sequential structure of the model
+    model_layers = []
+    activation_functions = []
     
-    # Compute the neuron output for each input pair
-    Z = torch.zeros_like(X1)
-    for i in range(X1.shape[0]):
-        for j in range(X1.shape[1]):
-            x = torch.tensor([X1[i,j], X2[i,j]])
-            # Apply the neuron's linear transformation and activation
-            z = x @ weights + bias
-            Z[i,j] = torch.sigmoid(z)
+    # Collect all modules in sequential order
+    for name, module in model.named_children():
+        if isinstance(module, torch.nn.Linear):
+            model_layers.append({
+                'type': 'linear',
+                'in_features': module.in_features,
+                'out_features': module.out_features,
+                'name': name
+            })
+        elif any(isinstance(module, act_type) for act_type in [
+            torch.nn.ReLU, torch.nn.LeakyReLU, torch.nn.Sigmoid, 
+            torch.nn.Tanh, torch.nn.Softmax, torch.nn.GELU,
+            torch.nn.ELU, torch.nn.SELU
+        ]):
+            # Map activation function to readable name
+            act_name = type(module).__name__.replace("ReLU", "ReLU").replace("LeakyReLU", "Leaky ReLU")
+            activation_functions.append(act_name)
     
-    # Plot the decision boundary
-    plt.figure(figsize=(10, 8))
-    contour = plt.contourf(X1.numpy(), X2.numpy(), Z.numpy(), 20, cmap='viridis')
-    plt.colorbar(contour)
-    plt.xlabel('Input 1')
-    plt.ylabel('Input 2')
-    # plt.title(f'Neuron Output with Weights=[{weight1:.2f}, {weight2:.2f}], Bias={bias:.2f}')
-    plt.grid(True)
-    plt.show()
+    # Extract layer sizes from the model architecture
+    layer_sizes = []
+    
+    # First layer's input size
+    if model_layers:
+        layer_sizes.append(model_layers[0]['in_features'])
+        
+    # All layers' output sizes
+    for layer in model_layers:
+        layer_sizes.append(layer['out_features'])
+    
+    # Create figure
+    fig, ax = plt.subplots(figsize=(12, 8))
+    
+    # Set limits and remove axes
+    ax.set_xlim(0, 100)
+    ax.set_ylim(0, 100)
+    ax.axis('off')
+    
+    # Load font
+    from utils.plotting.fonts import load_font
+    custom_font = load_font()
+    
+    # Layer positions - distribute evenly
+    layer_positions = np.linspace(10, 90, len(layer_sizes))
+    
+    # Draw nodes for each layer
+    for i, (layer_pos, layer_size) in enumerate(zip(layer_positions, layer_sizes)):
+        # Calculate node positions - distribute evenly vertically
+        max_nodes_to_display = min(layer_size, 15)  # Limit nodes for large layers
+        if layer_size > max_nodes_to_display:
+            node_positions = np.linspace(80, 20, max_nodes_to_display)
+            # Add text to indicate there are more nodes
+            ax.text(layer_pos, 10, f"(+{layer_size - max_nodes_to_display} more)", 
+                    ha='center', fontproperties=custom_font, fontsize=8)
+        else:
+            node_positions = np.linspace(80, 20, layer_size)
+        
+        # Draw nodes
+        for node_pos in node_positions:
+            circle = plt.Circle((layer_pos, node_pos), 3, color='blue', fill=True)
+            ax.add_patch(circle)
+        
+        # Add layer label
+        if i == 0:
+            ax.text(layer_pos, 90, f'Input Layer\n({layer_size})', ha='center', fontproperties=custom_font)
+        elif i == len(layer_sizes) - 1:
+            ax.text(layer_pos, 90, f'Output Layer\n({layer_size})', ha='center', fontproperties=custom_font)
+        else:
+            ax.text(layer_pos, 90, f'Hidden Layer {i}\n({layer_size})', ha='center', fontproperties=custom_font)
+        
+        # Draw connections to next layer
+        if i < len(layer_sizes) - 1:
+            next_layer_pos = layer_positions[i + 1]
+            next_layer_size = layer_sizes[i + 1]
+            
+            # Handle large layers by limiting connections
+            next_max_nodes = min(next_layer_size, 15)
+            next_node_positions = np.linspace(80, 20, next_max_nodes) if next_layer_size > 0 else []
+            
+            # Draw connections (limit for large layers to avoid clutter)
+            max_connections = min(len(node_positions), 15)
+            for idx, node_pos in enumerate(node_positions[:max_connections]):
+                for next_idx, next_node_pos in enumerate(next_node_positions[:max_connections]):
+                    # Skip some connections for better visualization if there are many nodes
+                    if max_connections > 10 and (idx % 2 != 0 or next_idx % 2 != 0):
+                        continue
+                    alpha = 0.1
+                    ax.plot([layer_pos, next_layer_pos], [node_pos, next_node_pos], 'k-', alpha=alpha)
+            
+            # Add activation function label if available
+            if i < len(activation_functions):
+                midpoint = (layer_pos + next_layer_pos) / 2
+                ax.text(midpoint, 5, f'{activation_functions[i]}', 
+                        ha='center', fontproperties=custom_font, color='red', fontsize=9)
+    
+    plt.title('Neural Network Architecture', fontsize=16, fontproperties=custom_font)
+    plt.tight_layout()
+    
+    return fig, ax
 
-# Create interactive sliders
-interact(
-    visualize_neuron,
-    weight1=FloatSlider(min=-2, max=2, step=0.1, value=1.0),
-    weight2=FloatSlider(min=-2, max=2, step=0.1, value=-1.0),
-    bias=FloatSlider(min=-3, max=3, step=0.1, value=0.0)
-)
+def plot_interactive_regression(
