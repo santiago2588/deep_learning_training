@@ -705,6 +705,14 @@
                 },
                 "relative_risk_factor": {
                     "expected": true
+                },
+                "test_accuracy": {
+                    "expected": 0.8,
+                    "tolerance": 0.2
+                },
+                "test_f1": {
+                    "expected": 0.7,
+                    "tolerance": 0.3
                 }
             },
             "hints": [
@@ -713,7 +721,11 @@
                 "The failure probability should be very high (over 0.7) for the cold launch temperature",
                 "Compare with a typical 'safe' temperature to see how much higher the risk is",
                 "Given the high probability, the recommendation should be to NOT launch",
-                "The relative risk should show that failure is many times more likely at the cold launch temperature"
+                "The relative risk should show that failure is many times more likely at the cold launch temperature",
+                "To evaluate on the test set, apply the same prediction process to X_test",
+                "Calculate accuracy by comparing binary predictions (threshold 0.5) with actual values",
+                "For F1 score, compute precision and recall first, then use the formula F1 = 2 * (precision * recall) / (precision + recall)",
+                "Be careful with division by zero when calculating precision, recall, and F1 score"
             ]
         }
     }
