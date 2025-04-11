@@ -293,11 +293,13 @@ def visualize_network_nx(model: torch.nn.Module, figsize: tuple = (8, 4)) -> Tup
                 transform=ax.transData,
                 zorder=12)
     
-    # Add a title that includes activation function if present
-    title = "Neural Network Architecture"
+    # Add a title with network size information
+    n_input = len(input_nodes)
+    n_hidden = len(hidden_nodes)
+    n_output = len(output_nodes)
+    title = f"Neural Network ({n_input}-{n_hidden}-{n_output})"
     if activations:
-        act_name = ", ".join(set(activations))
-        title += f" with {act_name} Activation"
+        title += "\nActivations: " + ", ".join(set(activations))
     
     # Add legend for activation function if present
     legend_elements = [
