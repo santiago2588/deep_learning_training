@@ -85,6 +85,18 @@ class ExerciseChecker:
         elif isinstance(student_value, torch.nn.Module):
             return self._check_model(student_value, expected, key, exercise_data)
             
+        # Handle tensor shapes (special case for torch.Size objects)
+        elif isinstance(student_value, torch.Size):
+            if "shape" in expected:
+                expected_shape = tuple(expected["shape"])
+                if student_value != expected_shape:
+                    self._print_error(
+                        f"{key} has wrong shape. Expected {expected_shape}, got {student_value}"
+                    )
+                    self._show_relevant_hint(exercise_data["hints"], key)
+                    return False
+            return True
+            
         # Handle metrics with tolerance
         elif "expected" in expected:
             tolerance = expected.get("tolerance", 1e-4)
@@ -109,15 +121,23 @@ class ExerciseChecker:
         tolerance = expected.get("tolerance", 1e-4)
 
         for case in test_cases:
-            input_val = torch.tensor(case["input"], dtype=torch.float32)
+            input_data = case["input"]
             expected_val = case["expected"]
             
             try:
-                result = student_func(input_val).item()
+                # Handle MSE loss function test case (special format for SE02.exercise_3)
+                if isinstance(input_data[0], dict) and "predictions" in input_data[0]:
+                    predictions = torch.tensor(input_data[0]["predictions"], dtype=torch.float32)
+                    targets = torch.tensor(input_data[0]["targets"], dtype=torch.float32)
+                    result = student_func(predictions, targets).item()
+                else:
+                    # Regular function test case
+                    input_val = torch.tensor(input_data, dtype=torch.float32)
+                    result = student_func(input_val).item()
+                    
                 if abs(result - expected_val) > tolerance:
                     self._print_error(
-                        f"{key} failed for input {case['input']}: "
-                        f"expected {expected_val:.4f}, got {result:.4f}"
+                        f"{key} failed test case: expected {expected_val:.4f}, got {result:.4f}"
                     )
                     self._show_relevant_hint(exercise_data["hints"], key)
                     return False

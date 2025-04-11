@@ -1,4 +1,12 @@
 {
+    "challenger":{
+        "url": "https://archive.ics.uci.edu/static/public/92/challenger+usa+space+shuttle+o+ring.zip",
+        "description": "Challenger USA Space Shuttle O-Ring dataset for predicting the failure of O-rings",
+        "website": "https://archive.ics.uci.edu/dataset/92/challenger+usa+space+shuttle+o+ring",
+        "authors": ["Draper, D. "],
+        "year": 1993,
+        "category": "regression"
+    },
     "air quality": {
         "url": "https://archive.ics.uci.edu/static/public/360/air+quality.zip",
         "description": "Air Quality dataset from an Italian city with hourly averaged responses from gas sensors",

@@ -1,4 +1,31 @@
 {
+    "documentation": {
+        "overview": "Documentation for answer schema: Each session (SE01, SE02, etc.) contains multiple exercises",
+        "exercise_structure": [
+            "answers: Object containing expected outputs for each part",
+            "hints: Array of hints that guide students when they make errors"
+        ],
+        "schema_conventions": {
+            "tensors": {
+                "value": "The expected tensor values",
+                "dtype": "The expected tensor data type (e.g. torch.float32)",
+                "shape": "(Optional) The expected tensor shape",
+                "value_range": "(Optional) min_val/max_val for random tensors, acceptable value range"
+            },
+            "scalar_values": {
+                "expected": "The expected numerical value",
+                "tolerance": "How much the student's answer can deviate from expected"
+            },
+            "boolean_checks": {
+                "expected": "true/false with the expected outcome",
+                "tolerance": "(Optional) For numerical comparison before boolean conversion"
+            },
+            "function_validation": {
+                "test_cases": "Array of input/expected pairs to test the function",
+                "tolerance": "How much outputs can deviate from expected values"
+            }
+        }
+    },
     "SE01": {
         "exercise_1": {
             "answers": {
@@ -511,57 +538,152 @@
                     ],
                     "tolerance": 1e-4
                 },
-                "neuron_output": {
-                    "expected": 0.9241,
-                    "tolerance": 1e-4
+                "neuron_input_size": {
+                    "expected": 2,
+                    "tolerance": 0
+                },
+                "has_bias": {
+                    "expected": true
+                },
+                "is_parameterized": {
+                    "expected": true
                 }
             },
             "hints": [
-                "Sigmoid formula is 1 / (1 + e^(-x))",
-                "Use torch.exp(-x) for the exponential",
-                "Test with both positive and negative values",
-                "Make sure to handle tensor inputs properly"
+                "The sigmoid function is defined as 1 / (1 + e^(-x))",
+                "Use torch.exp(-x) for the exponential part",
+                "For the neuron class, remember to use torch.nn.Parameter for weights and bias",
+                "The forward method should compute the dot product between weights and input, add bias, then apply activation",
+                "For the output test, given input [1.0, 2.0] with weights [1.0, 1.0] and bias 0.5, the result should be close to 0.97",
+                "For the neuron class, initialize weights with torch.randn(input_features) to get random values",
+                "Make weights and bias learnable by wrapping them with torch.nn.Parameter",
+                "Make sure your neuron has the correct number of input features (weights)"
             ]
         },
         "exercise_2": {
             "answers": {
-                "mse_loss": {
-                    "test_cases": [
-                        {
-                            "input": {
-                                "y_pred": [2.0, 3.0, 4.0],
-                                "y_true": [2.0, 3.0, 4.0]
-                            },
-                            "expected": 0.0
-                        },
-                        {
-                            "input": {
-                                "y_pred": [1.0, 2.0, 3.0],
-                                "y_true": [2.0, 3.0, 4.0]
-                            },
-                            "expected": 1.0
-                        }
+                "X_shape": {
+                    "shape": [
+                        23,
+                        1
                     ],
+                    "tolerance": 0
+                },
+                "y_shape": {
+                    "shape": [
+                        23,
+                        1
+                    ],
+                    "tolerance": 0
+                },
+                "X_mean": {
+                    "expected": 20.8696,
                     "tolerance": 1e-4
                 },
-                "final_weight": {
-                    "expected": 2.0,
-                    "tolerance": 0.1
+                "X_std": {
+                    "expected": 3.9206,
+                    "tolerance": 1e-4
                 },
-                "final_bias": {
-                    "expected": 1.0,
-                    "tolerance": 0.1
-                },
-                "final_loss": {
-                    "expected": 0.01,
-                    "tolerance": 0.01
+                "n_distress_cases": {
+                    "value": 6
                 }
             },
             "hints": [
-                "MSE loss is calculated as the mean of squared differences between predictions and true values",
-                "For a linear model, try weight=2.0 and bias=1.0 as they are the true parameters",
-                "Watch how the error decreases as your parameters get closer to the true values",
-                "The learning rate controls how quickly parameters are updated - too high might cause overshooting"
+                "Convert temperature values to PyTorch tensors with .float() and reshape with .view(-1, 1)",
+                "Similarly convert n_distressed values and reshape to match temperature shape",
+                "Calculate mean with X.mean() and standard deviation with X.std()",
+                "Normalize using the formula: (X - X_mean) / X_std",
+                "Count distress cases by summing the target tensor with y.sum().item()"
+            ]
+        },
+        "exercise_3": {
+            "answers": {
+                "mse_loss": {
+                    "test_cases": [
+                        {
+                            "input": [
+                                {
+                                    "predictions": [[0.0], [0.5], [1.0]],
+                                    "targets": [[0.0], [0.0], [1.0]]
+                                }
+                            ],
+                            "expected": 0.0833
+                        },
+                        {
+                            "input": [
+                                {
+                                    "predictions": [[0.3], [0.7]],
+                                    "targets": [[0.0], [1.0]]
+                                }
+                            ],
+                            "expected": 0.0900
+                        },
+                        {
+                            "input": [
+                                {
+                                    "predictions": [[0.0], [0.0]],
+                                    "targets": [[1.0], [1.0]]
+                                }
+                            ],
+                            "expected": 1.0
+                        }
+                    ],
+                    "tolerance": 1e-3
+                }
+            },
+            "hints": [
+                "Mean Squared Error is calculated as the average of squared differences: mean((predictions - targets)**2)",
+                "Use squared_diff = (predictions - targets) ** 2 to calculate the squared differences",
+                "Use squared_diff.mean() to get the average",
+                "To verify your implementation, compare with PyTorch's nn.MSELoss()",
+                "Loop through each input to get predictions from your model",
+                "Forward pass: model(X_normalized[i]) for each data point"
+            ]
+        },
+        "exercise_4": {
+            "answers": {
+                "training_convergence": {
+                    "expected": true,
+                    "tolerance": 0
+                },
+                "final_loss": {
+                    "expected": 0.16,
+                    "tolerance": 0.05
+                },
+                "negative_weight": {
+                    "expected": true,
+                    "tolerance": 0
+                }
+            },
+            "hints": [
+                "In the backward pass, call loss.backward() to compute gradients",
+                "Update parameters using weight -= learning_rate * weight.grad",
+                "Remember to zero gradients with weight.grad.zero_() after each update",
+                "Use with torch.no_grad(): when updating parameters to prevent tracking computations",
+                "For the O-ring data, you should see the weight become negative (indicating higher failure at lower temperatures)",
+                "Monitor the loss over time - it should decrease and eventually stabilize"
+            ]
+        },
+        "exercise_5": {
+            "answers": {
+                "challenger_failure_prob": {
+                    "expected": 0.9,
+                    "tolerance": 0.15
+                },
+                "recommendation": {
+                    "expected": true
+                },
+                "relative_risk_factor": {
+                    "expected": true
+                }
+            },
+            "hints": [
+                "Remember to use the same normalization (subtract X_mean and divide by X_std) for the Challenger temperature",
+                "Use model(challenger_tensor) to get the failure probability prediction",
+                "The failure probability should be very high (over 0.7) for the cold launch temperature",
+                "Compare with a typical 'safe' temperature to see how much higher the risk is",
+                "Given the high probability, the recommendation should be to NOT launch",
+                "The relative risk should show that failure is many times more likely at the cold launch temperature"
             ]
         }
     }

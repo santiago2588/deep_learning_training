@@ -207,5 +207,3 @@ def visualize_network(model: torch.nn.Module) -> None:
     plt.tight_layout()
     
     return fig, ax
-
-def plot_interactive_regression(
