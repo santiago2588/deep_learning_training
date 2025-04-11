@@ -294,3 +294,42 @@ def make_fig_pretty(
             ax.grid(color="#E0E0E0", linestyle=":", linewidth=0.3)
         else:
             ax.grid(color="gray", linestyle="--", linewidth=0.5)
+            
+    # Apply font to all text annotations in the plot
+    for text_obj in ax.texts:
+        text_obj.set_fontproperties(fm)
+        if not tufte_style and hasattr(text_obj, 'get_text'):
+            try:
+                # Try to uppercase if it's a regular text object
+                text = text_obj.get_text()
+                if not text.replace(".", "").replace("-", "").isdigit():
+                    text_obj.set_text(text.upper())
+            except (AttributeError, TypeError):
+                pass
+    
+    # Find and format colorbar if it exists
+    figure = ax.get_figure()
+    for child in figure.get_children():
+        if hasattr(child, 'ax') and hasattr(child, 'set_label'):
+            # This is likely a colorbar
+            if hasattr(child, 'ax'):
+                colorbar_ax = child.ax
+                
+                # Format colorbar title
+                if hasattr(colorbar_ax, 'get_ylabel') and colorbar_ax.get_ylabel():
+                    colorbar_ax.set_ylabel(
+                        colorbar_ax.get_ylabel().upper() if not tufte_style else colorbar_ax.get_ylabel(),
+                        fontproperties=fm
+                    )
+                
+                # Format colorbar ticks
+                for label in colorbar_ax.get_yticklabels():
+                    label.set_fontproperties(fm)
+    
+    # Apply font to any other text elements in the figure
+    for ax_obj in figure.get_axes():
+        # Format subplot titles if using plt.subplot with titles
+        if hasattr(ax_obj, 'title') and ax_obj.title is not None:
+            ax_obj.title.set_fontproperties(fm)
+            if not tufte_style:
+                ax_obj.title.set_text(ax_obj.title.get_text().upper())
