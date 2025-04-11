@@ -602,7 +602,17 @@
                     "tolerance": 1e-4
                 },
                 "n_distress_cases": {
-                    "value": 6
+                    "expected": 6.0,
+                    "tolerance": 0
+                },
+                "data_clipped": {
+                    "expected": true
+                },
+                "train_test_split_ratio": {
+                    "expected": true
+                },
+                "tensors_created": {
+                    "expected": true
                 }
             },
             "hints": [
@@ -612,7 +622,8 @@
                 "Similarly convert n_distressed values and reshape to match temperature shape",
                 "Calculate mean with X.mean() and standard deviation with X.std()",
                 "Normalize using the formula: (X - X_mean) / X_std",
-                "Count distress cases by summing the target tensor with y.sum().item()"
+                "Count distress cases by summing the target tensor with y.sum().item()",
+                "Make sure to split the data with approximately 80% for training"
             ]
         },
         "exercise_3": {
