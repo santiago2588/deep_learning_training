@@ -291,7 +291,9 @@ def make_fig_pretty(
     if grid:
         if tufte_style:
             # Tufte prefers subtle, lighter grid lines
-            ax.grid(color="#E0E0E0", linestyle=":", linewidth=0.3)
+            ax.grid(color="#E0E0E0", linestyle=":", linewidth=0.3, alpha=0.9, which='major')
+            # Remove minor grid lines for cleaner look in Tufte style
+            ax.minorticks_off()
         else:
             ax.grid(color="gray", linestyle="--", linewidth=0.5)
             

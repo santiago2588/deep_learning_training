@@ -759,14 +759,6 @@
                 },
                 "relative_risk_factor": {
                     "expected": true
-                },
-                "test_accuracy": {
-                    "expected": 0.8,
-                    "tolerance": 0.2
-                },
-                "test_f1": {
-                    "expected": 0.7,
-                    "tolerance": 0.3
                 }
             },
             "hints": [
@@ -776,10 +768,43 @@
                 "Compare with a typical 'safe' temperature to see how much higher the risk is",
                 "Given the high probability, the recommendation should be to NOT launch",
                 "The relative risk should show that failure is many times more likely at the cold launch temperature",
+                "Make sure to use with torch.no_grad() when making predictions with a trained model",
+                "Normalize the challenger temperature using the same mean and standard deviation as the training data",
+                "To calculate relative risk, divide the probability of failure at the challenger temperature by the probability at a normal temperature"
+            ]
+        },
+        "exercise_6": {
+            "answers": {
+                "test_accuracy": {
+                    "expected": 0.8,
+                    "tolerance": 0.2
+                },
+                "test_precision": {
+                    "expected": 0.7,
+                    "tolerance": 0.3
+                },
+                "test_recall": {
+                    "expected": 0.7,
+                    "tolerance": 0.3
+                },
+                "test_f1": {
+                    "expected": 0.7,
+                    "tolerance": 0.3
+                }
+            },
+            "hints": [
                 "To evaluate on the test set, apply the same prediction process to X_test",
                 "Calculate accuracy by comparing binary predictions (threshold 0.5) with actual values",
-                "For F1 score, compute precision and recall first, then use the formula F1 = 2 * (precision * recall) / (precision + recall)",
-                "Be careful with division by zero when calculating precision, recall, and F1 score"
+                "Accuracy is the ratio of correct predictions to total predictions",
+                "True positives (TP) are cases where both prediction and actual are 1",
+                "False positives (FP) are cases where prediction is 1 but actual is 0",
+                "False negatives (FN) are cases where prediction is 0 but actual is 1",
+                "Precision = TP / (TP + FP) - what fraction of positive predictions were correct",
+                "Recall = TP / (TP + FN) - what fraction of actual positives were correctly identified",
+                "F1 score = 2 * (precision * recall) / (precision + recall)",
+                "Be careful with division by zero when calculating precision, recall, and F1 score",
+                "Use binary_predictions = (test_predictions > 0.5).float() to convert probabilities to binary values",
+                "Visualize the test predictions to better understand model performance"
             ]
         }
     }

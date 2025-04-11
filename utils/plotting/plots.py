@@ -13,7 +13,7 @@ from matplotlib.lines import Line2D
 
 
 __all__ = ["plot_loss", "plot_distribution",
-           "visualize_network_nx"]
+           "visualize_network_nx", "plot_model_predictions_SE02"]
 
 
 def plot_loss(
@@ -21,8 +21,9 @@ def plot_loss(
     val_loss: Optional[List[float]] = None,
     title: str = "Training Progress",
     figsize: tuple = (10, 6),
+    ax: Optional[plt.Axes] = None,
     **kwargs: Optional[dict]
-) -> None:
+) -> Tuple[plt.Figure, plt.Axes]:
     """
     Plot training and validation loss curves.
 
@@ -31,8 +32,15 @@ def plot_loss(
         val_loss: Optional list of validation loss values
         title: Plot title
         figsize: Figure size as (width, height)
+        ax: Optional matplotlib axes to plot on
+        **kwargs: Additional arguments to pass to make_fig_pretty
+        
+    Returns:
+        fig, ax: Matplotlib figure and axes objects
     """
-    fig, ax = plt.subplots(figsize=figsize)
+    fig = None
+    if ax is None:
+        fig, ax = plt.subplots(figsize=figsize)
 
     epochs = range(1, len(train_loss) + 1)
 
@@ -50,10 +58,13 @@ def plot_loss(
         title=title,
         legend=True,
         legd_loc='upper right',
-        grid=True
+        grid=True,
+        **kwargs
     )
 
-    plt.tight_layout()
+    if fig is not None:
+        plt.tight_layout()
+    
     return fig, ax
 
 
@@ -337,3 +348,82 @@ def visualize_network_nx(model: torch.nn.Module, figsize: tuple = (8, 4)) -> Tup
     ax.axis('off')
     
     return fig, ax, G, pos
+
+
+def plot_model_predictions_SE02(
+    model: torch.nn.Module,
+    X: torch.Tensor,
+    y: torch.Tensor,
+    X_mean: float,
+    X_std: float,
+    special_temp: Optional[float] = None,
+    special_temp_label: Optional[str] = None,
+    title: str = "Model Predictions",
+    figsize: tuple = (10, 6),
+    ax: Optional[plt.Axes] = None,
+    **kwargs: Optional[dict]
+) -> Tuple[plt.Figure, plt.Axes]:
+    """
+    Plot model predictions against actual data points.
+    
+    Args:
+        model: The trained model
+        X: Feature tensor (normalized)
+        y: Target tensor
+        X_mean: Mean value used for normalization
+        X_std: Standard deviation used for normalization
+        special_temp: Optional temperature to highlight with a vertical line
+        special_temp_label: Label for the special temperature
+        title: Plot title
+        figsize: Figure size as (width, height)
+        ax: Optional matplotlib axes to plot on
+        **kwargs: Additional arguments to pass to make_fig_pretty
+        
+    Returns:
+        fig, ax: Matplotlib figure and axes objects
+    """
+    fig = None
+    if ax is None:
+        fig, ax = plt.subplots(figsize=figsize)
+    
+    # Convert tensors to numpy for plotting
+    temperatures = X.numpy().flatten() * X_std + X_mean  # De-normalize for plotting
+    actual = y.numpy().flatten()
+    
+    # Create temperature range for smooth curve
+    temp_range = np.linspace(min(temperatures) - 2, max(temperatures) + 2, 100)
+    temp_range_normalized = (temp_range - X_mean) / X_std
+    
+    # Get predictions for the whole temperature range
+    with torch.no_grad():
+        smooth_preds = np.array([model(torch.tensor([t]).float()).item() for t in temp_range_normalized])
+    
+    # Plot the data points and model prediction curve
+    ax.scatter(temperatures, actual, color='None', edgecolor='black',
+               s=100, alpha=0.7, label='Actual Data')
+    ax.plot(temp_range, smooth_preds, 'orange', linewidth=2, label='Model Prediction')
+    
+    # Add threshold line at 0.5 probability
+    ax.axhline(y=0.5, color='gray', linestyle='--', alpha=0.7)
+    
+    # Add special temperature line if provided
+    if special_temp is not None:
+        ax.axvline(x=special_temp, color='black', linestyle='--', alpha=0.7)
+        if special_temp_label:
+            ax.text(special_temp+0.5, 0.8, special_temp_label, rotation=90)
+    
+    make_fig_pretty(
+        ax=ax,
+        title=title,
+        xlabel="Temperature (°C)",
+        ylabel="Probability of Failure",
+        legend=True,
+        legd_loc='upper right',
+        grid=True,
+        **kwargs
+    )
+    
+    if fig is not None:
+        plt.tight_layout()
+        
+    return fig, ax
