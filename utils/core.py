@@ -97,17 +97,39 @@ class ExerciseChecker:
                     return False
             return True
             
-        # Handle metrics with tolerance
-        elif "expected" in expected:
-            tolerance = expected.get("tolerance", 1e-4)
-            if abs(student_value - expected["expected"]) > tolerance:
+        # Handle metrics with min/max range or expected value with tolerance
+        elif "expected" in expected or "min_val" in expected or "max_val" in expected:
+            # Handle exact value with tolerance
+            if "expected" in expected:
+                tolerance = expected.get("tolerance", 1e-4)
+                if abs(student_value - expected["expected"]) > tolerance:
+                    self._print_error(
+                        f"{key} has incorrect value. "
+                        f"Expected {expected['expected']:.4f}, got {student_value:.4f}"
+                    )
+                    self._show_relevant_hint(exercise_data["hints"], key)
+                    return False
+            
+            # Handle min/max range checks
+            if "min_val" in expected and student_value < expected["min_val"]:
                 self._print_error(
-                    f"{key} has incorrect value. "
-                    f"Expected {expected['expected']:.4f}, got {student_value:.4f}"
+                    f"{key} is too small: {student_value:.4f}. Should be at least {expected['min_val']:.4f}"
                 )
                 self._show_relevant_hint(exercise_data["hints"], key)
                 return False
+                
+            if "max_val" in expected and student_value > expected["max_val"]:
+                self._print_error(
+                    f"{key} is too large: {student_value:.4f}. Should be at most {expected['max_val']:.4f}"
+                )
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+                
             return True
+        
+        # Handle metrics specifically (can contain dictionaries or ranges)
+        elif "metrics" in expected:
+            return self._check_metrics(student_value, expected, key, exercise_data)
 
         return True
 
@@ -218,28 +240,53 @@ class ExerciseChecker:
         
         # Handle dictionary of metrics
         if isinstance(student_value, dict):
-            for metric_name, (min_val, max_val) in metrics.items():
+            for metric_name, expected_range in metrics.items():
                 if metric_name not in student_value:
                     self._print_error(f"{key} missing metric {metric_name}")
                     self._show_relevant_hint(exercise_data["hints"], key)
                     return False
                 
-                if not (min_val <= student_value[metric_name] <= max_val):
+                # Handle range as (min, max) tuple
+                if isinstance(expected_range, (list, tuple)) and len(expected_range) == 2:
+                    min_val, max_val = expected_range
+                    if not (min_val <= student_value[metric_name] <= max_val):
+                        self._print_error(
+                            f"{key} {metric_name} should be between {min_val} and {max_val}, got {student_value[metric_name]:.4f}"
+                        )
+                        self._show_relevant_hint(exercise_data["hints"], key)
+                        return False
+                # Handle exact value with tolerance
+                elif isinstance(expected_range, dict) and "expected" in expected_range:
+                    expected_val = expected_range["expected"]
+                    tolerance = expected_range.get("tolerance", 1e-4)
+                    if abs(student_value[metric_name] - expected_val) > tolerance:
+                        self._print_error(
+                            f"{key} {metric_name} should be close to {expected_val}, got {student_value[metric_name]:.4f}"
+                        )
+                        self._show_relevant_hint(exercise_data["hints"], key)
+                        return False
+        
+        # Handle single metric value with range
+        else:
+            # Check if metrics contains a "value" entry with (min, max) format
+            if "value" in metrics and isinstance(metrics["value"], (list, tuple)) and len(metrics["value"]) == 2:
+                min_val, max_val = metrics["value"]
+                if not (min_val <= student_value <= max_val):
                     self._print_error(
-                        f"{key} {metric_name} should be between {min_val} and {max_val}"
+                        f"{key} should be between {min_val} and {max_val}, got {student_value:.4f}"
                     )
                     self._show_relevant_hint(exercise_data["hints"], key)
                     return False
-        
-        # Handle single metric value
-        else:
-            min_val, max_val = metrics["value"]
-            if not (min_val <= student_value <= max_val):
-                self._print_error(
-                    f"{key} should be between {min_val} and {max_val}"
-                )
-                self._show_relevant_hint(exercise_data["hints"], key)
-                return False
+            # Handle exact value with tolerance
+            elif "expected" in metrics:
+                expected_val = metrics["expected"]
+                tolerance = metrics.get("tolerance", 1e-4)
+                if abs(student_value - expected_val) > tolerance:
+                    self._print_error(
+                        f"{key} should be close to {expected_val}, got {student_value:.4f}"
+                    )
+                    self._show_relevant_hint(exercise_data["hints"], key)
+                    return False
 
         return True
 

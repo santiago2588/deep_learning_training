@@ -64,13 +64,14 @@ def _update_plot(
         fig, ax = plt.subplots(figsize=(12, 6))
         
         # Plot data points
-        ax.scatter(temperatures, actual, color='blue', s=100, alpha=0.7, label='Actual Data')
+        ax.scatter(temperatures, actual, color='None', edgecolor='k',
+                    s=100, alpha=0.7, label='Actual Data')
         
         # Plot model predictions
         temp_range = np.linspace(min(temperatures) - 2, max(temperatures) + 2, 100)
         temp_range_normalized = (temp_range - X_mean) / X_std
         smooth_preds = np.array([custom_model(torch.tensor([t]).float()).item() for t in temp_range_normalized])
-        ax.plot(temp_range, smooth_preds, 'r-', linewidth=3, label='Model Prediction')
+        ax.plot(temp_range, smooth_preds, 'orange', linewidth=3, label='Model Prediction')
         
         # Add reference lines
         ax.axhline(y=0.5, color='gray', linestyle='--', alpha=0.7)

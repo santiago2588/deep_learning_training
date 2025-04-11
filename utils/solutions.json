@@ -565,15 +565,21 @@
                 "f_to_c": {
                     "test_cases": [
                         {
-                            "input": [32.0],
+                            "input": [
+                                32.0
+                            ],
                             "expected": 0.0
                         },
                         {
-                            "input": [212.0],
+                            "input": [
+                                212.0
+                            ],
                             "expected": 100.0
                         },
                         {
-                            "input": [68.0],
+                            "input": [
+                                68.0
+                            ],
                             "expected": 20.0
                         }
                     ],
@@ -633,8 +639,28 @@
                         {
                             "input": [
                                 {
-                                    "predictions": [[0.0], [0.5], [1.0]],
-                                    "targets": [[0.0], [0.0], [1.0]]
+                                    "predictions": [
+                                        [
+                                            0.0
+                                        ],
+                                        [
+                                            0.5
+                                        ],
+                                        [
+                                            1.0
+                                        ]
+                                    ],
+                                    "targets": [
+                                        [
+                                            0.0
+                                        ],
+                                        [
+                                            0.0
+                                        ],
+                                        [
+                                            1.0
+                                        ]
+                                    ]
                                 }
                             ],
                             "expected": 0.0833
@@ -642,8 +668,22 @@
                         {
                             "input": [
                                 {
-                                    "predictions": [[0.3], [0.7]],
-                                    "targets": [[0.0], [1.0]]
+                                    "predictions": [
+                                        [
+                                            0.3
+                                        ],
+                                        [
+                                            0.7
+                                        ]
+                                    ],
+                                    "targets": [
+                                        [
+                                            0.0
+                                        ],
+                                        [
+                                            1.0
+                                        ]
+                                    ]
                                 }
                             ],
                             "expected": 0.0900
@@ -651,8 +691,22 @@
                         {
                             "input": [
                                 {
-                                    "predictions": [[0.0], [0.0]],
-                                    "targets": [[1.0], [1.0]]
+                                    "predictions": [
+                                        [
+                                            0.0
+                                        ],
+                                        [
+                                            0.0
+                                        ]
+                                    ],
+                                    "targets": [
+                                        [
+                                            1.0
+                                        ],
+                                        [
+                                            1.0
+                                        ]
+                                    ]
                                 }
                             ],
                             "expected": 1.0
@@ -677,8 +731,8 @@
                     "tolerance": 0
                 },
                 "final_loss": {
-                    "expected": 0.16,
-                    "tolerance": 0.05
+                    "max_val": 0.15,
+                    "min_val": 0.0
                 },
                 "negative_weight": {
                     "expected": true,
