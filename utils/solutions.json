@@ -811,34 +811,6 @@
     "SE03": {
         "exercise_1": {
             "answers": {
-                "feats_train_path": {
-                    "expected": true
-                },
-                "targets_train_path": {
-                    "expected": true
-                },
-                "feats_val_path": {
-                    "expected": true
-                },
-                "targets_val_path": {
-                    "expected": true
-                },
-                "feats_test_path": {
-                    "expected": true
-                },
-                "targets_test_path": {
-                    "expected": true
-                }
-            },
-            "hints": [
-                "Use the Path library to create file paths by joining the right_arm_path with the appropriate file names",
-                "The training file names should be 'RTrain_x.csv' and 'RTrain_y.csv'",
-                "The validation file names should be 'RVal_x.csv' and 'RVal_y.csv'",
-                "The test file names should be 'RTest_x.csv' and 'RTest_y.csv'"
-            ]
-        },
-        "exercise_2": {
-            "answers": {
                 "X_train_tensor": {
                     "dtype": "torch.float32"
                 },
@@ -855,9 +827,13 @@
                     "max_val": 1.0,
                     "dtype": "torch.float32"
                 },
-                "scale_range": {
-                    "expected": [0.0, 1.0],
-                    "tolerance": 1e-4
+                "scale_range_min": {
+                    "expected": 0.0,
+                    "tolerance": 0
+                },
+                "scale_range_max": {
+                    "expected":  1.0,
+                    "tolerance": 0
                 }
             },
             "hints": [
@@ -868,7 +844,7 @@
                 "Check that the normalized data is in the range [0, 1]"
             ]
         },
-        "exercise_3": {
+        "exercise_2": {
             "answers": {
                 "model": {
                     "architecture": "Module"
@@ -894,7 +870,7 @@
                 "For the final layer, don't apply an activation function since this is a regression task"
             ]
         },
-        "exercise_4": {
+        "exercise_3": {
             "answers": {
                 "optimizer_type": {
                     "expected": true
@@ -914,7 +890,7 @@
                 "The learning rate is passed as a parameter to the optimizer"
             ]
         },
-        "exercise_5": {
+        "exercise_4": {
             "answers": {
                 "train_losses": {
                     "min_val": 0.0
@@ -939,7 +915,7 @@
                 "Use model.eval() and torch.no_grad() when computing validation loss"
             ]
         },
-        "exercise_6": {
+        "exercise_5": {
             "answers": {
                 "test_loss": {
                     "min_val": 0.0,
@@ -965,7 +941,7 @@
                 "Calculate R-squared score with utils.ml.r2_score(test_targets_original, test_predictions_original)"
             ]
         },
-        "exercise_7": {
+        "exercise_6": {
             "answers": {
                 "improved_model": {
                     "architecture": "Module"
