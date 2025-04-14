@@ -1,0 +1,69 @@
+{
+    "SE03": {
+      "quiz_1": {
+        "title": "Activation Functions Quiz",
+        "question": "For a regression problem like predicting the robot arm joint angles, which activation function would be most appropriate for the output layer?",
+        "options": [
+          "Sigmoid - to constrain all outputs between 0 and 1",
+          "ReLU - to ensure no negative values in the output",
+          "Linear (no activation) - to allow any numeric output value",
+          "Softmax - to convert outputs into probability distributions",
+          "Tanh - to constrain all outputs between -1 and 1"
+        ],
+        "correct": 2,
+        "explanation": "For regression problems, where we need to predict continuous values like joint angles, the linear activation (or no activation) is most appropriate for the output layer. This is because:\n\n1. Regression outputs need the full range of possible values, not constrained to intervals like [0,1] (sigmoid) or [-1,1] (tanh).\n2. Joint angles can be positive or negative, so ReLU (which outputs only positive values) would be too restrictive.\n3. Softmax is for multi-class classification problems, not regression.\n\nHidden layers in the network can and should use non-linear activations like ReLU, Tanh, or Leaky ReLU to capture complex relationships, but the output layer in regression tasks typically uses linear activation to predict any real-valued output."
+      },
+      "quiz_2": {
+        "title": "Neural Network Architecture Quiz",
+        "question": "When designing a neural network for the robot arm inverse kinematics problem, which combination of activation functions would likely work best?",
+        "options": [
+          "Hidden layers: Sigmoid, Output layer: Sigmoid",
+          "Hidden layers: ReLU, Output layer: Linear",
+          "Hidden layers: Linear, Output layer: ReLU",
+          "Hidden layers: Softmax, Output layer: Tanh",
+          "Hidden layers: Tanh, Output layer: Softmax"
+        ],
+        "correct": 1,
+        "explanation": "The best combination for this regression task is:\n\nHidden layers: ReLU - ReLU (Rectified Linear Unit) works well in hidden layers because:\n1. It helps mitigate the vanishing gradient problem that can occur with sigmoid/tanh\n2. It introduces non-linearity needed to learn complex patterns\n3. It's computationally efficient\n4. It's widely used in modern neural networks with proven success\n\nOutput layer: Linear - Linear activation is appropriate for the output layer in regression tasks because:\n1. It allows the model to predict any numerical value within the range of joint angles\n2. Joint angles can be positive or negative values\n3. The model needs to predict exact values, not probabilities or classifications\n\nSigmoid and tanh would constrain outputs inappropriately, while softmax is designed for multi-class classification problems."
+      },
+      "quiz_3": {
+        "title": "Neural Network Width Quiz",
+        "question": "For the robot arm inverse kinematics regression problem, which statement about network width (number of neurons in hidden layers) is most accurate?",
+        "options": [
+          "A single neuron in each hidden layer is sufficient since this is a simple regression task",
+          "The number of neurons should exactly match the number of input features (6)",
+          "The hidden layers should have more neurons than inputs to capture complex spatial relationships",
+          "The hidden layers should have fewer neurons than the output to prevent overfitting",
+          "The width of the network doesn't impact performance, only the depth matters"
+        ],
+        "correct": 2,
+        "explanation": "The hidden layers should have more neurons than inputs to capture complex spatial relationships in the robot arm kinematics problem. This is because:\n\n1. Inverse kinematics involves complex non-linear relationships between end-effector positions and joint angles\n2. The mapping from 6D input space (position and orientation) to 5D output space (joint angles) requires learning complex mathematical transformations\n3. With too few neurons, the network would suffer from high bias (underfitting)\n4. The number of neurons doesn't need to match the input or output dimensions exactly\n5. While having too many neurons can lead to overfitting, techniques like regularization and dropout can help mitigate this\n\nA common practice is to start with more neurons than inputs and gradually adjust based on validation performance."
+      },
+      "quiz_4": {
+        "title": "Network Depth for Inverse Kinematics",
+        "question": "When designing a neural network for robot arm inverse kinematics, which statement about network depth (number of hidden layers) is most accurate?",
+        "options": [
+          "A single hidden layer is always sufficient for any regression problem",
+          "Deeper networks are always better than shallow ones for inverse kinematics",
+          "Multiple hidden layers help capture hierarchical relationships in joint movements",
+          "Deeper networks train faster than shallow networks",
+          "The number of hidden layers should match the number of robot joints"
+        ],
+        "correct": 2,
+        "explanation": "Multiple hidden layers help capture hierarchical relationships in joint movements. This is because:\n\n1. Inverse kinematics involves complex geometric and spatial transformations that benefit from hierarchical representations\n2. The first few layers might learn basic spatial features while deeper layers combine these into more complex movement patterns\n3. With a single hidden layer, the model might struggle to approximate the complex non-linear relationship between end-effector positions and joint configurations\n4. However, very deep networks may be prone to training difficulties like vanishing gradients\n5. The optimal depth depends on the complexity of the specific robot's kinematic chain, not just the number of joints\n\nDepth should be chosen based on the complexity of the task and validated empirically, not based on arbitrary rules."
+      },
+      "quiz_5": {
+        "title": "Regularization Techniques for Kinematics Models",
+        "question": "Which regularization technique would be most effective for improving generalization in a neural network for robot arm inverse kinematics?",
+        "options": [
+          "Using only linear layers without any non-linear activations",
+          "Implementing dropout between layers during training",
+          "Limiting training to exactly 10 epochs",
+          "Using MSE loss instead of MAE loss",
+          "Removing all hidden layers to simplify the model"
+        ],
+        "correct": 1,
+        "explanation": "Implementing dropout between layers during training is most effective because:\n\n1. Dropout randomly deactivates a percentage of neurons during each training step, which prevents neurons from co-adapting too much\n2. This forces the network to learn redundant representations of the kinematic relationships\n3. The model becomes more robust to variations in input positions and orientations\n4. Dropout acts like an ensemble of different network architectures, improving generalization\n5. It helps prevent overfitting when the network needs to be expressive (with many parameters) to capture the complex mapping\n\nFor robot arm inverse kinematics, good generalization is critical since the robot needs to perform reliably across the entire workspace, even in positions not exactly represented in the training data."
+      }
+    }
+  }

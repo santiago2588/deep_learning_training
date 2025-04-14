@@ -10,6 +10,74 @@ def find_project_root() -> Path:
         current_path = current_path.parent
     raise FileNotFoundError("Project root not found")
 
+class QuizManager:
+    """Utility class for managing interactive quizzes"""
+    
+    def __init__(self, session: str):
+        self.session = session
+        project_root = find_project_root()
+        self.quizzes_path = project_root / 'utils/quizzes.json'
+        
+        # Load quizzes if the file exists, otherwise create a default empty structure
+        if self.quizzes_path.exists():
+            with open(self.quizzes_path, 'r') as f:
+                self.quizzes = json.load(f)
+        else:
+            self.quizzes = {}
+            print("📝 Note: quizzes.json not found. Using default empty quizzes.")
+    
+    def run_quiz(self, quiz_number: int):
+        """Run a quiz by its number"""
+        try:
+            quiz_key = f"quiz_{quiz_number}"
+            if self.session not in self.quizzes or quiz_key not in self.quizzes[self.session]:
+                print(f"❌ Quiz {quiz_number} not found for session {self.session}")
+                return
+                
+            quiz = self.quizzes[self.session][quiz_key]
+            
+            print("-" * 80)
+            print(f"📋 {quiz['title']}")
+            print("-" * 80)
+            
+            # Display the question and options
+            print(quiz["question"])
+            print()
+            
+            for i, option in enumerate(quiz["options"]):
+                print(f"{chr(65 + i)}. {option}")
+                
+            print()
+            
+            # Get the answer from the user (wrapped in try-catch for interrupt handling)
+            while True:
+                try:
+                    answer = input("Enter your answer (A, B, C, etc.): ").strip().upper()
+                    if answer and answer in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[:len(quiz["options"])]:
+                        break
+                    else:
+                        print(f"Please enter a valid option (A-{chr(64 + len(quiz['options']))})")
+                except KeyboardInterrupt:
+                    print("\nQuiz aborted.")
+                    return
+                    
+            # Check the answer
+            correct_index = quiz["correct"]
+            correct_letter = chr(65 + correct_index)
+            
+            if answer == correct_letter:
+                print("\n✅ Correct!")
+            else:
+                print(f"\n❌ Incorrect. The correct answer is {correct_letter}.")
+                
+            # Display the explanation
+            print("\n📚 Explanation:")
+            print(quiz["explanation"])
+            print("-" * 80)
+            
+        except Exception as e:
+            print(f"❌ Error running quiz: {str(e)}")
+
 class ExerciseChecker:
     """Utility class for checking workshop exercises"""
     
