@@ -2,7 +2,7 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 import ipywidgets as widgets
-from ipywidgets import FloatSlider, interact, interactive, fixed, Layout
+from ipywidgets import FloatSlider, interact, interactive, Layout,interactive_output
 from typing import Callable, Optional, Dict, Any, Union, Tuple
 
 from .plots import make_fig_pretty
@@ -61,7 +61,7 @@ def _update_plot(
         actual = y.numpy().flatten()
         
         # Plot the results
-        fig, ax = plt.subplots(figsize=(12, 6))
+        fig, ax = plt.subplots(figsize=(10, 5))
         
         # Plot data points
         ax.scatter(temperatures, actual, color='None', edgecolor='k',
@@ -206,10 +206,10 @@ def create_interactive_neuron_visualizer(
     ))
     
     # Create the interactive widget
-    interact_widget = interact(wrapped_update_plot, w=w_slider, b=b_slider)
+    inter_out = interactive_output(wrapped_update_plot, {'w':w_slider, 'b':b_slider})
     
     # Combine all widgets
-    main_widget = widgets.VBox([
+    main_ui = widgets.VBox([
         widgets.HBox([w_slider, b_slider, train_button]), 
         out
     ])
@@ -217,4 +217,4 @@ def create_interactive_neuron_visualizer(
     # Initial update
     wrapped_update_plot(w_slider.value, b_slider.value)
     
-    return main_widget
+    return main_ui, inter_out
