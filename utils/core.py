@@ -38,6 +38,7 @@ class ExerciseChecker:
         Check student answer against solution.
         Handles various types including tensors, models and metrics.
         """
+        print('-' * 80)
         exercise_key = f"exercise_{exercise}"
         exercise_data = self.answers[self.session][exercise_key]
         all_correct = True
