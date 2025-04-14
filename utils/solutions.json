@@ -807,5 +807,190 @@
                 "Visualize the test predictions to better understand model performance"
             ]
         }
+    },
+    "SE03": {
+        "exercise_1": {
+            "answers": {
+                "feats_train_path": {
+                    "expected": true
+                },
+                "targets_train_path": {
+                    "expected": true
+                },
+                "feats_val_path": {
+                    "expected": true
+                },
+                "targets_val_path": {
+                    "expected": true
+                },
+                "feats_test_path": {
+                    "expected": true
+                },
+                "targets_test_path": {
+                    "expected": true
+                }
+            },
+            "hints": [
+                "Use the Path library to create file paths by joining the right_arm_path with the appropriate file names",
+                "The training file names should be 'RTrain_x.csv' and 'RTrain_y.csv'",
+                "The validation file names should be 'RVal_x.csv' and 'RVal_y.csv'",
+                "The test file names should be 'RTest_x.csv' and 'RTest_y.csv'"
+            ]
+        },
+        "exercise_2": {
+            "answers": {
+                "X_train_tensor": {
+                    "dtype": "torch.float32"
+                },
+                "y_train_tensor": {
+                    "dtype": "torch.float32"
+                },
+                "X_train_scaled": {
+                    "min_val": 0.0,
+                    "max_val": 1.0,
+                    "dtype": "torch.float32"
+                },
+                "y_train_scaled": {
+                    "min_val": 0.0,
+                    "max_val": 1.0,
+                    "dtype": "torch.float32"
+                },
+                "scale_range": {
+                    "expected": [0.0, 1.0],
+                    "tolerance": 1e-4
+                }
+            },
+            "hints": [
+                "Use torch.tensor() to convert the DataFrame values to PyTorch tensors with dtype=torch.float32",
+                "Create a CustomScaler with method='minmax' for proper normalization",
+                "Remember to fit the scaler on the training data only",
+                "Apply the transform method to normalize the data",
+                "Check that the normalized data is in the range [0, 1]"
+            ]
+        },
+        "exercise_3": {
+            "answers": {
+                "model": {
+                    "architecture": "Module"
+                },
+                "input_layer_size": {
+                    "expected": 6
+                },
+                "hidden_layer_size": {
+                    "expected": 64
+                },
+                "output_layer_size": {
+                    "expected": 5
+                },
+                "activation_type": {
+                    "expected": true
+                }
+            },
+            "hints": [
+                "Initialize the parent class with super().__init__()",
+                "Use torch.nn.Linear for fully connected layers with appropriate input and output sizes",
+                "Use torch.nn.ReLU() for the activation function",
+                "Create a feed-forward network with 2 hidden layers",
+                "For the final layer, don't apply an activation function since this is a regression task"
+            ]
+        },
+        "exercise_4": {
+            "answers": {
+                "optimizer_type": {
+                    "expected": true
+                },
+                "learning_rate": {
+                    "expected": 0.001,
+                    "tolerance": 1e-6
+                },
+                "loss_function_type": {
+                    "expected": true
+                }
+            },
+            "hints": [
+                "Use torch.optim.Adam with params=model.parameters() and lr=0.001",
+                "Use torch.nn.MSELoss() for the loss function",
+                "Store both optimizer and loss function as attributes of the model for easy access",
+                "The learning rate is passed as a parameter to the optimizer"
+            ]
+        },
+        "exercise_5": {
+            "answers": {
+                "train_losses": {
+                    "min_val": 0.0
+                },
+                "val_losses": {
+                    "min_val": 0.0
+                },
+                "loss_trend": {
+                    "expected": true
+                },
+                "overfit_check": {
+                    "expected": true
+                }
+            },
+            "hints": [
+                "Call model.train() to put the model in training mode",
+                "Zero the gradients with model.optimizer.zero_grad() before each forward pass",
+                "Forward pass: compute predictions with model(train_features)",
+                "Compute loss with model.loss_function(predictions, train_targets)",
+                "Backward pass: compute gradients with loss.backward()",
+                "Update weights with model.optimizer.step()",
+                "Use model.eval() and torch.no_grad() when computing validation loss"
+            ]
+        },
+        "exercise_6": {
+            "answers": {
+                "test_loss": {
+                    "min_val": 0.0,
+                    "max_val": 0.1
+                },
+                "r2_score": {
+                    "min_val": 0.7,
+                    "max_val": 1.0
+                },
+                "predictions_shape": {
+                    "expected": true
+                },
+                "values_match": {
+                    "expected": true
+                }
+            },
+            "hints": [
+                "Put the model in evaluation mode with model.eval()",
+                "Use torch.no_grad() to disable gradient tracking during evaluation",
+                "Get predictions with model(X_test_scaled)",
+                "Calculate loss with model.loss_function(test_predictions, y_test_scaled)",
+                "Use y_scaler.inverse_transform() to convert predictions and targets back to original scale",
+                "Calculate R-squared score with utils.ml.r2_score(test_targets_original, test_predictions_original)"
+            ]
+        },
+        "exercise_7": {
+            "answers": {
+                "improved_model": {
+                    "architecture": "Module"
+                },
+                "num_layers": {
+                    "expected": 3
+                },
+                "has_dropout": {
+                    "expected": true
+                },
+                "has_batch_norm": {
+                    "expected": true
+                },
+                "activation_type": {
+                    "expected": true
+                }
+            },
+            "hints": [
+                "Initialize the parent class with super().__init__()",
+                "Create a more complex architecture with multiple layers",
+                "Add batch normalization layers after each linear layer",
+                "Use dropout for regularization to prevent overfitting",
+                "Use LeakyReLU instead of ReLU for better gradient flow",
+                "Remember to follow the correct order: Linear -> BatchNorm -> Activation -> Dropout"
+            ]
+        }
     }
 }
