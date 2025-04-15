@@ -330,19 +330,21 @@ class ExerciseChecker:
                 self._show_relevant_hint(exercise_data["hints"], key)
                 return False
 
-        # Generic check for activation_type - compare class types generically
-        if key == "activation_type":
+        # Generic check for activation_type and optimizer type - compare class types generically
+        if (key == "activation_type") or (key == "optimizer_type"):
             # For boolean expected value, we simply check if the type exists
             if expected.get("expected") is True:
                 return True
             # Otherwise compare directly with expected type if available
             if "expected_type" in expected:
-                expected_type = getattr(torch.nn, expected["expected_type"])
+                expected_type = getattr(torch.nn, expected["expected_type"]) if key == "activation_type" else getattr(torch.optim, expected["expected_type"])  
+
                 if not (student_model == expected_type or issubclass(student_model, expected_type)):
                     self._print_error(f"{key} has incorrect type. Expected {expected['expected_type']}")
                     self._show_relevant_hint(exercise_data["hints"], key)
                     return False
             return True
+        
 
         # Generic check for weight initialization parameters
         if key in ["weight_init_kaiming", "weight_init_xavier", "bias_init_zeros"]:
