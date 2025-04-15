@@ -853,21 +853,42 @@
                     "expected": 6
                 },
                 "hidden_layer_size": {
-                    "expected": 64
+                    "expected": 32
                 },
                 "output_layer_size": {
                     "expected": 5
                 },
                 "activation_type": {
-                    "expected": true
+                    "expected_type": "ReLU"
+                },
+                "fc1_weight_stats": {
+                    "mean_near_zero": true,
+                    "std_range": [0.1, 0.5]
+                },
+                "fc2_weight_stats": {
+                    "mean_near_zero": true,
+                    "std_range": [0.1, 0.5]
+                },
+                "fc1_bias_stats": {
+                    "mean_near_zero": true,
+                    "std_range": [0.0, 1e-5]
+                },
+                "fc2_bias_stats": {
+                    "mean_near_zero": true,
+                    "std_range": [0.0, 1e-5]
                 }
             },
             "hints": [
                 "Initialize the parent class with super().__init__()",
                 "Use torch.nn.Linear for fully connected layers with appropriate input and output sizes",
                 "Use torch.nn.ReLU() for the activation function",
-                "Create a feed-forward network with 2 hidden layers",
-                "For the final layer, don't apply an activation function since this is a regression task"
+                "Use a smaller network (32 hidden neurons) to avoid overfitting",
+                "Initialize the first layer weights with torch.nn.init.kaiming_uniform_ which is appropriate for ReLU activations",
+                "Use torch.nn.init.xavier_uniform_ for the output layer weights which works well with linear outputs",
+                "Initialize all biases to zero with torch.nn.init.zeros_",
+                "Kaiming initialization should produce weights with mean near zero and std between 0.1-0.5",
+                "Xavier initialization should also have mean near zero but with appropriate variance for the layer size",
+                "The final layer should not have an activation function as this is a regression task"
             ]
         },
         "exercise_3": {

@@ -166,6 +166,10 @@ class ExerciseChecker:
                     return False
             return True
             
+        # Handle weight initialization checks specific to SE03 exercise 2
+        elif key.endswith("_weight_init") or key.endswith("_bias_init"):
+            return self._check_weight_initialization(student_value, expected, key, exercise_data)
+            
         # Handle metrics with min/max range or expected value with tolerance
         elif "expected" in expected or "min_val" in expected or "max_val" in expected:
             # Handle exact value with tolerance
@@ -200,6 +204,46 @@ class ExerciseChecker:
         elif "metrics" in expected:
             return self._check_metrics(student_value, expected, key, exercise_data)
 
+        return True
+
+    def _check_weight_initialization(self, student_tensor, expected, key: str, exercise_data: dict) -> bool:
+        """Validate weight or bias initialization"""
+        if not isinstance(student_tensor, torch.Tensor):
+            self._print_error(f"{key} should be a tensor")
+            return False
+        
+        # Check mean close to zero for weights
+        if key.endswith("_weight_init"):
+            mean = student_tensor.mean().item()
+            std = student_tensor.std().item()
+            
+            # Check if mean is close to zero (characteristic of proper initialization)
+            if abs(mean) > 0.05:  # Allow small deviation from zero
+                self._print_error(f"{key} mean should be close to zero, got {mean:.4f}")
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+            
+            # Check if standard deviation is in reasonable range
+            if "fc1" in key and (std < 0.1 or std > 0.5):
+                self._print_error(
+                    f"{key} standard deviation should be between 0.1 and 0.5 for proper He initialization, got {std:.4f}"
+                )
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+            elif "fc2" in key and (std < 0.1 or std > 0.5):
+                self._print_error(
+                    f"{key} standard deviation should be between 0.1 and 0.5 for proper Xavier initialization, got {std:.4f}"
+                )
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+        
+        # Check if biases are initialized to zero
+        elif key.endswith("_bias_init"):
+            if not torch.allclose(student_tensor, torch.zeros_like(student_tensor), atol=1e-5):
+                self._print_error(f"{key} should be initialized to zeros")
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+        
         return True
 
     def _check_function(self, student_func, expected, key: str, exercise_data: dict) -> bool:
@@ -281,11 +325,83 @@ class ExerciseChecker:
         """Validate neural network model properties"""
         # Check architecture
         if "architecture" in expected:
-            if not isinstance(student_model, getattr(torch.nn, expected["architecture"])):
+            if not isinstance(student_model, torch.nn.Module):
                 self._print_error(f"{key} has incorrect architecture")
                 self._show_relevant_hint(exercise_data["hints"], key)
                 return False
 
+        # Generic check for activation_type - compare class types generically
+        if key == "activation_type":
+            # For boolean expected value, we simply check if the type exists
+            if expected.get("expected") is True:
+                return True
+            # Otherwise compare directly with expected type if available
+            if "expected_type" in expected:
+                expected_type = getattr(torch.nn, expected["expected_type"])
+                if not (student_model == expected_type or issubclass(student_model, expected_type)):
+                    self._print_error(f"{key} has incorrect type. Expected {expected['expected_type']}")
+                    self._show_relevant_hint(exercise_data["hints"], key)
+                    return False
+            return True
+
+        # Generic check for weight initialization parameters
+        if key in ["weight_init_kaiming", "weight_init_xavier", "bias_init_zeros"]:
+            if not student_model:
+                self._print_error(f"{key} initialization is missing")
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+            return True
+
+        # Generic check for weight statistics
+        if key.endswith("_weight_stats"):
+            if not isinstance(student_model, dict):
+                self._print_error(f"{key} should be a dictionary with mean and std")
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+            
+            # Check if mean is close to zero
+            if "mean" not in student_model:
+                self._print_error(f"{key} missing 'mean' field")
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+                
+            if "mean_near_zero" in expected and expected["mean_near_zero"]:
+                if abs(student_model["mean"]) > 0.1:
+                    self._print_error(f"{key} mean should be close to zero, got {student_model['mean']:.4f}")
+                    self._show_relevant_hint(exercise_data["hints"], key)
+                    return False
+                
+            # Check if std is in reasonable range
+            if "std" not in student_model:
+                self._print_error(f"{key} missing 'std' field")
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+                
+            if "std_range" in expected and len(expected["std_range"]) == 2:
+                min_std, max_std = expected["std_range"]
+                if student_model["std"] < min_std or student_model["std"] > max_std:
+                    self._print_error(f"{key} std should be between {min_std} and {max_std}, got {student_model['std']:.4f}")
+                    self._show_relevant_hint(exercise_data["hints"], key)
+                    return False
+                
+            return True
+
+        # Generic model validation for any session/exercise
+        if key == "model":
+            # Check if model has expected input/output dimensions
+            if hasattr(expected, "input_size") and hasattr(student_model, "fc1") and hasattr(student_model.fc1, "in_features"):
+                if student_model.fc1.in_features != expected["input_size"]:
+                    self._print_error(f"Model input size should be {expected['input_size']}, got {student_model.fc1.in_features}")
+                    self._show_relevant_hint(exercise_data["hints"], key)
+                    return False
+                
+            # Check for appropriate hidden layer size to avoid overfitting
+            if "max_hidden_size" in expected and hasattr(student_model, "fc1") and hasattr(student_model.fc1, "out_features"):
+                if student_model.fc1.out_features > expected["max_hidden_size"]:
+                    self._print_error(f"Hidden layer size {student_model.fc1.out_features} is too large (max: {expected['max_hidden_size']}) and may overfit")
+                    self._show_relevant_hint(exercise_data["hints"], key)
+                    return False
+            
         # Check layer properties
         if "layers" in expected:
             for layer_name, layer_props in expected["layers"].items():
