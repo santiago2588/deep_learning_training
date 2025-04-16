@@ -989,5 +989,109 @@
                 "Remember to follow the correct order: Linear -> BatchNorm -> Activation -> Dropout"
             ]
         }
+    },
+    "SE04": {
+        "exercise_1": {
+            "answers": {
+                "conv_operation": {
+                    "output_shape": [1, 3, 28, 28],
+                    "kernel_shape": [3, 3],
+                    "stride": 1,
+                    "padding": 1
+                },
+                "output_size_calculation": {
+                    "expected": true
+                }
+            },
+            "hints": [
+                "Remember the formula for output size: ((W - K + 2P) / S) + 1",
+                "Make sure to use torch.nn.functional.conv2d for the convolution",
+                "Check that your kernel shape and padding are correctly defined"
+            ]
+        },
+        "exercise_2": {
+            "answers": {
+                "filter_horizontal_edges": {
+                    "kernel_values": [-1, -1, -1, 0, 0, 0, 1, 1, 1],
+                    "kernel_shape": [3, 3]
+                },
+                "filter_vertical_edges": {
+                    "kernel_values": [-1, 0, 1, -1, 0, 1, -1, 0, 1],
+                    "kernel_shape": [3, 3]
+                },
+                "output_check": {
+                    "expected": true
+                }
+            },
+            "hints": [
+                "Horizontal edge detection filters should have negative values in the top row and positive in the bottom row",
+                "Vertical edge detection filters should have negative values in the left column and positive in the right column",
+                "Make sure your kernels are properly reshaped to 3x3 matrices"
+            ]
+        },
+        "exercise_3": {
+            "answers": {
+                "simple_cnn": {
+                    "conv_layer_count": 2,
+                    "output_shape_test": [32, 2]
+                },
+                "forward_pass_implemented": true
+            },
+            "hints": [
+                "Your CNN should have at least 2 convolutional layers followed by pooling layers",
+                "The flatten layer should compute the correct output size based on the input dimensions and convolution operations",
+                "Make sure to implement both convolutional blocks and fully connected layers"
+            ]
+        },
+        "exercise_4": {
+            "answers": {
+                "data_augmentation": {
+                    "check_normalization": true,
+                    "transform_count": {"min": 5, "max": 8}
+                },
+                "train_val_test_split": {
+                    "implemented": true
+                }
+            },
+            "hints": [
+                "Include normalization with mean and std in your transforms",
+                "Consider using horizontal flip, rotation, and color jitter for data augmentation",
+                "Make sure to use different transforms for training vs. validation/test sets"
+            ]
+        },
+        "exercise_5": {
+            "answers": {
+                "model_training": {
+                    "optimizer_type": "Adam",
+                    "scheduler_implemented": true
+                },
+                "regularization": {
+                    "batch_norm_layers": {"min": 3, "max": 8},
+                    "dropout_layers": {"min": 2, "max": 8},
+                    "weight_decay": true
+                }
+            },
+            "hints": [
+                "Use batch normalization after convolutional layers to stabilize training",
+                "Apply dropout to prevent overfitting, especially in fully connected layers",
+                "Consider using a learning rate scheduler for better convergence"
+            ]
+        },
+        "exercise_6": {
+            "answers": {
+                "metrics": {
+                    "accuracy": {"min": 0.7, "max": 1.0},
+                    "precision": {"min": 0.7, "max": 1.0},
+                    "recall": {"min": 0.7, "max": 1.0},
+                    "f1": {"min": 0.7, "max": 1.0}
+                },
+                "visualization_implemented": true
+            },
+            "hints": [
+                "Calculate and report multiple metrics including accuracy, precision, recall, and F1 score",
+                "Visualize the confusion matrix to understand model performance",
+                "Plot examples of correct and incorrect predictions to gain insights"
+            ]
+        }
     }
 }

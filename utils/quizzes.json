@@ -65,5 +65,67 @@
         "correct": 1,
         "explanation": "Implementing dropout between layers during training is most effective because:\n\n1. Dropout randomly deactivates a percentage of neurons during each training step, which prevents neurons from co-adapting too much\n2. This forces the network to learn redundant representations of the kinematic relationships\n3. The model becomes more robust to variations in input positions and orientations\n4. Dropout acts like an ensemble of different network architectures, improving generalization\n5. It helps prevent overfitting when the network needs to be expressive (with many parameters) to capture the complex mapping\n\nFor robot arm inverse kinematics, good generalization is critical since the robot needs to perform reliably across the entire workspace, even in positions not exactly represented in the training data."
       }
+    },
+    "SE04": {
+        "quiz_1": {
+            "title": "CNN Components Quiz",
+            "question": "Which of the following statements about convolutional layers is TRUE?",
+            "options": [
+                "Convolutional layers always reduce the spatial dimensions of the input",
+                "Each filter in a convolutional layer must have the same number of channels as the input",
+                "The number of parameters in a convolutional layer depends on the size of the input image",
+                "A 3x3 filter with stride 1 can only be applied to images with dimensions that are multiples of 3"
+            ],
+            "correct": 1,
+            "explanation": "Each filter in a convolutional layer must have the same number of channels as the input. This is because the filter is applied across the entire depth of the input volume. The number of parameters in a convolutional layer depends on the filter size and number of filters, not on the input image size. Whether convolutional layers reduce dimensions depends on padding and stride settings. And filters can be applied to images of any dimension; they don't need to be multiples of the filter size."
+        },
+        "quiz_2": {
+            "title": "CNN Architecture Quiz",
+            "question": "Which CNN architecture introduced 'residual connections' to solve the vanishing gradient problem in very deep networks?",
+            "options": [
+                "AlexNet",
+                "VGG-16",
+                "ResNet",
+                "Inception (GoogLeNet)"
+            ],
+            "correct": 2,
+            "explanation": "ResNet (Residual Network) introduced residual connections (or skip connections) that allow gradients to flow directly through the network, helping to train very deep networks without suffering from vanishing gradients. This innovation enabled the successful training of networks with over 100 layers. AlexNet was the first CNN to win ImageNet, VGG-16 used small filters throughout the network, and Inception used modules with multiple filter sizes in parallel."
+        },
+        "quiz_3": {
+            "title": "CNN Training Best Practices",
+            "question": "When training a CNN from scratch with limited data, which approach is MOST likely to improve generalization?",
+            "options": [
+                "Using a very large model with many parameters",
+                "Applying aggressive data augmentation techniques",
+                "Removing all regularization methods like dropout",
+                "Training with a very high learning rate"
+            ],
+            "correct": 1,
+            "explanation": "With limited data, applying data augmentation techniques (like random crops, flips, rotations, etc.) is one of the most effective ways to improve model generalization. This artificially expands your dataset by creating variations of the existing images. Using a very large model with many parameters would likely lead to overfitting on a small dataset. Removing regularization would also lead to overfitting, and using a very high learning rate would likely cause training instability."
+        },
+        "quiz_4": {
+            "title": "Pooling Layers in CNNs",
+            "question": "What is the primary purpose of pooling layers in CNNs?",
+            "options": [
+                "To introduce non-linearity into the network",
+                "To extract features from the input image",
+                "To reduce spatial dimensions and provide translation invariance",
+                "To normalize pixel values across all feature maps"
+            ],
+            "correct": 2,
+            "explanation": "The primary purpose of pooling layers is to reduce the spatial dimensions of the feature maps and provide some degree of translation invariance. By downsampling the feature maps, pooling helps make the network robust to small variations in the position of features. Non-linearity is introduced by activation functions (like ReLU), feature extraction is done by convolutional layers, and normalization is typically handled by batch normalization layers."
+        },
+        "quiz_5": {
+            "title": "Kernel Size Selection",
+            "question": "When should you consider using larger kernel sizes (e.g., 5×5 or 7×7) instead of 3×3 kernels in a CNN?",
+            "options": [
+                "When you need to reduce computation time",
+                "When processing high-resolution images and need to capture larger spatial patterns",
+                "When your dataset has very few samples",
+                "When training on a CPU instead of a GPU"
+            ],
+            "correct": 1,
+            "explanation": "Larger kernel sizes are beneficial when you need to capture larger spatial patterns in high-resolution images. They increase the receptive field size more rapidly, allowing the network to 'see' more of the input image at once. However, they also increase computational cost (not reduce it), require more training data (not less), and are more computationally intensive on any hardware platform including CPUs."
+        }
     }
-  }
+}
