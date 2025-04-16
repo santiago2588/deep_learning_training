@@ -852,9 +852,6 @@
                 "input_layer_size": {
                     "expected": 6
                 },
-                "hidden_layer_size": {
-                    "expected": 32
-                },
                 "output_layer_size": {
                     "expected": 5
                 },
@@ -894,14 +891,14 @@
         "exercise_3": {
             "answers": {
                 "optimizer_type": {
-                    "expected": true
+                    "expected_type": "Adam"
                 },
                 "learning_rate": {
-                    "expected": 0.001,
-                    "tolerance": 1e-6
+                    "min_val": 0.0001,
+                    "max_val": 0.1
                 },
                 "loss_function_type": {
-                    "expected": true
+                    "expected_type": "MSELoss"
                 }
             },
             "hints": [
@@ -940,7 +937,7 @@
             "answers": {
                 "test_loss": {
                     "min_val": 0.0,
-                    "max_val": 0.1
+                    "max_val": 0.03
                 },
                 "r2_score": {
                     "min_val": 0.7,
@@ -960,33 +957,6 @@
                 "Calculate loss with model.loss_function(test_predictions, y_test_scaled)",
                 "Use y_scaler.inverse_transform() to convert predictions and targets back to original scale",
                 "Calculate R-squared score with utils.ml.r2_score(test_targets_original, test_predictions_original)"
-            ]
-        },
-        "exercise_6": {
-            "answers": {
-                "improved_model": {
-                    "architecture": "Module"
-                },
-                "num_layers": {
-                    "expected": 3
-                },
-                "has_dropout": {
-                    "expected": true
-                },
-                "has_batch_norm": {
-                    "expected": true
-                },
-                "activation_type": {
-                    "expected": true
-                }
-            },
-            "hints": [
-                "Initialize the parent class with super().__init__()",
-                "Create a more complex architecture with multiple layers",
-                "Add batch normalization layers after each linear layer",
-                "Use dropout for regularization to prevent overfitting",
-                "Use LeakyReLU instead of ReLU for better gradient flow",
-                "Remember to follow the correct order: Linear -> BatchNorm -> Activation -> Dropout"
             ]
         }
     },
