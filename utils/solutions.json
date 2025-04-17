@@ -984,6 +984,297 @@
                 "Remember the formula for output size: ((W - K + 2P) / S) + 1",
                 "Check that your kernel shape and padding are correctly defined"
             ]
+        },
+        "exercise_2": {
+            "answers": {
+                "apply_filter_pytorch": {
+                    "test_cases": [
+                        {
+                            "input": ["test_image", "edge_detection_kernel"],
+                            "output_shape": [256, 256, 3],
+                            "check_edges": true
+                        },
+                        {
+                            "input": ["test_image", "sharpen_kernel"],
+                            "output_shape": [256, 256, 3],
+                            "check_contrast": true
+                        }
+                    ]
+                },
+                "edge_detection_kernel": {
+                    "value": [
+                        [1, 0, -1],
+                        [0, 0, 0],
+                        [-1, 0, 1]
+                    ],
+                    "dtype": "numpy.ndarray",
+                    "shape": [3, 3]
+                },
+                "sharpen_kernel": {
+                    "value": [
+                        [0, -1, 0],
+                        [-1, 5, -1],
+                        [0, -1, 0]
+                    ],
+                    "dtype": "numpy.ndarray",
+                    "shape": [3, 3]
+                },
+                "emboss_kernel": {
+                    "value": [
+                        [-2, -1, 0],
+                        [-1, 1, 1],
+                        [0, 1, 2]
+                    ],
+                    "dtype": "numpy.ndarray",
+                    "shape": [3, 3]
+                }
+            },
+            "hints": [
+                "Make sure your edge detection kernel highlights boundaries between different regions",
+                "The sharpening filter should enhance details by increasing contrast",
+                "The embossing filter should create a 3D effect by highlighting edges with shadows",
+                "Ensure your PyTorch convolution correctly applies the filter to each channel"
+            ]
+        },
+        "exercise_3": {
+            "answers": {
+                "resize_transform": {
+                    "transform_type": "Compose",
+                    "contains": ["Resize", "ToTensor"],
+                    "resize_size": [128, 128]
+                },
+                "center_crop_transform": {
+                    "transform_type": "Compose",
+                    "contains": ["Resize", "CenterCrop", "ToTensor"],
+                    "crop_size": 100
+                },
+                "random_crop_transform": {
+                    "transform_type": "Compose",
+                    "contains": ["Resize", "RandomCrop", "ToTensor"],
+                    "crop_size": 100
+                },
+                "hflip_transform": {
+                    "transform_type": "Compose",
+                    "contains": ["Resize", "RandomHorizontalFlip", "ToTensor"],
+                    "flip_probability": 1.0
+                },
+                "rotate_transform": {
+                    "transform_type": "Compose",
+                    "contains": ["Resize", "RandomRotation", "ToTensor"],
+                    "rotation_degrees": 30
+                },
+                "color_transform": {
+                    "transform_type": "Compose",
+                    "contains": ["Resize", "ColorJitter", "ToTensor"],
+                    "brightness": {"min": 0.3, "max": 0.7},
+                    "contrast": {"min": 0.3, "max": 0.7}
+                },
+                "norm_transform": {
+                    "transform_type": "Compose",
+                    "contains": ["Resize", "ToTensor", "Normalize"],
+                    "norm_mean": [0.485, 0.456, 0.406],
+                    "norm_std": [0.229, 0.224, 0.225]
+                }
+            },
+            "hints": [
+                "Use transforms.RandomCrop(100) for random cropping",
+                "Set p=1.0 in transforms.RandomHorizontalFlip for guaranteed flipping",
+                "Use transforms.RandomRotation(degrees=30) for rotation",
+                "The ColorJitter transformation should modify brightness, contrast, saturation, and hue",
+                "ImageNet normalization uses mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]"
+            ]
+        },
+        "exercise_4": {
+            "answers": {
+                "train_transforms": {
+                    "transform_type": "Compose",
+                    "contains": ["Resize", "RandomHorizontalFlip", "RandomRotation", "ColorJitter", "ToTensor", "Normalize"],
+                    "normalization": {
+                        "mean": [0.485, 0.456, 0.406],
+                        "std": [0.229, 0.224, 0.225]
+                    }
+                },
+                "test_val_transforms": {
+                    "transform_type": "Compose",
+                    "contains": ["Resize", "ToTensor", "Normalize"],
+                    "normalization": {
+                        "mean": [0.485, 0.456, 0.406],
+                        "std": [0.229, 0.224, 0.225]
+                    }
+                },
+                "train_data": {
+                    "dataset_type": "ImageFolder",
+                    "classes": ["crack", "no_crack"],
+                    "transform_applied": true
+                },
+                "test_data": {
+                    "dataset_type": "ImageFolder",
+                    "classes": ["crack", "no_crack"],
+                    "transform_applied": true
+                },
+                "val_data": {
+                    "dataset_type": "ImageFolder",
+                    "classes": ["crack", "no_crack"],
+                    "transform_applied": true
+                }
+            },
+            "hints": [
+                "Use transforms.Normalize with ImageNet statistics",
+                "Training transforms should include data augmentation methods",
+                "Test/validation transforms should only include resize, ToTensor, and normalization",
+                "Use ImageFolder with appropriate root directories and transforms"
+            ]
+        },
+        "exercise_5": {
+            "answers": {
+                "train_dataloader": {
+                    "loader_type": "DataLoader",
+                    "batch_size": {"min": 8, "max": 128},
+                    "shuffle": true
+                },
+                "test_dataloader": {
+                    "loader_type": "DataLoader",
+                    "batch_size": {"min": 8, "max": 128},
+                    "shuffle": false
+                },
+                "val_dataloader": {
+                    "loader_type": "DataLoader",
+                    "batch_size": {"min": 8, "max": 128},
+                    "shuffle": false
+                }
+            },
+            "hints": [
+                "Use DataLoader with appropriate datasets",
+                "Set shuffle=True for training data and shuffle=False for test/validation data",
+                "Choose a reasonable batch size (16, 32, or 64)",
+                "Monitor memory usage if using large batch sizes"
+            ]
+        },
+        "exercise_6": {
+            "answers": {
+                "model_architecture": {
+                    "model_type": "nn.Module",
+                    "has_init": true,
+                    "has_forward": true
+                },
+                "conv_layer": {
+                    "layer_type": "Conv2d",
+                    "in_channels": 3,
+                    "out_channels": {"min": 8, "max": 64},
+                    "kernel_size": {"min": 2, "max": 7},
+                    "stride": {"min": 1, "max": 3},
+                    "padding": {"min": 0, "max": 3}
+                },
+                "linear_layers": {
+                    "count": {"min": 1, "max": 3},
+                    "output_features": 2
+                },
+                "activation": {
+                    "function": "ReLU",
+                    "count": {"min": 1, "max": 4}
+                },
+                "flatten_operation": {
+                    "expected": true,
+                    "correct_dimensions": true
+                }
+            },
+            "hints": [
+                "Use torch.nn.Conv2d for convolutional layers",
+                "Make sure the input dimensions to the first linear layer match the output of the convolutional layer",
+                "Use ReLU activation after the convolutional layer",
+                "The output layer should have the number of classes as the output dimension"
+            ]
+        },
+        "exercise_7": {
+            "answers": {
+                "test_accuracy": {
+                    "min_val": 0.5,
+                    "max_val": 1.0,
+                    "evaluation_mode": true
+                },
+                "classification_report": {
+                    "contains_metrics": ["precision", "recall", "f1-score", "support"],
+                    "classes": ["crack", "no_crack"],
+                    "f1_score": {"min": 0.4, "max": 1.0},
+                    "uses_utility_function": true
+                }
+            },
+            "hints": [
+                "Use utils.ml.compute_accuracy to calculate the accuracy",
+                "Generate a classification report with utils.ml.compute_classification_report",
+                "Pass the model, test dataloader, and class names to the functions"
+            ]
+        },
+        "exercise_8": {
+            "answers": {
+                "model_architecture": {
+                    "model_type": "nn.Module",
+                    "has_init": true,
+                    "has_forward": true,
+                    "layers_count": {"min": 6, "max": 15}
+                },
+                "conv_layers": {
+                    "count": {"min": 2, "max": 5},
+                    "channels": {
+                        "first_layer": {"in": 3, "out": {"min": 8, "max": 64}},
+                        "increasing_pattern": true
+                    },
+                    "kernel_sizes": {"min": 2, "max": 7}
+                },
+                "pooling_layers": {
+                    "count": {"min": 1, "max": 4},
+                    "type": "MaxPool2d",
+                    "kernel_size": {"min": 2, "max": 3},
+                    "stride": {"min": 1, "max": 3}
+                },
+                "batch_norm_layers": {
+                    "present": true,
+                    "count": {"min": 1, "max": 5},
+                    "momentum": {"min": 0.1, "max": 0.9}
+                },
+                "dropout_layers": {
+                    "present": true,
+                    "count": {"min": 1, "max": 3},
+                    "rate": {"min": 0.05, "max": 0.5}
+                },
+                "flatten_operation": {
+                    "present": true,
+                    "correct_dimensions": true
+                }
+            },
+            "hints": [
+                "Use torch.nn.Conv2d for convolutional layers",
+                "Add torch.nn.MaxPool2d after convolutional layers",
+                "Use torch.nn.BatchNorm2d for batch normalization",
+                "Add dropout layers for regularization",
+                "Make sure to flatten the output before the fully connected layers",
+                "Check the input dimensions to the first linear layer based on the size reduction from pooling layers"
+            ]
+        },
+        "exercise_9": {
+            "answers": {
+                "test_accuracy": {
+                    "min_val": 0.9,
+                    "max_val": 1.0,
+                    "improvement": {"min": 0.05, "max": 1.0},
+                    "evaluation_mode": true,
+                    "no_grad": true
+                },
+                "classification_report": {
+                    "contains_metrics": ["precision", "recall", "f1-score", "support"],
+                    "classes": ["crack", "no_crack"],
+                    "precision": {"min": 0.6, "max": 1.0},
+                    "recall": {"min": 0.6, "max": 1.0},
+                    "f1_score": {"min": 0.6, "max": 1.0},
+                    "uses_utility_function": true,
+                    "balanced_performance": true
+                }
+            },
+            "hints": [
+                "Use utils.ml.compute_accuracy to calculate the accuracy",
+                "Generate a classification report with utils.ml.compute_classification_report",
+                "The VGG architecture should outperform the simple CNN model from Exercise 6"
+            ]
         }
     }
 }

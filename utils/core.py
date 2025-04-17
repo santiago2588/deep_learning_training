@@ -1,6 +1,8 @@
 import torch
 import json
 from pathlib import Path
+import inspect
+import pandas as pd
 
 def find_project_root() -> Path:
     current_path = Path(__file__).resolve()
@@ -170,6 +172,40 @@ class ExerciseChecker:
         elif key.endswith("_weight_init") or key.endswith("_bias_init"):
             return self._check_weight_initialization(student_value, expected, key, exercise_data)
             
+        # Handle CNN-specific checks (added for SE04)
+        elif key.endswith("_transform") and "transform_type" in expected:
+            return self._check_transforms(student_value, expected, key, exercise_data)
+            
+        elif "model_type" in expected and key.endswith("_architecture"):
+            return self._check_model_architecture(student_value, expected, key, exercise_data)
+            
+        elif key == "conv_layer" or key == "conv_layers":
+            return self._check_conv_layers(student_value, expected, key, exercise_data)
+            
+        elif key == "flatten_operation":
+            return self._check_flatten_operation(student_value, expected, key, exercise_data)
+            
+        elif key == "pooling_layers":
+            return self._check_pooling_layers(student_value, expected, key, exercise_data)
+            
+        elif key == "dropout_layers":
+            return self._check_dropout_layers(student_value, expected, key, exercise_data)
+            
+        elif key == "batch_norm_layers":
+            return self._check_batch_norm_layers(student_value, expected, key, exercise_data)
+            
+        elif key == "linear_layers":
+            return self._check_linear_layers(student_value, expected, key, exercise_data)
+            
+        elif key == "activation":
+            return self._check_activation_layers(student_value, expected, key, exercise_data)
+            
+        elif key.endswith("dataloader") and "loader_type" in expected:
+            return self._check_dataloader(student_value, expected, key, exercise_data)
+            
+        elif key == "classification_report" and "contains_metrics" in expected:
+            return self._check_classification_report(student_value, expected, key, exercise_data)
+            
         # Handle metrics with min/max range or expected value with tolerance
         elif "expected" in expected or "min_val" in expected or "max_val" in expected:
             # Handle exact value with tolerance
@@ -204,6 +240,501 @@ class ExerciseChecker:
         elif "metrics" in expected:
             return self._check_metrics(student_value, expected, key, exercise_data)
 
+        return True
+
+    def _check_transforms(self, student_transform, expected, key: str, exercise_data: dict) -> bool:
+        """Validate image transformation configurations"""
+        import torchvision.transforms as T
+        
+        # Check transform type
+        if not isinstance(student_transform, T.Compose):
+            self._print_error(f"{key} should be a transforms.Compose object")
+            self._show_relevant_hint(exercise_data["hints"], key)
+            return False
+            
+        # Check for required transform components
+        transform_list = student_transform.transforms
+        transform_names = [t.__class__.__name__ for t in transform_list]
+        
+        for required_transform in expected.get("contains", []):
+            if required_transform not in transform_names:
+                self._print_error(f"{key} missing {required_transform} transform")
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+                
+        # Check specific transform parameters
+        if "resize_size" in expected:
+            resize_transforms = [t for t in transform_list if isinstance(t, T.Resize)]
+            if not resize_transforms:
+                self._print_error(f"{key} should include a Resize transform")
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+            resize_size = resize_transforms[0].size
+            if resize_size != tuple(expected["resize_size"]) and resize_size != expected["resize_size"][0]:
+                self._print_error(f"{key} has incorrect resize size. Expected {expected['resize_size']}")
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+                
+        if "crop_size" in expected:
+            crop_transforms = [t for t in transform_list 
+                              if isinstance(t, T.CenterCrop) or isinstance(t, T.RandomCrop)]
+            if not crop_transforms:
+                self._print_error(f"{key} should include a crop transform")
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+            crop_size = crop_transforms[0].size
+            if crop_size != expected["crop_size"]:
+                self._print_error(f"{key} has incorrect crop size")
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+                
+        if "flip_probability" in expected:
+            flip_transforms = [t for t in transform_list if isinstance(t, T.RandomHorizontalFlip)]
+            if not flip_transforms:
+                self._print_error(f"{key} should include a RandomHorizontalFlip transform")
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+            flip_prob = flip_transforms[0].p
+            if abs(flip_prob - expected["flip_probability"]) > 1e-5:
+                self._print_error(f"{key} has incorrect flip probability")
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+                
+        if "rotation_degrees" in expected:
+            rotate_transforms = [t for t in transform_list if isinstance(t, T.RandomRotation)]
+            if not rotate_transforms:
+                self._print_error(f"{key} should include a RandomRotation transform")
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+            degrees = rotate_transforms[0].degrees
+            if isinstance(degrees, (tuple, list)):
+                degrees = max(degrees)
+            if degrees != expected["rotation_degrees"]:
+                self._print_error(f"{key} has incorrect rotation degrees")
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+                
+        if "norm_mean" in expected or "norm_std" in expected:
+            norm_transforms = [t for t in transform_list if isinstance(t, T.Normalize)]
+            if not norm_transforms:
+                self._print_error(f"{key} should include a Normalize transform")
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+                
+            if "norm_mean" in expected:
+                mean = norm_transforms[0].mean
+                if not all(abs(m1 - m2) < 1e-5 for m1, m2 in zip(mean, expected["norm_mean"])):
+                    self._print_error(f"{key} has incorrect normalization mean")
+                    self._show_relevant_hint(exercise_data["hints"], key)
+                    return False
+                    
+            if "norm_std" in expected:
+                std = norm_transforms[0].std
+                if not all(abs(s1 - s2) < 1e-5 for s1, s2 in zip(std, expected["norm_std"])):
+                    self._print_error(f"{key} has incorrect normalization std")
+                    self._show_relevant_hint(exercise_data["hints"], key)
+                    return False
+                    
+        return True
+
+    def _check_model_architecture(self, student_model, expected, key: str, exercise_data: dict) -> bool:
+        """Validate CNN model architecture"""
+        if not isinstance(student_model, torch.nn.Module):
+            self._print_error(f"{key} should be a PyTorch model (nn.Module)")
+            self._show_relevant_hint(exercise_data["hints"], key)
+            return False
+            
+        if expected.get("has_init", False) and not hasattr(student_model, "__init__"):
+            self._print_error(f"{key} should have an __init__ method")
+            self._show_relevant_hint(exercise_data["hints"], key)
+            return False
+            
+        if expected.get("has_forward", False) and not hasattr(student_model, "forward"):
+            self._print_error(f"{key} should have a forward method")
+            self._show_relevant_hint(exercise_data["hints"], key)
+            return False
+            
+        if "layers_count" in expected:
+            # Count layers by inspecting module children
+            layers_count = len(list(student_model.modules()))
+            min_count = expected["layers_count"]["min"]
+            max_count = expected["layers_count"]["max"]
+            
+            if layers_count < min_count or layers_count > max_count:
+                self._print_error(
+                    f"{key} should have between {min_count} and {max_count} layers, found {layers_count}"
+                )
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+                
+        return True
+
+    def _check_conv_layers(self, student_model, expected, key: str, exercise_data: dict) -> bool:
+        """Validate convolutional layers in a CNN model"""
+        # Find all Conv2d layers in the model
+        conv_layers = []
+        for name, module in student_model.named_modules():
+            if isinstance(module, torch.nn.Conv2d):
+                conv_layers.append(module)
+                
+        # Check if we have expected number of convolutional layers
+        if "count" in expected:
+            min_count = expected["count"]["min"]
+            max_count = expected["count"]["max"]
+            
+            if len(conv_layers) < min_count or len(conv_layers) > max_count:
+                self._print_error(
+                    f"{key} should have between {min_count} and {max_count} Conv2d layers, found {len(conv_layers)}"
+                )
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+                
+        # Check first conv layer parameters
+        if conv_layers and "channels" in expected and "first_layer" in expected["channels"]:
+            first_layer = conv_layers[0]
+            
+            if "in" in expected["channels"]["first_layer"] and first_layer.in_channels != expected["channels"]["first_layer"]["in"]:
+                self._print_error(
+                    f"First conv layer should have {expected['channels']['first_layer']['in']} input channels, found {first_layer.in_channels}"
+                )
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+                
+            if "out" in expected["channels"]["first_layer"]:
+                out_spec = expected["channels"]["first_layer"]["out"]
+                if isinstance(out_spec, dict):
+                    min_out = out_spec["min"]
+                    max_out = out_spec["max"]
+                    if first_layer.out_channels < min_out or first_layer.out_channels > max_out:
+                        self._print_error(
+                            f"First conv layer should have between {min_out} and {max_out} output channels, found {first_layer.out_channels}"
+                        )
+                        self._show_relevant_hint(exercise_data["hints"], key)
+                        return False
+                else:
+                    if first_layer.out_channels != out_spec:
+                        self._print_error(
+                            f"First conv layer should have {out_spec} output channels, found {first_layer.out_channels}"
+                        )
+                        self._show_relevant_hint(exercise_data["hints"], key)
+                        return False
+                        
+        # Check for increasing channel pattern
+        if len(conv_layers) > 1 and "channels" in expected and expected["channels"].get("increasing_pattern", False):
+            for i in range(1, len(conv_layers)):
+                if conv_layers[i].out_channels <= conv_layers[i-1].out_channels:
+                    self._print_error(
+                        f"Conv layers should have increasing number of channels, found {conv_layers[i-1].out_channels} → {conv_layers[i].out_channels}"
+                    )
+                    self._show_relevant_hint(exercise_data["hints"], key)
+                    return False
+                    
+        # Check kernel sizes
+        if "kernel_sizes" in expected:
+            min_size = expected["kernel_sizes"]["min"]
+            max_size = expected["kernel_sizes"]["max"]
+            
+            for i, layer in enumerate(conv_layers):
+                if isinstance(layer.kernel_size, int):
+                    k_size = layer.kernel_size
+                else:
+                    k_size = layer.kernel_size[0]  # Assume square kernels
+                    
+                if k_size < min_size or k_size > max_size:
+                    self._print_error(
+                        f"Conv layer {i} should have kernel size between {min_size} and {max_size}, found {k_size}"
+                    )
+                    self._show_relevant_hint(exercise_data["hints"], key)
+                    return False
+                    
+        return True
+
+    def _check_flatten_operation(self, student_model, expected, key: str, exercise_data: dict) -> bool:
+        """Validate flattening operation in CNN model"""
+        has_flatten = False
+        for name, module in student_model.named_modules():
+            if isinstance(module, torch.nn.Flatten):
+                has_flatten = True
+                break
+                
+        # Check for view or reshape operations in forward method if no Flatten layer
+        if not has_flatten:
+            forward_code = inspect.getsource(student_model.forward)
+            if "view" not in forward_code and "reshape" not in forward_code and "flatten" not in forward_code.lower():
+                self._print_error(f"{key} missing flatten/reshape operation before linear layers")
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+                
+        return True
+
+    def _check_pooling_layers(self, student_model, expected, key: str, exercise_data: dict) -> bool:
+        """Validate pooling layers in CNN model"""
+        pooling_layers = []
+        for name, module in student_model.named_modules():
+            if isinstance(module, torch.nn.MaxPool2d) or isinstance(module, torch.nn.AvgPool2d):
+                pooling_layers.append(module)
+                
+        # Check number of pooling layers
+        if "count" in expected:
+            min_count = expected["count"]["min"]
+            max_count = expected["count"]["max"]
+            
+            if len(pooling_layers) < min_count or len(pooling_layers) > max_count:
+                self._print_error(
+                    f"{key} should have between {min_count} and {max_count} pooling layers, found {len(pooling_layers)}"
+                )
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+                
+        # Check pooling type
+        if pooling_layers and "type" in expected:
+            for i, layer in enumerate(pooling_layers):
+                if layer.__class__.__name__ != expected["type"]:
+                    self._print_error(
+                        f"Pooling layer {i} should be {expected['type']}, found {layer.__class__.__name__}"
+                    )
+                    self._show_relevant_hint(exercise_data["hints"], key)
+                    return False
+                    
+        # Check kernel size
+        if pooling_layers and "kernel_size" in expected:
+            min_size = expected["kernel_size"]["min"]
+            max_size = expected["kernel_size"]["max"]
+            
+            for i, layer in enumerate(pooling_layers):
+                if isinstance(layer.kernel_size, int):
+                    k_size = layer.kernel_size
+                else:
+                    k_size = layer.kernel_size[0]  # Assume square kernels
+                    
+                if k_size < min_size or k_size > max_size:
+                    self._print_error(
+                        f"Pooling layer {i} should have kernel size between {min_size} and {max_size}, found {k_size}"
+                    )
+                    self._show_relevant_hint(exercise_data["hints"], key)
+                    return False
+                    
+        return True
+
+    def _check_batch_norm_layers(self, student_model, expected, key: str, exercise_data: dict) -> bool:
+        """Validate batch normalization layers in CNN model"""
+        bn_layers = []
+        for name, module in student_model.named_modules():
+            if isinstance(module, torch.nn.BatchNorm2d):
+                bn_layers.append(module)
+                
+        # Check if batch normalization is present
+        if expected.get("present", False) and not bn_layers:
+            self._print_error(f"{key} should include batch normalization layers")
+            self._show_relevant_hint(exercise_data["hints"], key)
+            return False
+            
+        # Check number of batch norm layers
+        if "count" in expected:
+            min_count = expected["count"]["min"]
+            max_count = expected["count"]["max"]
+            
+            if len(bn_layers) < min_count or len(bn_layers) > max_count:
+                self._print_error(
+                    f"{key} should have between {min_count} and {max_count} batch normalization layers, found {len(bn_layers)}"
+                )
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+                
+        # Check momentum
+        if bn_layers and "momentum" in expected:
+            min_momentum = expected["momentum"]["min"]
+            max_momentum = expected["momentum"]["max"]
+            
+            for i, layer in enumerate(bn_layers):
+                if layer.momentum < min_momentum or layer.momentum > max_momentum:
+                    self._print_error(
+                        f"Batch norm layer {i} should have momentum between {min_momentum} and {max_momentum}, found {layer.momentum}"
+                    )
+                    self._show_relevant_hint(exercise_data["hints"], key)
+                    return False
+                    
+        return True
+
+    def _check_dropout_layers(self, student_model, expected, key: str, exercise_data: dict) -> bool:
+        """Validate dropout layers in CNN model"""
+        dropout_layers = []
+        for name, module in student_model.named_modules():
+            if isinstance(module, torch.nn.Dropout) or isinstance(module, torch.nn.Dropout2d):
+                dropout_layers.append(module)
+                
+        # Check if dropout is present
+        if expected.get("present", False) and not dropout_layers:
+            self._print_error(f"{key} should include dropout layers for regularization")
+            self._show_relevant_hint(exercise_data["hints"], key)
+            return False
+            
+        # Check number of dropout layers
+        if "count" in expected:
+            min_count = expected["count"]["min"]
+            max_count = expected["count"]["max"]
+            
+            if len(dropout_layers) < min_count or len(dropout_layers) > max_count:
+                self._print_error(
+                    f"{key} should have between {min_count} and {max_count} dropout layers, found {len(dropout_layers)}"
+                )
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+                
+        # Check dropout rate
+        if dropout_layers and "rate" in expected:
+            min_rate = expected["rate"]["min"]
+            max_rate = expected["rate"]["max"]
+            
+            for i, layer in enumerate(dropout_layers):
+                if layer.p < min_rate or layer.p > max_rate:
+                    self._print_error(
+                        f"Dropout layer {i} should have rate between {min_rate} and {max_rate}, found {layer.p}"
+                    )
+                    self._show_relevant_hint(exercise_data["hints"], key)
+                    return False
+                    
+        return True
+
+    def _check_linear_layers(self, student_model, expected, key: str, exercise_data: dict) -> bool:
+        """Validate linear layers in CNN model"""
+        linear_layers = []
+        for name, module in student_model.named_modules():
+            if isinstance(module, torch.nn.Linear):
+                linear_layers.append(module)
+                
+        # Check number of linear layers
+        if "count" in expected:
+            min_count = expected["count"]["min"]
+            max_count = expected["count"]["max"]
+            
+            if len(linear_layers) < min_count or len(linear_layers) > max_count:
+                self._print_error(
+                    f"{key} should have between {min_count} and {max_count} linear layers, found {len(linear_layers)}"
+                )
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+                
+        # Check output dimensions
+        if linear_layers and "output_features" in expected:
+            last_layer = linear_layers[-1]
+            if last_layer.out_features != expected["output_features"]:
+                self._print_error(
+                    f"Output layer should have {expected['output_features']} output features, found {last_layer.out_features}"
+                )
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+                
+        return True
+
+    def _check_activation_layers(self, student_model, expected, key: str, exercise_data: dict) -> bool:
+        """Validate activation functions in CNN model"""
+        activation_layers = []
+        for name, module in student_model.named_modules():
+            if isinstance(module, torch.nn.ReLU) or isinstance(module, torch.nn.LeakyReLU) or \
+               isinstance(module, torch.nn.Sigmoid) or isinstance(module, torch.nn.Tanh):
+                activation_layers.append(module)
+                
+        # Check if using expected activation function
+        if "function" in expected and activation_layers:
+            correct_function = False
+            for layer in activation_layers:
+                if layer.__class__.__name__ == expected["function"]:
+                    correct_function = True
+                    break
+                    
+            if not correct_function:
+                self._print_error(f"{key} should use {expected['function']} activation function")
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+                
+        # Check number of activation layers
+        if "count" in expected:
+            min_count = expected["count"]["min"]
+            max_count = expected["count"]["max"]
+            
+            if len(activation_layers) < min_count or len(activation_layers) > max_count:
+                self._print_error(
+                    f"{key} should have between {min_count} and {max_count} activation layers, found {len(activation_layers)}"
+                )
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+                
+        # If no explicit activation layers, check for functional calls in forward method
+        if not activation_layers:
+            forward_code = inspect.getsource(student_model.forward)
+            if "relu" not in forward_code.lower() and "sigmoid" not in forward_code.lower() and \
+               "tanh" not in forward_code.lower() and "leaky_relu" not in forward_code.lower():
+                self._print_error(f"{key} should include activation functions")
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+                
+        return True
+
+    def _check_dataloader(self, student_dataloader, expected, key: str, exercise_data: dict) -> bool:
+        """Validate PyTorch DataLoader configuration"""
+        from torch.utils.data import DataLoader
+        
+        if not isinstance(student_dataloader, DataLoader):
+            self._print_error(f"{key} should be a torch.utils.data.DataLoader")
+            self._show_relevant_hint(exercise_data["hints"], key)
+            return False
+            
+        # Check batch size
+        if "batch_size" in expected:
+            min_batch = expected["batch_size"]["min"]
+            max_batch = expected["batch_size"]["max"]
+            
+            if student_dataloader.batch_size < min_batch or student_dataloader.batch_size > max_batch:
+                self._print_error(
+                    f"{key} should have batch size between {min_batch} and {max_batch}, found {student_dataloader.batch_size}"
+                )
+                self._show_relevant_hint(exercise_data["hints"], key)
+                return False
+                
+        # Check shuffle parameter
+        if "shuffle" in expected and student_dataloader.shuffle != expected["shuffle"]:
+            expected_state = "enabled" if expected["shuffle"] else "disabled"
+            actual_state = "enabled" if student_dataloader.shuffle else "disabled"
+            
+            self._print_error(f"{key} should have shuffle {expected_state}, found {actual_state}")
+            self._show_relevant_hint(exercise_data["hints"], key)
+            return False
+            
+        return True
+
+    def _check_classification_report(self, student_report, expected, key: str, exercise_data: dict) -> bool:
+        """Validate classification report content and metrics"""
+        # Check if it's a string report from sklearn
+        if isinstance(student_report, str):
+            # Check for required metrics in the report string
+            for metric in expected.get("contains_metrics", []):
+                if metric not in student_report:
+                    self._print_error(f"{key} should contain {metric} in the report")
+                    self._show_relevant_hint(exercise_data["hints"], key)
+                    return False
+                    
+            # Check for required classes in the report string
+            for class_name in expected.get("classes", []):
+                if class_name not in student_report:
+                    self._print_error(f"{key} should contain {class_name} in the report")
+                    self._show_relevant_hint(exercise_data["hints"], key)
+                    return False
+                    
+            # Check if precision, recall and f1-score are reasonable
+            # This is a basic check since parsing values from a string report is complex
+            if "f1_score" in expected and "0.0" in student_report:
+                min_f1 = expected["f1_score"]["min"]
+                if "0.0" in student_report and min_f1 > 0:
+                    self._print_error(f"{key} has some very low F1 scores, check model performance")
+                    self._show_relevant_hint(exercise_data["hints"], key)
+                    return False
+        
+        # Handle case where student used a dictionary or DataFrame
+        elif isinstance(student_report, (dict, pd.DataFrame)):
+            # Implementation depends on actual format used
+            pass
+            
         return True
 
     def _check_weight_initialization(self, student_tensor, expected, key: str, exercise_data: dict) -> bool:
