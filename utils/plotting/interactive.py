@@ -7,7 +7,7 @@ from typing import Callable, Optional, Dict, Any, Union, Tuple
 
 from .plots import make_fig_pretty
 
-__all__ = ["create_interactive_neuron_visualizer"]
+__all__ = ["create_interactive_neuron_visualizer", "se04_visualize_transformations"]
 
 def _update_plot(
     w: float, 
@@ -218,3 +218,29 @@ def create_interactive_neuron_visualizer(
     wrapped_update_plot(w_slider.value, b_slider.value)
     
     return main_ui, inter_out
+
+def se04_visualize_transformations(transformed_images):
+    """Visualize the transformed images.
+    
+    Args:
+        transformed_images (dict): Dictionary of transformed images
+    """
+    _, axes = plt.subplots(3, 3, figsize=(8, 8))
+    axes = axes.flatten()
+    
+    for i, (title, img_tensor) in enumerate(transformed_images.items()):
+        if title == 'Normalized':
+            # Denormalize for visualization
+            mean = torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
+            std = torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
+            img_tensor = img_tensor * std + mean
+            
+        img_numpy = img_tensor.permute(1, 2, 0).numpy()
+        img_numpy = np.clip(img_numpy, 0, 1)
+        
+        axes[i].imshow(img_numpy)
+        axes[i].set_title(title)
+        axes[i].axis('off')
+    
+    plt.tight_layout()
+    plt.show()
