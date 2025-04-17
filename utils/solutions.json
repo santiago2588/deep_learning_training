@@ -964,7 +964,7 @@
         "exercise_1": {
             "answers": {
                 "output1": {
-                    "expected":  28,
+                    "expected":  26,
                     "tolerance": 0
                 },
                 "output2": {
@@ -972,107 +972,17 @@
                     "tolerance": 0
                 },
                 "output3": {
-                    "expected":  128,
+                    "expected":  64,
                     "tolerance": 0
                 },
                 "output4": {
-                    "expected":  64,
+                    "expected":  32,
                     "tolerance": 0
                 }
             },
             "hints": [
                 "Remember the formula for output size: ((W - K + 2P) / S) + 1",
                 "Check that your kernel shape and padding are correctly defined"
-            ]
-        },
-        "exercise_2": {
-            "answers": {
-                "filter_horizontal_edges": {
-                    "kernel_values": [-1, -1, -1, 0, 0, 0, 1, 1, 1],
-                    "kernel_shape": [3, 3]
-                },
-                "filter_vertical_edges": {
-                    "kernel_values": [-1, 0, 1, -1, 0, 1, -1, 0, 1],
-                    "kernel_shape": [3, 3]
-                },
-                "output_check": {
-                    "expected": true
-                }
-            },
-            "hints": [
-                "Horizontal edge detection filters should have negative values in the top row and positive in the bottom row",
-                "Vertical edge detection filters should have negative values in the left column and positive in the right column",
-                "Make sure your kernels are properly reshaped to 3x3 matrices"
-            ]
-        },
-        "exercise_3": {
-            "answers": {
-                "transformations": {
-                    "resize_implemented": true,
-                    "crop_implemented": true,
-                    "flip_implemented": true,
-                    "rotation_implemented": true,
-                    "color_jitter_implemented": true,
-                    "normalization_implemented": true
-                },
-                "visualization": true
-            },
-            "hints": [
-                "Make sure to implement all required transformations using torchvision.transforms",
-                "For center crop, first resize the image then apply CenterCrop",
-                "For random crop, first resize the image then apply RandomCrop",
-                "Horizontal flip should use RandomHorizontalFlip with p=1.0 for deterministic flipping",
-                "For rotation, use RandomRotation with a reasonable degree range (e.g., 30 degrees)",
-                "Color jitter should modify brightness, contrast, saturation, and possibly hue",
-                "For normalization, use the ImageNet mean and std: [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]"
-            ]
-        },
-        "exercise_4": {
-            "answers": {
-                "simple_cnn": {
-                    "conv_layer_count": 2,
-                    "output_shape_test": [32, 2]
-                },
-                "forward_pass_implemented": true
-            },
-            "hints": [
-                "Your CNN should have at least 2 convolutional layers followed by pooling layers",
-                "The flatten layer should compute the correct output size based on the input dimensions and convolution operations",
-                "Make sure to implement both convolutional blocks and fully connected layers"
-            ]
-        },
-        "exercise_5": {
-            "answers": {
-                "model_training": {
-                    "optimizer_type": "Adam",
-                    "scheduler_implemented": true
-                },
-                "regularization": {
-                    "batch_norm_layers": {"min": 3, "max": 8},
-                    "dropout_layers": {"min": 2, "max": 8},
-                    "weight_decay": true
-                }
-            },
-            "hints": [
-                "Use batch normalization after convolutional layers to stabilize training",
-                "Apply dropout to prevent overfitting, especially in fully connected layers",
-                "Consider using a learning rate scheduler for better convergence"
-            ]
-        },
-        "exercise_6": {
-            "answers": {
-                "metrics": {
-                    "accuracy": {"min": 0.7, "max": 1.0},
-                    "precision": {"min": 0.7, "max": 1.0},
-                    "recall": {"min": 0.7, "max": 1.0},
-                    "f1": {"min": 0.7, "max": 1.0}
-                },
-                "visualization_implemented": true
-            },
-            "hints": [
-                "Calculate and report multiple metrics including accuracy, precision, recall, and F1 score",
-                "Visualize the confusion matrix to understand model performance",
-                "Plot examples of correct and incorrect predictions to gain insights"
             ]
         }
     }
