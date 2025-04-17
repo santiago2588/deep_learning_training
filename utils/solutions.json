@@ -1001,6 +1001,28 @@
         },
         "exercise_3": {
             "answers": {
+                "transformations": {
+                    "resize_implemented": true,
+                    "crop_implemented": true,
+                    "flip_implemented": true,
+                    "rotation_implemented": true,
+                    "color_jitter_implemented": true,
+                    "normalization_implemented": true
+                },
+                "visualization": true
+            },
+            "hints": [
+                "Make sure to implement all required transformations using torchvision.transforms",
+                "For center crop, first resize the image then apply CenterCrop",
+                "For random crop, first resize the image then apply RandomCrop",
+                "Horizontal flip should use RandomHorizontalFlip with p=1.0 for deterministic flipping",
+                "For rotation, use RandomRotation with a reasonable degree range (e.g., 30 degrees)",
+                "Color jitter should modify brightness, contrast, saturation, and possibly hue",
+                "For normalization, use the ImageNet mean and std: [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]"
+            ]
+        },
+        "exercise_4": {
+            "answers": {
                 "simple_cnn": {
                     "conv_layer_count": 2,
                     "output_shape_test": [32, 2]
@@ -1011,22 +1033,6 @@
                 "Your CNN should have at least 2 convolutional layers followed by pooling layers",
                 "The flatten layer should compute the correct output size based on the input dimensions and convolution operations",
                 "Make sure to implement both convolutional blocks and fully connected layers"
-            ]
-        },
-        "exercise_4": {
-            "answers": {
-                "data_augmentation": {
-                    "check_normalization": true,
-                    "transform_count": {"min": 5, "max": 8}
-                },
-                "train_val_test_split": {
-                    "implemented": true
-                }
-            },
-            "hints": [
-                "Include normalization with mean and std in your transforms",
-                "Consider using horizontal flip, rotation, and color jitter for data augmentation",
-                "Make sure to use different transforms for training vs. validation/test sets"
             ]
         },
         "exercise_5": {
