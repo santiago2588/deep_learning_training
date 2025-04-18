@@ -1276,5 +1276,116 @@
                 "The VGG architecture should outperform the simple CNN model from Exercise 6"
             ]
         }
+    },
+    "SE05": {
+        "exercise_1": {
+            "answers": {
+                "model_loaded": {
+                    "expected": true
+                },
+                "model_type": {
+                    "expected_type": "EfficientNet"
+                },
+                "feature_extraction": {
+                    "expected": true
+                },
+                "feature_layer_freezing": {
+                    "expected": true
+                }
+            },
+            "hints": [
+                "Remember to use torchvision.models module to load pre-trained models",
+                "Set requires_grad=False for feature extraction layers",
+                "Ensure you're using a pre-trained model with pretrained=True or weights='IMAGENET1K_V1'"
+            ]
+        },
+        "exercise_2": {
+            "answers": {
+                "has_transformations": {
+                    "expected": true
+                },
+                "resize_transform": {
+                    "expected_size": [224, 224]
+                },
+                "normalization_transform": {
+                    "mean": [0.485, 0.456, 0.406],
+                    "std": [0.229, 0.224, 0.225]
+                },
+                "augmentation_transform": {
+                    "has_random_transforms": true
+                }
+            },
+            "hints": [
+                "Make sure to resize images to the input size expected by the pre-trained model (224x224)",
+                "Apply normalization with ImageNet statistics: mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]",
+                "Include data augmentation techniques like random rotation, flips, or color jitter for the training set",
+                "Create separate transforms for training (with augmentation) and validation/test (without augmentation)"
+            ]
+        },
+        "exercise_3": {
+            "answers": {
+                "classifier_layers": {
+                    "expected": true,
+                    "has_dropout": true,
+                    "output_classes": true
+                },
+                "optimizer_config": {
+                    "optimizer_type": "Adam",
+                    "learning_rate": {"min": 1e-5, "max": 1e-2}
+                },
+                "loss_function": {
+                    "expected_type": "CrossEntropyLoss"
+                }
+            },
+            "hints": [
+                "Replace the classifier with a custom one that includes dropout for regularization",
+                "Make sure your classifier's output dimension matches the number of classes in your dataset",
+                "Use a smaller learning rate (around 1e-4) for fine-tuning compared to training from scratch",
+                "CrossEntropyLoss is appropriate for multi-class classification problems"
+            ]
+        },
+        "exercise_4": {
+            "answers": {
+                "feature_extraction_accuracy": {
+                    "min_val": 0.7,
+                    "max_val": 1.0
+                },
+                "training_trend": {
+                    "expected": true
+                },
+                "early_stopping": {
+                    "implemented": true
+                }
+            },
+            "hints": [
+                "Make sure your model is in evaluation mode (model.eval()) when computing accuracy",
+                "Training loss should generally decrease over time",
+                "Implement early stopping to prevent overfitting",
+                "Using feature extraction, you should be able to achieve at least 70% accuracy on the test set"
+            ]
+        },
+        "exercise_5": {
+            "answers": {
+                "fine_tuning_implemented": {
+                    "expected": true
+                },
+                "selective_unfreezing": {
+                    "expected": true
+                },
+                "fine_tuning_accuracy": {
+                    "min_val": 0.8,
+                    "max_val": 1.0
+                },
+                "confusion_matrix": {
+                    "expected": true
+                }
+            },
+            "hints": [
+                "Unfreeze some of the later layers in the backbone for fine-tuning",
+                "Use an even smaller learning rate for fine-tuning compared to feature extraction",
+                "Fine-tuning should improve accuracy compared to pure feature extraction",
+                "Create a confusion matrix to visualize the classification results"
+            ]
+        }
     }
 }

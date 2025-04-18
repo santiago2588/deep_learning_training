@@ -127,5 +127,67 @@
             "correct": 1,
             "explanation": "Larger kernel sizes are beneficial when you need to capture larger spatial patterns in high-resolution images. They increase the receptive field size more rapidly, allowing the network to 'see' more of the input image at once. However, they also increase computational cost (not reduce it), require more training data (not less), and are more computationally intensive on any hardware platform including CPUs."
         }
+    },
+    "SE05": {
+        "quiz_1": {
+            "title": "Transfer Learning Fundamentals",
+            "question": "Which of the following best describes the main advantage of transfer learning for engineering applications?",
+            "options": [
+                "It allows models to be trained with zero data from the target domain",
+                "It eliminates the need for GPU acceleration when training deep networks",
+                "It enables the use of complex architectures without understanding how they work",
+                "It leverages knowledge from pre-trained models to reduce required training data and time"
+            ],
+            "correct": 3,
+            "explanation": "Transfer learning provides a major advantage for engineering applications by allowing knowledge learned from one task to be applied to a different but related task. This approach significantly reduces the amount of training data required and accelerates the training process, which is particularly valuable in engineering domains where labeled datasets may be limited or expensive to obtain. Pre-trained models have already learned useful features from large datasets like ImageNet, allowing engineers to build effective models for specialized applications without starting from scratch."
+        },
+        "quiz_2": {
+            "title": "Pre-trained Models Selection",
+            "question": "When selecting a pre-trained model for an engineering defect detection task, which factor is MOST important to consider?",
+            "options": [
+                "The architecture with the most parameters",
+                "The most recently published model",
+                "The similarity between the original training data and your target application",
+                "The model with the fastest inference time"
+            ],
+            "correct": 2,
+            "explanation": "The similarity between the original training data and your target application is the most important factor when selecting a pre-trained model for transfer learning. Models trained on data similar to your target domain will have learned more relevant features, making transfer learning more effective. While inference speed, model size, and recency are all relevant considerations, the domain similarity directly impacts how well the learned features will transfer to your engineering task. For example, a model pre-trained on natural images may transfer well to structural crack detection, but less well to specialized domains like hyperspectral satellite imagery or medical scans."
+        },
+        "quiz_3": {
+            "title": "Feature Extraction vs. Fine-tuning",
+            "question": "For a materials science dataset with only 500 labeled examples, which transfer learning approach would likely yield better results?",
+            "options": [
+                "Training from scratch with data augmentation",
+                "Feature extraction with a frozen pre-trained backbone",
+                "Full fine-tuning of all layers in the pre-trained model",
+                "Using the pre-trained model without any modifications"
+            ],
+            "correct": 1,
+            "explanation": "Feature extraction with a frozen pre-trained backbone is typically the best approach for small datasets like the materials science example with only 500 samples. When using feature extraction, the pre-trained network layers are kept frozen (weights aren't updated), and only the new classification layers are trained. This approach prevents overfitting on the small dataset while still leveraging the powerful feature representations learned from a large dataset. Training from scratch would likely lead to overfitting, while full fine-tuning might also overfit with so little data. Using the pre-trained model without modifications wouldn't adapt to the specific materials science task at all."
+        },
+        "quiz_4": {
+            "title": "Transfer Learning Techniques",
+            "question": "When implementing progressive unfreezing during transfer learning, what is the correct order to unfreeze network layers?",
+            "options": [
+                "Unfreeze all layers simultaneously",
+                "Unfreeze early layers first, then later layers",
+                "Unfreeze later layers first, then early layers",
+                "Unfreeze layers randomly to improve generalization"
+            ],
+            "correct": 2,
+            "explanation": "The correct order for progressive unfreezing is to unfreeze later (deeper) layers first, then gradually unfreeze earlier layers. This approach is based on the understanding that early convolutional layers in a CNN capture generic features (like edges and textures) that transfer well across domains, while later layers capture more task-specific features. By unfreezing and fine-tuning the later layers first, we adapt the model to the new task while preserving the useful generic features. This strategy helps prevent catastrophic forgetting and typically leads to better performance compared to unfreezing all layers simultaneously or in the reverse order."
+        },
+        "quiz_5": {
+            "title": "Learning Rate Selection",
+            "question": "When fine-tuning a pre-trained model for an engineering application, what learning rate strategy is generally recommended?",
+            "options": [
+                "Use the same learning rate that was used for pre-training",
+                "Use a larger learning rate to quickly adapt the model",
+                "Use a much smaller learning rate than when training from scratch",
+                "Learning rate doesn't matter as long as the architecture is appropriate"
+            ],
+            "correct": 2,
+            "explanation": "When fine-tuning a pre-trained model, using a much smaller learning rate than when training from scratch is the recommended approach. A smaller learning rate (typically 10-100× smaller) helps preserve the valuable knowledge already contained in the pre-trained weights while making small, careful adjustments to adapt to the new task. Using too large a learning rate could destroy the useful features learned during pre-training, leading to a phenomenon known as 'catastrophic forgetting.' The learning rate is a critical hyperparameter in fine-tuning that significantly impacts the effectiveness of transfer learning."
+        }
     }
 }
