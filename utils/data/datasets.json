@@ -1,4 +1,12 @@
 {
+    "promoters": {
+        "url": "https://archive.ics.uci.edu/static/public/67/molecular+biology+promoter+gene+sequences.zip",
+        "description": "Promoter sequences of E. coli for predicting promoter regions",
+        "website": "https://archive.ics.uci.edu/dataset/67/molecular+biology+promoter+gene+sequences",
+        "authors": ["C. Harley", "R. Reynolds", "M. Noordewier"],
+        "year": 1990,
+        "category": "classification"
+    },
     "challenger":{
         "url": "https://archive.ics.uci.edu/static/public/92/challenger+usa+space+shuttle+o+ring.zip",
         "description": "Challenger USA Space Shuttle O-Ring dataset for predicting the failure of O-rings",
