@@ -138,7 +138,7 @@
           "When you're building a model to predict well-documented physical properties",
           "When computational efficiency isn't a concern and you have months to train a model from scratch"
         ],
-        "answer": 1,
+        "correct": 1,
         "explanation": "Transfer learning provides a major advantage for engineering applications by allowing knowledge learned from one task to be applied to a different but related task. This approach significantly reduces the amount of training data required and accelerates the training process, which is particularly valuable in engineering domains where labeled datasets may be limited or expensive to obtain. Pre-trained models have already learned useful features from large datasets like ImageNet, allowing engineers to build effective models for specialized applications without starting from scratch."
       },
       "quiz_2": {
@@ -150,7 +150,7 @@
           "Feature extraction with a frozen pre-trained backbone",
           "Using the pre-trained model without any modifications"
         ],
-        "answer": 2,
+        "correct": 2,
         "explanation": "Feature extraction with a frozen pre-trained backbone is typically the best approach for small datasets like the materials science example with only 500 samples. When using feature extraction, the pre-trained network layers are kept frozen (weights aren't updated), and only the new classification layers are trained. This approach prevents overfitting on the small dataset while still leveraging the powerful feature representations learned from a large dataset. Training from scratch would likely lead to overfitting, while full fine-tuning might also overfit with so little data. Using the pre-trained model without modifications wouldn't adapt to the specific materials science task at all."
       },
       "quiz_3": {
@@ -162,7 +162,7 @@
           "The model's size and inference speed",
           "The popularity of the model in research papers"
         ],
-        "answer": 0,
+        "correct": 0,
         "explanation": "The similarity between the original training data and your target application is the most important factor when selecting a pre-trained model for transfer learning. Models trained on data similar to your target domain will have learned more relevant features, making transfer learning more effective. While inference speed, model size, and recency are all relevant considerations, the domain similarity directly impacts how well the learned features will transfer to your engineering task. For example, a model pre-trained on natural images may transfer well to structural crack detection, but less well to specialized domains like hyperspectral satellite imagery or medical scans."
       },
       "quiz_4": {
@@ -174,7 +174,7 @@
           "Unfreeze later layers first, then gradually unfreeze earlier layers",
           "Keep all layers frozen and only train the classifier head"
         ],
-        "answer": 2,
+        "correct": 2,
         "explanation": "The correct order for progressive unfreezing is to unfreeze later (deeper) layers first, then gradually unfreeze earlier layers. This approach is based on the understanding that early convolutional layers in a CNN capture generic features (like edges and textures) that transfer well across domains, while later layers capture more task-specific features. By unfreezing and fine-tuning the later layers first, we adapt the model to the new task while preserving the useful generic features. This strategy helps prevent catastrophic forgetting and typically leads to better performance compared to unfreezing all layers simultaneously or in the reverse order."
       },
       "quiz_5": {
@@ -186,7 +186,7 @@
           "Use a higher learning rate for early layers than for later layers",
           "Learning rates don't matter much in transfer learning"
         ],
-        "answer": 1,
+        "correct": 1,
         "explanation": "When fine-tuning a pre-trained model, using a much smaller learning rate than you would for training from scratch is typically most effective. This is because pre-trained weights already encode valuable information, and large learning rates could destroy this information through drastic updates. A common practice is to use a learning rate that is 10-100 times smaller than what you would use for training from scratch. This allows the model to make small adjustments to adapt to the new task while preserving the useful features learned during pre-training. Additionally, some practitioners use even smaller learning rates for earlier layers (which contain more general features) and slightly larger ones for later layers (which need more adaptation to the specific task)."
       }
     }
