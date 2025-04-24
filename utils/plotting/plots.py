@@ -1,6 +1,6 @@
+from zmq import device
 import scipy
 import torch
-from ipywidgets import interact, FloatSlider
 import matplotlib.pyplot as plt
 import numpy as np
 from typing import Optional, List, Tuple, Dict, Any
@@ -8,12 +8,11 @@ from .formatting import make_fig_pretty
 import networkx as nx
 import matplotlib.patches as mpatches
 from .fonts import load_font
-from matplotlib.colors import to_rgba
 from matplotlib.lines import Line2D
 
 
 __all__ = ["plot_loss", "plot_distribution",
-           "visualize_network_nx", "plot_model_predictions_SE02"]
+           "visualize_network_nx", "plot_model_predictions_SE02", "show_binary_segmentation_batch", "show_binary_segmentation_predictions", "compare_binary_segmentation_models"]
 
 
 def plot_loss(
@@ -34,7 +33,7 @@ def plot_loss(
         figsize: Figure size as (width, height)
         ax: Optional matplotlib axes to plot on
         **kwargs: Additional arguments to pass to make_fig_pretty
-        
+
     Returns:
         fig, ax: Matplotlib figure and axes objects
     """
@@ -64,7 +63,7 @@ def plot_loss(
 
     if fig is not None:
         plt.tight_layout()
-    
+
     return fig, ax
 
 
@@ -179,18 +178,20 @@ def visualize_network_nx(model: torch.nn.Module, figsize: tuple = (8, 4)) -> Tup
     # Simplify the network representation
     # Create basic nodes: inputs, hidden layer, and output
     input_nodes = [f"x{i+1}" for i in range(layers[0]['in_features'])]
-    hidden_nodes = ["Neuron"] if layers[0]['out_features'] == 1 else [f"h{i+1}" for i in range(layers[0]['out_features'])]
-    output_nodes = ["y"] if len(layers) == 1 or layers[-1]['out_features'] == 1 else [f"y{i+1}" for i in range(layers[-1]['out_features'])]
-    
+    hidden_nodes = ["Neuron"] if layers[0]['out_features'] == 1 else [
+        f"h{i+1}" for i in range(layers[0]['out_features'])]
+    output_nodes = ["y"] if len(layers) == 1 or layers[-1]['out_features'] == 1 else [
+        f"y{i+1}" for i in range(layers[-1]['out_features'])]
+
     # Add all nodes to the graph
     for node in input_nodes + hidden_nodes + output_nodes:
         G.add_node(node)
-    
+
     # Add edges from inputs to hidden layer
     for input_node in input_nodes:
         for hidden_node in hidden_nodes:
             G.add_edge(input_node, hidden_node)
-    
+
     # If we have a deeper network, add edges from hidden to output
     if len(layers) > 1:
         for hidden_node in hidden_nodes:
@@ -201,36 +202,36 @@ def visualize_network_nx(model: torch.nn.Module, figsize: tuple = (8, 4)) -> Tup
         for hidden_node in hidden_nodes:
             for output_node in output_nodes:
                 G.add_edge(hidden_node, output_node)
-    
+
     # Create a simple, clean layout
     pos = {}
-    
+
     # Position input nodes vertically on the left
     input_spacing = 2 / max(len(input_nodes), 1)
     for i, node in enumerate(input_nodes):
         pos[node] = (-1, (i * input_spacing) - 1 + input_spacing/2)
-    
+
     # Position hidden nodes in the middle
     hidden_spacing = 2 / max(len(hidden_nodes), 1)
     for i, node in enumerate(hidden_nodes):
         pos[node] = (0, (i * hidden_spacing) - 1 + hidden_spacing/2)
-    
+
     # Position output nodes on the right
     output_spacing = 2 / max(len(output_nodes), 1)
     for i, node in enumerate(output_nodes):
         pos[node] = (1, (i * output_spacing) - 1 + output_spacing/2)
-    
+
     # Create figure
     fig, ax = plt.subplots(figsize=figsize)
-    
+
     # Load font for consistent styling - use the same font for everything
     fm = load_font()
-    
+
     # Define pleasing colors
     node_color = '#AED6F1'  # Light blue
     edge_color = '#2C3E50'  # Dark blue/gray
     activation_color = '#E74C3C'  # Red for activation functions
-    
+
     # Draw nodes first (so edges appear on top)
     nx.draw_networkx_nodes(
         G, pos,
@@ -240,20 +241,20 @@ def visualize_network_nx(model: torch.nn.Module, figsize: tuple = (8, 4)) -> Tup
         linewidths=1.5,
         ax=ax
     )
-    
+
     # Identify activation edges - always the connections to output layer
     act_edges = []
     regular_edges = []
-    
+
     for u, v in G.edges():
         if v in output_nodes:
             act_edges.append((u, v))
         else:
             regular_edges.append((u, v))
-    
+
     # Draw regular edges with straight lines for better arrow visibility
     nx.draw_networkx_edges(
-        G, pos, 
+        G, pos,
         edgelist=regular_edges,
         arrowsize=20,
         width=1.5,
@@ -264,15 +265,15 @@ def visualize_network_nx(model: torch.nn.Module, figsize: tuple = (8, 4)) -> Tup
         arrowstyle='-|>',  # Clear arrow style
         ax=ax
     )
-    
+
     # Draw activation function edges with different style and color
     if activations and act_edges:
         # Get activation name for display in legend
         act_name = ", ".join(set(activations))
-        
+
         # Draw activation edges with distinctive style
         nx.draw_networkx_edges(
-            G, pos, 
+            G, pos,
             edgelist=act_edges,
             arrowsize=25,
             width=3.0,
@@ -286,16 +287,16 @@ def visualize_network_nx(model: torch.nn.Module, figsize: tuple = (8, 4)) -> Tup
             min_target_margin=15,
             ax=ax
         )
-        
+
         # We no longer add the dot on the activation function lines
-    
+
     # Draw node labels with consistent font
     label_font = fm.copy()
     label_font.set_weight('bold')
-    
+
     # Custom draw labels with consistent font
     for node, (x, y) in pos.items():
-        ax.text(x, y, node, 
+        ax.text(x, y, node,
                 fontproperties=label_font,
                 fontsize=10,
                 horizontalalignment='center',
@@ -303,7 +304,7 @@ def visualize_network_nx(model: torch.nn.Module, figsize: tuple = (8, 4)) -> Tup
                 color='black',
                 transform=ax.transData,
                 zorder=12)
-    
+
     # Add a title with network size information
     n_input = len(input_nodes)
     n_hidden = len(hidden_nodes)
@@ -311,42 +312,42 @@ def visualize_network_nx(model: torch.nn.Module, figsize: tuple = (8, 4)) -> Tup
     title = f"Neural Network ({n_input}-{n_hidden}-{n_output})"
     if activations:
         title += "\nActivations: " + ", ".join(set(activations))
-    
+
     # Add legend for activation function if present
     legend_elements = [
         mpatches.Patch(color=node_color, label='Network Nodes'),
         Line2D([0], [0], color=edge_color, lw=1.5, label='Connections')
     ]
-    
+
     if activations:
         legend_elements.append(
-            Line2D([0], [0], color=activation_color, lw=3.0, 
-                  label=f'{act_name} Activation')  # Removed marker
+            Line2D([0], [0], color=activation_color, lw=3.0,
+                   label=f'{act_name} Activation')  # Removed marker
         )
-    
+
     # Create the legend with consistent font in the top-left position
     legend = ax.legend(
-        handles=legend_elements, 
+        handles=legend_elements,
         loc='upper left',  # Changed to upper left as requested
         prop=fm,
         framealpha=0.8  # Better visibility of legend
     )
-    
+
     # Make figure pretty with consistent font throughout
     make_fig_pretty(
         ax=ax,
         title=title,
         grid=False
     )
-    
+
     # Make sure there's enough padding around the graph
     plt.tight_layout(pad=1.2)
-    
+
     # Remove axis ticks and labels
     ax.set_xticks([])
     ax.set_yticks([])
     ax.axis('off')
-    
+
     return fig, ax, G, pos
 
 
@@ -365,7 +366,7 @@ def plot_model_predictions_SE02(
 ) -> Tuple[plt.Figure, plt.Axes]:
     """
     Plot model predictions against actual data points.
-    
+
     Args:
         model: The trained model
         X: Feature tensor (normalized)
@@ -378,40 +379,42 @@ def plot_model_predictions_SE02(
         figsize: Figure size as (width, height)
         ax: Optional matplotlib axes to plot on
         **kwargs: Additional arguments to pass to make_fig_pretty
-        
+
     Returns:
         fig, ax: Matplotlib figure and axes objects
     """
     fig = None
     if ax is None:
         fig, ax = plt.subplots(figsize=figsize)
-    
+
     # Convert tensors to numpy for plotting
     temperatures = X.numpy().flatten() * X_std + X_mean  # De-normalize for plotting
     actual = y.numpy().flatten()
-    
+
     # Create temperature range for smooth curve
     temp_range = np.linspace(min(temperatures) - 2, max(temperatures) + 2, 100)
     temp_range_normalized = (temp_range - X_mean) / X_std
-    
+
     # Get predictions for the whole temperature range
     with torch.no_grad():
-        smooth_preds = np.array([model(torch.tensor([t]).float()).item() for t in temp_range_normalized])
-    
+        smooth_preds = np.array(
+            [model(torch.tensor([t]).float()).item() for t in temp_range_normalized])
+
     # Plot the data points and model prediction curve
     ax.scatter(temperatures, actual, color='None', edgecolor='black',
                s=100, alpha=0.7, label='Actual Data')
-    ax.plot(temp_range, smooth_preds, 'orange', linewidth=2, label='Model Prediction')
-    
+    ax.plot(temp_range, smooth_preds, 'orange',
+            linewidth=2, label='Model Prediction')
+
     # Add threshold line at 0.5 probability
     ax.axhline(y=0.5, color='gray', linestyle='--', alpha=0.7)
-    
+
     # Add special temperature line if provided
     if special_temp is not None:
         ax.axvline(x=special_temp, color='black', linestyle='--', alpha=0.7)
         if special_temp_label:
             ax.text(special_temp+0.5, 0.8, special_temp_label, rotation=90)
-    
+
     make_fig_pretty(
         ax=ax,
         title=title,
@@ -422,8 +425,165 @@ def plot_model_predictions_SE02(
         grid=True,
         **kwargs
     )
-    
+
     if fig is not None:
         plt.tight_layout()
-        
+
     return fig, ax
+
+
+def show_binary_segmentation_batch(dl: torch.utils.data.DataLoader, n_images: int = 10, mean: torch.Tensor = None, std: torch.Tensor = None):
+    """
+    Display a batch of images and their corresponding segmentation masks.
+
+    Args:
+        dl: DataLoader containing the dataset
+        n_images: Number of images to display
+    """
+
+    if mean is None or std is None:
+        # Default to ones
+        mean = torch.ones(3)
+        std = torch.ones(3)
+
+    for images, masks in dl:
+        _, ax = plt.subplots(nrows=2, ncols=n_images, figsize=(20, 5))
+
+        for ix in range(n_images):
+            # Denormalize the image
+            img = images[ix].permute(1, 2, 0).numpy()
+            img = img * std.numpy() + mean.numpy()  # Denormalize
+            img = np.clip(img, 0, 1)  # Clip values to valid range
+
+            ax[0, ix].imshow(img)
+            ax[0, ix].axis('off')
+            make_fig_pretty(ax=ax[0, ix], grid=False,
+                            title=f"Image {ix+1}",
+                            is_image=True,)
+
+            ax[1, ix].imshow(masks[ix].squeeze(), cmap='gray')
+            ax[1, ix].axis('off')
+            make_fig_pretty(ax=ax[1, ix],
+                            title=f"Mask {ix+1}",
+                            is_image=True)
+
+        plt.show()
+        break
+
+
+def show_binary_segmentation_predictions(model: torch.nn.Module,
+                                         dl: torch.utils.data.DataLoader,
+                                         n_images=10,
+                                         mean: torch.Tensor = None,
+                                         std: torch.Tensor = None) -> None:
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    if mean is None or std is None:
+        # Default to ones
+        mean = torch.ones(3)
+        std = torch.ones(3)
+
+    model.eval()
+    with torch.no_grad():
+        for images, masks in dl:
+            images = images.to(device)
+            masks = masks.to(device)
+
+            outputs = model(images)
+
+            # Apply threshold for binary segmentation
+            outputs = (outputs > 0.5).float()
+
+            _, ax = plt.subplots(nrows=3, ncols=n_images, figsize=(20, 5))
+            for ix in range(n_images):
+                # Denormalize the image
+                img = images[ix].permute(1, 2, 0).cpu().numpy()
+                img = img * std.cpu().numpy() + mean.cpu().numpy()
+                img = np.clip(img, 0, 1)
+
+                ax[0, ix].imshow(img)
+                ax[0, ix].axis('off')
+                make_fig_pretty(ax=ax[0, ix],
+                                title=f"Image {ix+1}",
+                                is_image=True)
+
+                ax[1, ix].imshow(masks[ix].squeeze().cpu(), cmap='gray')
+                ax[1, ix].axis('off')
+                make_fig_pretty(ax=ax[1, ix],
+                                title=f"GT {ix+1}",
+                                is_image=True)
+
+                ax[2, ix].imshow(outputs[ix].squeeze().cpu(), cmap='gray')
+                ax[2, ix].axis('off')
+                make_fig_pretty(ax=ax[2, ix],
+                                title=f"PR {ix+1}",
+                                is_image=True)
+
+            plt.show()
+            break
+
+
+def compare_binary_segmentation_models(model1: torch.nn.Module,
+                                       model2: torch.nn.Module,
+                                       dl: torch.utils.data.DataLoader,
+                                       n_images=10,
+                                       mean: torch.Tensor = None,
+                                       std: torch.Tensor = None) -> None:
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    if mean is None or std is None:
+        # Default to ones
+        mean = torch.ones(3)
+        std = torch.ones(3)
+
+    model1.eval()
+    model2.eval()
+
+    with torch.no_grad():
+        for images, masks in dl:
+            images = images.to(device)
+            masks = masks.to(device)
+
+            outputs1 = model1(images)
+            outputs2 = model2(images)
+
+            # Apply threshold for binary segmentation
+            outputs1 = (outputs1 > 0.5).float()
+            outputs2 = (outputs2 > 0.5).float()
+
+            _, ax = plt.subplots(nrows=4, ncols=n_images, figsize=(20, 5))
+            for ix in range(n_images):
+                # Denormalize the image
+                img = images[ix].permute(1, 2, 0).cpu().numpy()
+                img = img * std.cpu().numpy() + mean.cpu().numpy()
+                img = np.clip(img, 0, 1)
+
+                ax[0, ix].imshow(img)
+                ax[0, ix].axis('off')
+                make_fig_pretty(ax=ax[0, ix],
+                                title=f"Image {ix+1}",
+                                is_image=True)
+
+                ax[1, ix].imshow(masks[ix].squeeze().cpu(), cmap='gray')
+                ax[1, ix].axis('off')
+                make_fig_pretty(ax=ax[1, ix],
+                                title=f"GT {ix+1}",
+                                is_image=True)
+
+                ax[2, ix].imshow(outputs1[ix].squeeze().cpu(), cmap='gray')
+                ax[2, ix].axis('off')
+                make_fig_pretty(ax=ax[2, ix],
+
+                                title=f"M1 PR {ix+1}",
+                                is_image=True)
+
+                ax[3, ix].imshow(outputs2[ix].squeeze().cpu(), cmap='gray')
+                ax[3, ix].axis('off')
+                make_fig_pretty(ax=ax[3, ix],
+                                title=f"M2 PR {ix+1}",
+                                is_image=True)
+
+            plt.show()
+            break

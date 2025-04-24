@@ -140,7 +140,8 @@ def make_fig_pretty(
     grid: bool = False,
     tufte_style: bool = False,
     background_color: Optional[str] = None,
-    range_frame: bool = False
+    range_frame: bool = False,
+    is_image: bool = False
 ) -> None:
     """
     Apply consistent formatting to a matplotlib figure with Tufte principles option.
@@ -168,6 +169,7 @@ def make_fig_pretty(
         tufte_style: Whether to apply Tufte-style minimalist formatting
         background_color: Optional custom background color
         range_frame: Whether to use a range frame instead of full axes (Tufte-style)
+        is_image: Whether the plot contains an image
     """
     is_3d = "3D" in str(type(ax.axes))
     
@@ -179,25 +181,71 @@ def make_fig_pretty(
     if background_color:
         ax.set_facecolor(background_color)
         
-    # Set title and axis labels
-    if tufte_style:
-        # In Tufte style, title should be less prominent - smaller and not all caps
-        ax.set_title(title, fontproperties=fm, fontsize=title_fsize-1, color='#505050')
-        ax.set_xlabel(xlabel, fontproperties=fm, fontsize=xlabel_fsize, color='#505050')
-        ax.set_ylabel(ylabel, fontproperties=fm, fontsize=ylabel_fsize, color='#505050')
+    # Set title and axis labels with special handling for images
+    if is_image:
+        # For images, left-align title and make it more subtle
+        if tufte_style:
+            ax.set_title(title, fontproperties=fm, fontsize=title_fsize-1, 
+                         color='#505050', loc='left', pad=8)
+            
+            # For images in Tufte style, remove all axes and ticks
+            ax.axis('off')
+        else:
+            title_text = " ".join(title.upper())
+            ax.set_title(title_text, fontproperties=fm, fontsize=title_fsize, 
+                         loc='left', pad=5)
+            
+            # For regular image style, keep minimal axes
+            ax.set_xticks([])
+            ax.set_yticks([])
+            for spine in ax.spines.values():
+                spine.set_visible(False)
         
-        if is_3d:
-            ax.set_zlabel(zlabel, fontproperties=fm, fontsize=11, color='#505050')
+        # For images, we typically don't need axis labels
+        if xlabel:
+            ax.set_xlabel(xlabel if tufte_style else " ".join(xlabel.upper()),
+                       fontproperties=fm, fontsize=xlabel_fsize)
+        if ylabel:
+            ax.set_ylabel(ylabel if tufte_style else " ".join(ylabel.upper()),
+                       fontproperties=fm, fontsize=ylabel_fsize)
     else:
-        # Standard formatting
-        ax.set_title(" ".join(title.upper()), fontproperties=fm, fontsize=title_fsize)
-        ax.set_xlabel(" ".join(xlabel.upper()), fontproperties=fm, fontsize=xlabel_fsize)
-        ax.set_ylabel(" ".join(ylabel.upper()), fontproperties=fm, fontsize=ylabel_fsize)
-        
-        if is_3d:
-            ax.set_zlabel(" ".join(zlabel.upper()), fontproperties=fm, fontsize=11)
+        # Standard formatting for regular plots
+        if tufte_style:
+            # In Tufte style, title should be less prominent - smaller and not all caps
+            ax.set_title(title, fontproperties=fm, fontsize=title_fsize-1, color='#505050')
+            ax.set_xlabel(xlabel, fontproperties=fm, fontsize=xlabel_fsize, color='#505050')
+            ax.set_ylabel(ylabel, fontproperties=fm, fontsize=ylabel_fsize, color='#505050')
+            
+            if is_3d:
+                ax.set_zlabel(zlabel, fontproperties=fm, fontsize=11, color='#505050')
+        else:
+            # Standard formatting
+            ax.set_title(" ".join(title.upper()), fontproperties=fm, fontsize=title_fsize)
+            ax.set_xlabel(" ".join(xlabel.upper()), fontproperties=fm, fontsize=xlabel_fsize)
+            ax.set_ylabel(" ".join(ylabel.upper()), fontproperties=fm, fontsize=ylabel_fsize)
+            
+            if is_3d:
+                ax.set_zlabel(" ".join(zlabel.upper()), fontproperties=fm, fontsize=11)
     
-    # Format axis ticks
+    # Skip additional formatting for images if needed
+    if is_image:
+        # Add a thin border around images if not in Tufte style
+        if not tufte_style:
+            for spine in ax.spines.values():
+                spine.set_visible(True)
+                spine.set_color('#cccccc')
+                spine.set_linewidth(0.5)
+                
+        # Apply any image-specific adjustments to figure layout
+        fig = ax.get_figure()
+        if fig:
+            # Tighter layout for images
+            fig.tight_layout(pad=1.0 if tufte_style else 0.5)
+            
+        # Skip the rest of the formatting that's intended for data plots
+        return
+    
+    # Format axis ticks for non-image plots
     format_axis_ticks(ax, 'x', sharex, is_3d, fm, xtick_fsize)
     format_axis_ticks(ax, 'y', sharey, is_3d, fm, ytick_fsize)
     if is_3d:
