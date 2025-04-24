@@ -1280,111 +1280,303 @@
     "SE05": {
         "exercise_1": {
             "answers": {
-                "model_loaded": {
+                "dataset_class": {
+                    "expected": "ISICDataset",
+                    "check_type": "class"
+                },
+                "has_getitem": {
                     "expected": true
                 },
-                "model_type": {
-                    "expected_type": "EfficientNet"
-                },
-                "feature_extraction": {
+                "has_len": {
                     "expected": true
                 },
-                "feature_layer_freezing": {
+                "dataset_instance": {
+                    "check_type": "instance",
+                    "expected_class": "ISICDataset"
+                },
+                "img_transform_used": {
+                    "expected": true
+                },
+                "mask_transform_used": {
                     "expected": true
                 }
             },
             "hints": [
-                "Remember to use torchvision.models module to load pre-trained models",
-                "Set requires_grad=False for feature extraction layers",
-                "Ensure you're using a pre-trained model with pretrained=True or weights='IMAGENET1K_V1'"
+                "Make sure to implement both __getitem__ and __len__ methods in your custom dataset class",
+                "Your dataset class should accept image_dir, mask_dir, img_transform and mask_transform parameters",
+                "Remember to convert the image to RGB and the mask to grayscale",
+                "Apply img_transform to the image and mask_transform to the mask if provided"
             ]
         },
         "exercise_2": {
             "answers": {
-                "has_transformations": {
-                    "expected": true
+                "dataloader": {
+                    "check_type": "instance",
+                    "expected_class": "DataLoader"
                 },
-                "resize_transform": {
-                    "expected_size": [224, 224]
+                "mean_shape": {
+                    "expected": [3],
+                    "check_type": "shape"
                 },
-                "normalization_transform": {
-                    "mean": [0.485, 0.456, 0.406],
-                    "std": [0.229, 0.224, 0.225]
+                "std_shape": {
+                    "expected": [3],
+                    "check_type": "shape"
                 },
-                "augmentation_transform": {
-                    "has_random_transforms": true
+                "mean_range": {
+                    "expected": true,
+                    "check_type": "boolean"
+                },
+                "std_range": {
+                    "expected": true,
+                    "check_type": "boolean"
                 }
             },
             "hints": [
-                "Make sure to resize images to the input size expected by the pre-trained model (224x224)",
-                "Apply normalization with ImageNet statistics: mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]",
-                "Include data augmentation techniques like random rotation, flips, or color jitter for the training set",
-                "Create separate transforms for training (with augmentation) and validation/test (without augmentation)"
+                "Calculate channel_sum and channel_squared_sum across the dataset",
+                "Normalize by the total number of pixels (n_pixels)",
+                "The mean should be between 0 and 1 for normalized images",
+                "The std should be positive and less than 1"
             ]
         },
         "exercise_3": {
             "answers": {
-                "classifier_layers": {
-                    "expected": true,
-                    "has_dropout": true,
-                    "output_classes": true
+                "train_transforms": {
+                    "check_type": "instance",
+                    "expected_class": "Compose"
                 },
-                "optimizer_config": {
-                    "optimizer_type": "Adam",
-                    "learning_rate": {"min": 1e-5, "max": 1e-2}
+                "valid_transforms": {
+                    "check_type": "instance", 
+                    "expected_class": "Compose"
                 },
-                "loss_function": {
-                    "expected_type": "CrossEntropyLoss"
+                "has_resize": {
+                    "expected": true
+                },
+                "has_horizontal_flip": {
+                    "expected": true
+                },
+                "has_vertical_flip": {
+                    "expected": true
+                },
+                "has_rotation": {
+                    "expected": true
+                },
+                "has_color_jitter": {
+                    "expected": true
+                },
+                "has_normalize": {
+                    "expected": true
+                },
+                "has_to_tensor": {
+                    "expected": true
                 }
             },
             "hints": [
-                "Replace the classifier with a custom one that includes dropout for regularization",
-                "Make sure your classifier's output dimension matches the number of classes in your dataset",
-                "Use a smaller learning rate (around 1e-4) for fine-tuning compared to training from scratch",
-                "CrossEntropyLoss is appropriate for multi-class classification problems"
+                "Use albumentations.Compose to combine multiple transformations",
+                "Include albumentations.Resize to resize images to 64x64",
+                "Add flip and rotation augmentations for training data",
+                "Include albumentations.Normalize with the calculated mean and std",
+                "End with ToTensorV2 transformation to convert to PyTorch tensors"
             ]
         },
         "exercise_4": {
             "answers": {
-                "feature_extraction_accuracy": {
-                    "min_val": 0.7,
-                    "max_val": 1.0
+                "dataset_class": {
+                    "expected": "ISICDatasetAlbumentations",
+                    "check_type": "class"
                 },
-                "training_trend": {
+                "inherits_from_isic": {
                     "expected": true
                 },
-                "early_stopping": {
-                    "implemented": true
+                "has_getitem_override": {
+                    "expected": true
+                },
+                "uses_numpy": {
+                    "expected": true
+                },
+                "normalizes_mask": {
+                    "expected": true
+                },
+                "ensures_binary": {
+                    "expected": true
                 }
             },
             "hints": [
-                "Make sure your model is in evaluation mode (model.eval()) when computing accuracy",
-                "Training loss should generally decrease over time",
-                "Implement early stopping to prevent overfitting",
-                "Using feature extraction, you should be able to achieve at least 70% accuracy on the test set"
+                "Make your ISICDatasetAlbumentations class inherit from ISICDataset",
+                "Override the __getitem__ method to use albumentations",
+                "Convert PIL Images to numpy arrays before applying albumentations",
+                "Normalize mask values to be between 0 and 1",
+                "Ensure the mask is binary (0 or 1) using a threshold of 0.5"
             ]
         },
         "exercise_5": {
             "answers": {
-                "fine_tuning_implemented": {
-                    "expected": true
+                "train_dataset": {
+                    "check_type": "instance",
+                    "expected_class": "Subset"
                 },
-                "selective_unfreezing": {
-                    "expected": true
+                "valid_dataset": {
+                    "check_type": "instance",
+                    "expected_class": "Subset"
                 },
-                "fine_tuning_accuracy": {
-                    "min_val": 0.8,
-                    "max_val": 1.0
+                "train_dataloader": {
+                    "check_type": "instance",
+                    "expected_class": "DataLoader"
                 },
-                "confusion_matrix": {
+                "valid_dataloader": {
+                    "check_type": "instance",
+                    "expected_class": "DataLoader"
+                },
+                "train_split_ratio": {
+                    "expected": 0.8,
+                    "tolerance": 0.05
+                },
+                "batch_size_correct": {
                     "expected": true
                 }
             },
             "hints": [
-                "Unfreeze some of the later layers in the backbone for fine-tuning",
-                "Use an even smaller learning rate for fine-tuning compared to feature extraction",
-                "Fine-tuning should improve accuracy compared to pure feature extraction",
-                "Create a confusion matrix to visualize the classification results"
+                "Use torch.utils.data.random_split to split the dataset into training and validation sets",
+                "Use an 80/20 split for training and validation",
+                "Create DataLoader objects with batch_size=16",
+                "Set shuffle=True for the training DataLoader",
+                "Set shuffle=False for the validation DataLoader"
+            ]
+        },
+        "exercise_6": {
+            "answers": {
+                "double_conv_class": {
+                    "expected": "DoubleConv",
+                    "check_type": "class"
+                },
+                "has_forward": {
+                    "expected": true
+                },
+                "has_two_conv_layers": {
+                    "expected": true
+                },
+                "has_batch_norm": {
+                    "expected": true
+                },
+                "has_relu": {
+                    "expected": true
+                },
+                "uses_sequential": {
+                    "expected": true
+                }
+            },
+            "hints": [
+                "Create a DoubleConv class that inherits from torch.nn.Module",
+                "Use torch.nn.Sequential to combine the layers",
+                "Include two Conv2d layers with kernel_size=3 and padding=1",
+                "Add BatchNorm2d after each Conv2d layer",
+                "Use ReLU activation after each BatchNorm2d",
+                "Implement the forward method to process the input through the sequential layers"
+            ]
+        },
+        "exercise_7": {
+            "answers": {
+                "down_block_class": {
+                    "expected": "Down",
+                    "check_type": "class"
+                },
+                "has_maxpool": {
+                    "expected": true
+                },
+                "uses_doubleconv": {
+                    "expected": true
+                }
+            },
+            "hints": [
+                "Create a Down class that inherits from torch.nn.Module",
+                "Use MaxPool2d with kernel_size=2 for downsampling",
+                "Use the DoubleConv block after the MaxPool2d",
+                "Implement the forward method to process the input through the layers"
+            ]
+        },
+        "exercise_8": {
+            "answers": {
+                "up_block_class": {
+                    "expected": "Up",
+                    "check_type": "class"
+                },
+                "has_transpose_conv": {
+                    "expected": true
+                },
+                "uses_doubleconv": {
+                    "expected": true
+                },
+                "handles_padding": {
+                    "expected": true
+                },
+                "uses_concatenation": {
+                    "expected": true
+                }
+            },
+            "hints": [
+                "Create an Up class that inherits from torch.nn.Module",
+                "Use ConvTranspose2d with kernel_size=2 and stride=2 for upsampling",
+                "Handle feature map size differences using padding",
+                "Concatenate the upsampled features with the skip connection features",
+                "Use the DoubleConv block after concatenation"
+            ]
+        },
+        "exercise_9": {
+            "answers": {
+                "unet_class": {
+                    "expected": "UNet",
+                    "check_type": "class"
+                },
+                "has_encoder": {
+                    "expected": true
+                },
+                "has_decoder": {
+                    "expected": true
+                },
+                "has_skip_connections": {
+                    "expected": true
+                },
+                "has_final_conv": {
+                    "expected": true
+                },
+                "uses_sigmoid": {
+                    "expected": true
+                }
+            },
+            "hints": [
+                "Create a UNet class that inherits from torch.nn.Module",
+                "Define the encoder path with DoubleConv and Down blocks",
+                "Define the decoder path with Up blocks",
+                "Implement skip connections between encoder and decoder blocks",
+                "Add a final Conv2d layer with kernel_size=1 for output",
+                "Apply sigmoid activation to the output for binary segmentation"
+            ]
+        },
+        "exercise_10": {
+            "answers": {
+                "dice_loss_class": {
+                    "expected": "DiceLoss",
+                    "check_type": "class"
+                },
+                "has_smooth": {
+                    "expected": true
+                },
+                "uses_flattening": {
+                    "expected": true
+                },
+                "computes_intersection": {
+                    "expected": true
+                },
+                "returns_loss": {
+                    "expected": true
+                }
+            },
+            "hints": [
+                "Create a DiceLoss class that inherits from torch.nn.Module",
+                "Add a smoothing factor to prevent division by zero",
+                "Flatten the inputs using view(-1)",
+                "Calculate intersection as the dot product of predictions and targets",
+                "Calculate union as the sum of predictions and targets",
+                "Return 1 minus the Dice coefficient as the loss"
             ]
         }
     }
