@@ -114,9 +114,9 @@ def download_dataset(dataset_name: str, dest_path: str = None, extract: bool = F
     if extract:
         try:
             extract_path = dest_path / Path(url).stem
-            extract_files(f_path, extract_path, recursive=True,
+            extracted_path = extract_files(f_path, extract_path, recursive=True,
                          remove_compressed=remove_compressed)
-            f_path = extract_path
+            f_path = extracted_path
         except Exception as e:
             print(f'ERROR: Extraction failed - {e}')
 
@@ -124,7 +124,7 @@ def download_dataset(dataset_name: str, dest_path: str = None, extract: bool = F
 
 
 def extract_files(f_path: str, dest_path: str, recursive: bool = False, 
-                 remove_compressed: bool = False) -> None:
+                 remove_compressed: bool = False) -> Path:
     """
     Extract files from a compressed archive (zip, tar, tar.gz, tgz).
     
@@ -184,6 +184,10 @@ def extract_files(f_path: str, dest_path: str, recursive: bool = False,
         if remove_compressed and f_path.exists():
             f_path.unlink()
             print(f"Removed compressed file: {f_path}")
+        
+        extracted_path = dest_path / f_path.stem
+        if not extracted_path.exists():
+            extracted_path = dest_path
 
         # Recursively extract any archives in the extracted folder
         if recursive:
@@ -200,11 +204,14 @@ def extract_files(f_path: str, dest_path: str, recursive: bool = False,
                     is_archive = True
                 elif file.suffix == '.tgz':
                     is_archive = True
-                
+                 # Extract directly to the parent folder instead of creating a new subfolder
+                    
                 if is_archive:
                     print(f"Found nested archive: {file.name}")
-                    sub_dest = dest_path / file.stem
-                    extract_files(file, sub_dest, recursive=True,
-                                 remove_compressed=remove_compressed)
+                    extracted_path = extract_files(file, file.parent, recursive=True,
+                                remove_compressed=remove_compressed)
+        
+        return extracted_path
+        
     except Exception as e:
         print(f'ERROR: Extraction failed - {e}')

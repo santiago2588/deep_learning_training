@@ -122,26 +122,10 @@ def make_fig_pretty(
     ax: Axes,
     xlabel: str = "",
     ylabel: str = "",
-    zlabel: str = "",
-    ctab: bool = False,
     title: str = "",
     legend: bool = True,
-    legd_title: str = "",
-    legd_loc: str = "best",
-    legd_labels: Optional[List[str]] = None,
-    sharex: bool = False,
-    sharey: bool = False,
-    timestamp: bool = False,
-    xtick_fsize: int = 11,
-    ytick_fsize: int = 11,
-    xlabel_fsize: int = 11,
-    ylabel_fsize: int = 11,
-    title_fsize: int = 12,
     grid: bool = False,
-    tufte_style: bool = False,
-    background_color: Optional[str] = None,
-    range_frame: bool = False,
-    is_image: bool = False
+    **kwargs
 ) -> None:
     """
     Apply consistent formatting to a matplotlib figure with Tufte principles option.
@@ -150,27 +134,47 @@ def make_fig_pretty(
         ax: Matplotlib axis object
         xlabel: X-axis label
         ylabel: Y-axis label
-        zlabel: Z-axis label (for 3D plots)
-        ctab: Whether to add patterns to cross-tables
         title: Plot title
         legend: Whether to show legend
-        legd_title: Legend title
-        legd_loc: Legend location
-        legd_labels: Custom legend labels
-        sharex: Whether x-axis is shared
-        sharey: Whether y-axis is shared
-        timestamp: Whether to include timestamp
-        xtick_fsize: X-axis tick font size
-        ytick_fsize: Y-axis tick font size
-        xlabel_fsize: X-axis label font size
-        ylabel_fsize: Y-axis label font size
-        title_fsize: Title font size
         grid: Whether to show grid
-        tufte_style: Whether to apply Tufte-style minimalist formatting
-        background_color: Optional custom background color
-        range_frame: Whether to use a range frame instead of full axes (Tufte-style)
-        is_image: Whether the plot contains an image
+        **kwargs: Additional arguments including:
+            zlabel: Z-axis label (for 3D plots)
+            ctab: Whether to add patterns to cross-tables
+            legd_title: Legend title 
+            legd_loc: Legend location
+            legd_labels: Custom legend labels
+            sharex: Whether x-axis is shared
+            sharey: Whether y-axis is shared
+            timestamp: Whether to include timestamp
+            xtick_fsize: X-axis tick font size (default: 11)
+            ytick_fsize: Y-axis tick font size (default: 11)
+            xlabel_fsize: X-axis label font size (default: 11)
+            ylabel_fsize: Y-axis label font size (default: 11)
+            title_fsize: Title font size (default: 12)
+            tufte_style: Whether to apply Tufte-style formatting
+            background_color: Optional custom background color
+            range_frame: Whether to use range frame
+            is_image: Whether plot contains images
     """
+    # Extract optional parameters with defaults
+    zlabel = kwargs.get('zlabel', '')
+    ctab = kwargs.get('ctab', False)
+    legd_title = kwargs.get('legd_title', '')
+    legd_loc = kwargs.get('legd_loc', 'best')
+    legd_labels = kwargs.get('legd_labels', None)
+    sharex = kwargs.get('sharex', False)
+    sharey = kwargs.get('sharey', False)
+    timestamp = kwargs.get('timestamp', False)
+    xtick_fsize = kwargs.get('xtick_fsize', 11)
+    ytick_fsize = kwargs.get('ytick_fsize', 11)
+    xlabel_fsize = kwargs.get('xlabel_fsize', 11)
+    ylabel_fsize = kwargs.get('ylabel_fsize', 11)
+    title_fsize = kwargs.get('title_fsize', 12)
+    tufte_style = kwargs.get('tufte_style', False)
+    background_color = kwargs.get('background_color', None)
+    range_frame = kwargs.get('range_frame', False)
+    is_image = kwargs.get('is_image', False)
+
     is_3d = "3D" in str(type(ax.axes))
     
     # Load and configure fonts
@@ -183,25 +187,19 @@ def make_fig_pretty(
         
     # Set title and axis labels with special handling for images
     if is_image:
-        # For images, left-align title and make it more subtle
         if tufte_style:
             ax.set_title(title, fontproperties=fm, fontsize=title_fsize-1, 
                          color='#505050', loc='left', pad=8)
-            
-            # For images in Tufte style, remove all axes and ticks
             ax.axis('off')
         else:
             title_text = " ".join(title.upper())
             ax.set_title(title_text, fontproperties=fm, fontsize=title_fsize, 
                          loc='left', pad=5)
-            
-            # For regular image style, keep minimal axes
             ax.set_xticks([])
             ax.set_yticks([])
             for spine in ax.spines.values():
                 spine.set_visible(False)
         
-        # For images, we typically don't need axis labels
         if xlabel:
             ax.set_xlabel(xlabel if tufte_style else " ".join(xlabel.upper()),
                        fontproperties=fm, fontsize=xlabel_fsize)
@@ -209,40 +207,29 @@ def make_fig_pretty(
             ax.set_ylabel(ylabel if tufte_style else " ".join(ylabel.upper()),
                        fontproperties=fm, fontsize=ylabel_fsize)
     else:
-        # Standard formatting for regular plots
         if tufte_style:
-            # In Tufte style, title should be less prominent - smaller and not all caps
             ax.set_title(title, fontproperties=fm, fontsize=title_fsize-1, color='#505050')
             ax.set_xlabel(xlabel, fontproperties=fm, fontsize=xlabel_fsize, color='#505050')
             ax.set_ylabel(ylabel, fontproperties=fm, fontsize=ylabel_fsize, color='#505050')
-            
             if is_3d:
                 ax.set_zlabel(zlabel, fontproperties=fm, fontsize=11, color='#505050')
         else:
-            # Standard formatting
             ax.set_title(" ".join(title.upper()), fontproperties=fm, fontsize=title_fsize)
             ax.set_xlabel(" ".join(xlabel.upper()), fontproperties=fm, fontsize=xlabel_fsize)
             ax.set_ylabel(" ".join(ylabel.upper()), fontproperties=fm, fontsize=ylabel_fsize)
-            
             if is_3d:
                 ax.set_zlabel(" ".join(zlabel.upper()), fontproperties=fm, fontsize=11)
     
-    # Skip additional formatting for images if needed
     if is_image:
-        # Add a thin border around images if not in Tufte style
         if not tufte_style:
             for spine in ax.spines.values():
                 spine.set_visible(True)
                 spine.set_color('#cccccc')
                 spine.set_linewidth(0.5)
                 
-        # Apply any image-specific adjustments to figure layout
         fig = ax.get_figure()
         if fig:
-            # Tighter layout for images
             fig.tight_layout(pad=1.0 if tufte_style else 0.5)
-            
-        # Skip the rest of the formatting that's intended for data plots
         return
     
     # Format axis ticks for non-image plots
@@ -256,13 +243,9 @@ def make_fig_pretty(
     ylabels_fmt = [format_tick_label(label) for label in ylabels] if all(ylabels) else None
     format_spines(ax, ylabels_fmt, sharey, timestamp, tufte_style)
     
-    # Apply range frame (Tufte-style) if requested
     if tufte_style and range_frame and not is_3d:
-        # Get data range
         x_min, x_max = ax.get_xlim()
         y_min, y_max = ax.get_ylim()
-        
-        # Create minimal "range frame" - only show axes at the data range
         ax.spines['bottom'].set_visible(True)
         ax.spines['left'].set_visible(True)
         ax.spines['bottom'].set_bounds(x_min, x_max)
@@ -270,16 +253,10 @@ def make_fig_pretty(
         ax.spines['bottom'].set_linewidth(0.5)
         ax.spines['left'].set_linewidth(0.5)
     
-    # Handle cross-table patterns
     if ctab and "patches" in str(ax.get_children()):
-        # Get number of unique plots by counting legend entries
         handles, labels = ax.get_legend_handles_labels()
         n_plots = len(labels) if labels else 1
-        
-        # Count total bars
         n_bars = sum(1 for x in ax.get_children() if "Rectangle" in str(x)) - 1
-        
-        # Calculate elements per plot
         len_elems = n_bars // n_plots if n_plots > 0 else n_bars
         
         if len_elems > 0:
@@ -287,99 +264,66 @@ def make_fig_pretty(
             for bar, hatch in zip(ax.patches, hatches):
                 bar.set_hatch(hatch)
     
-    # Check if a legend already exists
     existing_legend = ax.get_legend()
     
-    # Add or format legend if requested
     if legend:
-        # If there's already a legend, format it
         if existing_legend is not None:
-            # Format existing legend
             existing_legend.set_title(legd_title.upper() if not tufte_style else legd_title)
             for text in existing_legend.get_texts():
                 text.set_fontproperties(fm)
                 text.set_fontsize(11)
                 if not tufte_style:
                     text.set_text(text.get_text().upper())
-            
             existing_legend.get_title().set_fontproperties(fm)
-            
-            # For Tufte style, make legend more subtle
             if tufte_style:
                 existing_legend.get_frame().set_facecolor('white')
                 existing_legend.get_frame().set_linewidth(0)
         else:
-            # Create new legend
             handles, labels = ax.get_legend_handles_labels()
             if handles:
                 if tufte_style:
                     legend_labels = legd_labels if legd_labels else labels
-                    _legend = ax.legend(
-                        handles,
-                        legend_labels,
-                        title=legd_title,
-                        prop=fm,
-                        fontsize=11,
-                        loc=legd_loc,
-                        frameon=False
-                    )
+                    _legend = ax.legend(handles, legend_labels, title=legd_title,
+                                    prop=fm, fontsize=11, loc=legd_loc, frameon=False)
                 else:
                     legend_labels = legd_labels if legd_labels else [x.upper() for x in labels]
-                    _legend = ax.legend(
-                        handles,
-                        legend_labels,
-                        title=legd_title.upper(),
-                        prop=fm,
-                        fontsize=11,
-                        loc=legd_loc
-                    )
+                    _legend = ax.legend(handles, legend_labels, title=legd_title.upper(),
+                                    prop=fm, fontsize=11, loc=legd_loc)
                 _legend.get_title().set_fontproperties(fm)
     
-    # Show grid if requested
     if grid:
         if tufte_style:
-            # Tufte prefers subtle, lighter grid lines
             ax.grid(color="#E0E0E0", linestyle=":", linewidth=0.3, alpha=0.9, which='major')
-            # Remove minor grid lines for cleaner look in Tufte style
             ax.minorticks_off()
         else:
             ax.grid(color="gray", linestyle="--", linewidth=0.5)
             
-    # Apply font to all text annotations in the plot
     for text_obj in ax.texts:
         text_obj.set_fontproperties(fm)
         if not tufte_style and hasattr(text_obj, 'get_text'):
             try:
-                # Try to uppercase if it's a regular text object
                 text = text_obj.get_text()
                 if not text.replace(".", "").replace("-", "").isdigit():
                     text_obj.set_text(text.upper())
             except (AttributeError, TypeError):
                 pass
     
-    # Find and format colorbar if it exists
     figure = ax.get_figure()
     for child in figure.get_children():
         if hasattr(child, 'ax') and hasattr(child, 'set_label'):
-            # This is likely a colorbar
             if hasattr(child, 'ax'):
                 colorbar_ax = child.ax
-                
-                # Format colorbar title
                 if hasattr(colorbar_ax, 'get_ylabel') and colorbar_ax.get_ylabel():
                     colorbar_ax.set_ylabel(
                         colorbar_ax.get_ylabel().upper() if not tufte_style else colorbar_ax.get_ylabel(),
                         fontproperties=fm
                     )
-                
-                # Format colorbar ticks
                 for label in colorbar_ax.get_yticklabels():
                     label.set_fontproperties(fm)
     
-    # Apply font to any other text elements in the figure
     for ax_obj in figure.get_axes():
-        # Format subplot titles if using plt.subplot with titles
         if hasattr(ax_obj, 'title') and ax_obj.title is not None:
             ax_obj.title.set_fontproperties(fm)
+            ax_obj.title.set_fontsize(title_fsize)
             if not tufte_style:
                 ax_obj.title.set_text(ax_obj.title.get_text().upper())
