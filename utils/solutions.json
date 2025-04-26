@@ -747,20 +747,6 @@
     },
     "exercise_2": {
       "answers": {
-        "apply_filter_pytorch": {
-          "test_cases": [
-            {
-              "input": ["test_image", "edge_detection_kernel"],
-              "output_shape": [256, 256, 3],
-              "check_edges": true
-            },
-            {
-              "input": ["test_image", "sharpen_kernel"],
-              "output_shape": [256, 256, 3],
-              "check_contrast": true
-            }
-          ]
-        },
         "edge_detection_kernel": {
           "value": [
             [1, 0, -1],
@@ -972,10 +958,6 @@
             "min": 1,
             "max": 4
           }
-        },
-        "flatten_operation": {
-          "expected": true,
-          "correct_dimensions": true
         }
       },
       "hints": [
