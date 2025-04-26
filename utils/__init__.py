@@ -14,7 +14,7 @@ import importlib
 import pkgutil
 
 # Import version
-from .__version__ import __version__
+from .__version__ import __version__, __version_full__, __commit__
 
 def import_all_modules(package_name):
     """Automatically import all modules and their public members."""
@@ -48,4 +48,4 @@ __all__ = list(dict.fromkeys(__all__))
 
 print('Faculty of Science and Engineering 🔬')
 print('\033[95mThe University of Manchester \033[0m')
-print(f'Invoking utils version: \033[92m{__version__}\033[0m')
+print(f'Invoking utils version: \033[92m{__version_full__}\033[0m')
