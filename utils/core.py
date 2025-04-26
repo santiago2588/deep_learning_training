@@ -1,5 +1,6 @@
 import torch
 import json
+import textwrap
 from pathlib import Path
 import inspect
 import pandas as pd
@@ -47,10 +48,16 @@ class QuizManager:
             print()
             
             for i, option in enumerate(quiz["options"]):
-                print(f"{chr(65 + i)}. {option}")
+                # Split options by newlines to make them more readable
+                option_lines = option.split('\n')
+                first_line = option_lines[0]
+                print(f"{chr(65 + i)}. {first_line}")
                 
-            print()
-            
+                # Print remaining lines with proper indentation
+                for line in option_lines[1:]:
+                    print(f"   {line}")
+                print()  # Extra spacing between options
+                
             # Get the answer from the user (wrapped in try-catch for interrupt handling)
             while True:
                 try:
@@ -72,9 +79,14 @@ class QuizManager:
             else:
                 print(f"\n❌ Incorrect. The correct answer is {correct_letter}.")
                 
-            # Display the explanation
+            # Display the explanation with better formatting
             print("\n📚 Explanation:")
-            print(quiz["explanation"])
+            
+            # Split explanation by newlines and print each line
+            wrapped_lines = textwrap.wrap(quiz["explanation"], width=80)
+            for line in wrapped_lines:
+                print(line)
+                
             print("-" * 80)
             
         except Exception as e:
