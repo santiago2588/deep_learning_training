@@ -130,6 +130,8 @@ def extract_files(f_path: str, dest_path: str, recursive: bool = False,
     
     This function handles multiple compression formats and can recursively
     extract nested archives. It shows a progress bar during extraction.
+    It prevents duplicate folder structures by detecting if the archive contains
+    a single root folder with the same name as the archive.
     
     Args:
         f_path (str or Path): Path to the compressed file
@@ -140,7 +142,7 @@ def extract_files(f_path: str, dest_path: str, recursive: bool = False,
                                           file after extraction. Default is False.
     
     Returns:
-        None
+        Path: Path to the extracted directory
     """
     # Convert paths to Path objects for consistent handling
     f_path = Path(f_path)
@@ -149,11 +151,15 @@ def extract_files(f_path: str, dest_path: str, recursive: bool = False,
     # Validate input paths
     if not f_path.exists():
         print(f'ERROR: File {f_path} does not exist')
-        return
+        return None
 
     if not dest_path.exists():
         dest_path.mkdir(parents=True, exist_ok=True)
-
+    
+    # Create a temporary extraction directory to prevent duplicate folders
+    temp_extract_dir = dest_path / f"_temp_{f_path.stem}"
+    temp_extract_dir.mkdir(exist_ok=True)
+    
     try:
         # Handle different archive types
         if f_path.suffix == '.tar':
@@ -170,12 +176,12 @@ def extract_files(f_path: str, dest_path: str, recursive: bool = False,
             members = f.namelist()
         else:
             print(f'ERROR: Unsupported file format: {f_path.suffix}')
-            return
+            return None
 
         # Extract files with a progress bar
         with tqdm(members, desc=f'Extracting {f_path.name}', dynamic_ncols=True) as pbar:
             for member in pbar:
-                f.extract(member, dest_path)
+                f.extract(member, temp_extract_dir)
                 pbar.update(0)  # Update is done automatically by tqdm iteration
 
         f.close()
@@ -185,9 +191,40 @@ def extract_files(f_path: str, dest_path: str, recursive: bool = False,
             f_path.unlink()
             print(f"Removed compressed file: {f_path}")
         
-        extracted_path = dest_path / f_path.stem
-        if not extracted_path.exists():
-            extracted_path = dest_path
+        # Check if there's a single root directory with the same name as the archive
+        items = list(temp_extract_dir.iterdir())
+        final_extract_path = dest_path
+        
+        # If there's a single item and it's a directory, we'll use its contents
+        if len(items) == 1 and items[0].is_dir():
+            root_dir = items[0]
+            # Move contents from temp_dir/single_dir/* to dest_path/
+            for item in root_dir.iterdir():
+                target_path = dest_path / item.name
+                if target_path.exists():
+                    if target_path.is_dir():
+                        # Merge directories
+                        for sub_item in item.iterdir():
+                            sub_target = target_path / sub_item.name
+                            if not sub_target.exists():
+                                sub_item.rename(sub_target)
+                    else:
+                        # Skip if file exists
+                        pass
+                else:
+                    # Move file or directory directly
+                    item.rename(target_path)
+        else:
+            # Move all contents from temp_dir/* to dest_path/
+            for item in items:
+                target_path = dest_path / item.name
+                if not target_path.exists():
+                    item.rename(target_path)
+        
+        # Clean up the temporary directory
+        if temp_extract_dir.exists():
+            import shutil
+            shutil.rmtree(temp_extract_dir, ignore_errors=True)
 
         # Recursively extract any archives in the extracted folder
         if recursive:
@@ -204,14 +241,16 @@ def extract_files(f_path: str, dest_path: str, recursive: bool = False,
                     is_archive = True
                 elif file.suffix == '.tgz':
                     is_archive = True
-                 # Extract directly to the parent folder instead of creating a new subfolder
                     
                 if is_archive:
                     print(f"Found nested archive: {file.name}")
-                    extracted_path = extract_files(file, file.parent, recursive=True,
+                    extract_files(file, file.parent, recursive=True,
                                 remove_compressed=remove_compressed)
         
-        return extracted_path
+        return dest_path
         
     except Exception as e:
         print(f'ERROR: Extraction failed - {e}')
+        import traceback
+        traceback.print_exc()
+        return None
