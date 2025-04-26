@@ -1,5 +1,6 @@
 from zmq import device
 import scipy
+import random
 import torch
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,7 +13,11 @@ from matplotlib.lines import Line2D
 
 
 __all__ = ["plot_loss", "plot_distribution",
-           "visualize_network_nx", "plot_model_predictions_SE02", "show_binary_segmentation_batch", "show_binary_segmentation_predictions", "compare_binary_segmentation_models"]
+           "visualize_network_nx", "plot_model_predictions_SE02",
+           "show_model_predictions",
+           "show_binary_segmentation_batch",
+           "show_binary_segmentation_predictions",
+           "compare_binary_segmentation_models"]
 
 
 def plot_loss(
@@ -431,6 +436,111 @@ def plot_model_predictions_SE02(
 
     return fig, ax
 
+
+def show_model_predictions(model, data_loader, class_names, num_images=12, title=None):
+    """
+    Visualize model predictions on a dataset.
+
+    Args:
+        model (torch.nn.Module): The trained model to evaluate
+        data_loader (DataLoader): DataLoader containing the dataset to visualize
+        class_names (list): List of class names
+        num_images (int, optional): Number of images to display. Defaults to 12.
+        title (str, optional): Title for the visualization. Defaults to None.
+
+    Returns:
+        None: Displays a matplotlib figure with predictions
+    """
+    # Set device for model evaluation
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = model.to(device)
+    model.eval()  # Set model to evaluation mode
+    
+    # Initialize figure for visualization
+    fig = plt.figure(figsize=(15, 10))
+    
+    # Collect predictions on a larger batch to get accuracy statistics
+    all_samples = []
+    total_correct = 0
+    total_samples = 0
+    
+    with torch.no_grad():
+        for i, (inputs, labels) in enumerate(data_loader):
+            inputs = inputs.to(device)
+            labels = labels.to(device)
+            
+            outputs = model(inputs)
+            _, preds = torch.max(outputs, 1)
+            
+            # Track overall accuracy
+            batch_correct = (preds == labels).sum().item()
+            total_correct += batch_correct
+            total_samples += labels.size(0)
+            
+            # Collect samples for display
+            for j in range(inputs.size(0)):
+                is_correct = preds[j] == labels[j]
+                
+                # Move tensors to CPU for numpy conversion
+                sample = {
+                    'image': inputs[j].cpu().permute(1, 2, 0).numpy(),
+                    'pred': preds[j].cpu().item(),
+                    'true': labels[j].cpu().item(),
+                    'is_correct': is_correct
+                }
+                
+                all_samples.append(sample)
+                
+            if len(all_samples) >= num_images * 3:  # Collect more than we need
+                break
+    
+    # Get overall accuracy
+    overall_accuracy = total_correct / total_samples if total_samples > 0 else 0
+    
+    # Randomly select samples for display
+    if len(all_samples) > num_images:
+        display_samples = random.sample(all_samples, num_images)
+    else:
+        display_samples = all_samples
+    
+    # Plot the samples
+    for i, sample in enumerate(display_samples):
+        ax = fig.add_subplot(3, 4, i + 1)
+        
+        # Display image (clipping to [0,1] range for proper display)
+        img_display = np.clip(sample['image'], 0, 1)
+        ax.imshow(img_display)
+        
+        pred_class = class_names[sample['pred']]
+        true_class = class_names[sample['true']]
+        
+        title_text = f'Pred: {pred_class}\nTrue: {true_class}'
+        title_color = 'green' if sample['is_correct'] else 'red'
+        
+        # Use make_fig_pretty for consistent styling
+        make_fig_pretty(
+            ax=ax,
+            title=title_text,
+            title_color=title_color,
+            title_fsize=11,
+            grid=False,
+            is_image=True
+        )
+    
+    if title:
+        fig_title = f"{title} - Overall Accuracy: {overall_accuracy:.1%}"
+        plt.suptitle(fig_title, fontsize=16)
+    # else:
+    #     fig_title = f"Model Predictions - Overall Accuracy: {overall_accuracy:.1%}"
+    
+
+    plt.tight_layout()
+    plt.subplots_adjust(top=0.9)
+    plt.show()
+    
+    # Print overall statistics
+    correct_count = sum(1 for s in display_samples if s['is_correct'])
+    print(f"Displayed samples: {correct_count}/{num_images} correct ({correct_count/num_images:.1%})")
 
 def show_binary_segmentation_batch(dl: torch.utils.data.DataLoader, n_images: int = 10, mean: torch.Tensor = None, std: torch.Tensor = None):
     """
