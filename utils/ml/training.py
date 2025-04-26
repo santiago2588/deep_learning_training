@@ -12,37 +12,31 @@ def train_model(
     **kwargs: Dict[str, Any]
 ) -> torch.nn.Module:
     """
-    Train a PyTorch model with flexible validation options.
-
+    Train a PyTorch model with the given criterion and optimizer.
+    
+    This function handles the common training loop pattern including:
+    - Epoch iteration with progress bars
+    - Training and validation steps
+    - Loss tracking and early stopping
+    - Learning rate scheduling
+    - Model checkpointing
+    
     Args:
-        model: The model to train
-        criterion: Loss function
-        optimiser: Optimizer
-        **kwargs: Additional arguments
-            Training data (one of):
-            - train_loader: DataLoader for training data
-            OR
-            - train_inputs: Training input tensor
-            - train_targets: Training target tensor
-            
-            Optional validation data:
-            - val_loader: DataLoader for validation data
-            OR
-            - val_inputs: Validation input tensor
-            - val_targets: Validation target tensor
-            
-            Other optional parameters:
-            - batch_size: Batch size for tensor inputs (default: 32)
-            - num_epochs (int): Number of epochs (default: 10)
-            - device (str): Device to use (default: 'cuda' if available else 'cpu')
-            - early_stopping (bool): Whether to use early stopping (default: False)
-            - patience (int): Epochs with no improvement before stopping (default: 5)
-            - tolerance (float): Minimum change in validation loss to qualify as improvement (default: 1e-4)
-            - save_path (str): Path to save best model (default: None)
-            - verbose (bool): Whether to show progress bars (default: True)
-
+        model: PyTorch model to train
+        criterion: Loss function to optimize
+        optimiser: Optimizer to use for training
+        **kwargs: Additional keyword arguments including:
+            train_dataloader: DataLoader for training data
+            val_dataloader: Optional DataLoader for validation data
+            device: Device to use for training ('cpu' or 'cuda')
+            epochs: Number of epochs to train for
+            verbose: Whether to display progress bars and logs
+            early_stopping_patience: Number of epochs to wait before stopping if validation loss doesn't improve
+            scheduler: Optional learning rate scheduler
+            checkpoint_path: Optional path to save model checkpoints
+    
     Returns:
-        torch.nn.Module: The trained model
+        torch.nn.Module: Trained PyTorch model
     """
     # Extract configuration from kwargs with defaults
     config = {

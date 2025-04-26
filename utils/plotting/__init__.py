@@ -1,3 +1,23 @@
+"""
+Plotting utilities for the UoM Deep Learning Workshop.
+
+This module provides various plotting functions and utilities for visualizing
+machine learning concepts, data, and results, including:
+
+- Loss and accuracy curve visualization
+- Network architecture visualization
+- Interactive visualizations for neural network concepts
+- Distribution plots 
+- Custom formatting and styling utilities
+- Matplotlib font management and configuration
+
+Key Components:
+- plots: Core plotting functions for visualizing model performance and architectures
+- formatting: Utilities for consistent and aesthetically pleasing plot styling
+- fonts: Custom font loading and management
+- interactive: Interactive widgets and visualizations for educational purposes
+"""
+
 __all__ = []
 
 from .fonts import *

@@ -1,3 +1,11 @@
+"""
+Font management utilities for plotting in the UoM Deep Learning Workshop.
+
+This module provides functions for downloading, managing and applying
+consistent fonts across all visualizations in the workshop materials.
+It handles temporary font file management and cleanup automatically.
+"""
+
 from tempfile import NamedTemporaryFile
 import urllib3
 import matplotlib.font_manager as fm
@@ -15,7 +23,12 @@ FONTS_URLS = {
 _temp_files = []
 
 def cleanup_temp_files():
-    """Delete all temporary font files at exit."""
+    """
+    Delete all temporary font files at exit.
+    
+    This function is registered with atexit to ensure proper cleanup
+    of downloaded font files when the Python interpreter exits.
+    """
     for file_path in _temp_files:
         try:
             if os.path.exists(file_path):
@@ -24,6 +37,23 @@ def cleanup_temp_files():
             pass
 
 def load_font(location=FONTS_URLS["Share Tech"]):
+    """
+    Download and load a custom font for matplotlib visualizations.
+    
+    This function handles downloading, caching, and loading fonts for
+    consistent typography in all workshop visualizations. It attempts
+    to reuse previously downloaded fonts when possible.
+    
+    Args:
+        location (str): URL of the font to download, defaults to Share Tech
+    
+    Returns:
+        FontProperties: A matplotlib FontProperties object configured with the loaded font
+        
+    Note:
+        Downloaded fonts are stored in temporary files that are automatically
+        removed when the Python interpreter exits.
+    """
     font_url = location + "?raw=true"
     
     # Check if we already have this font downloaded

@@ -1,3 +1,15 @@
+"""
+Utilities for the University of Manchester Faculty of Science and Engineering Deep Learning Workshop.
+
+This package provides various utility functions and classes for the workshop, including:
+- Data handling utilities for datasets and loaders
+- Machine learning utilities for training and evaluation
+- Plotting utilities for visualizing data and results
+- Core functions for project management and exercise validation
+
+The package automatically imports all submodules and their public members.
+"""
+
 import importlib
 import pkgutil
 

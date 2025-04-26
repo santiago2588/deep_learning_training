@@ -1,3 +1,12 @@
+"""
+Machine learning utilities for the UoM Deep Learning Workshop.
+
+This module provides functions for:
+- Data scaling and normalization
+- Model training and optimization
+- Evaluation metrics and performance analysis
+"""
+
 __all__ = []
 
 from .scaling import *

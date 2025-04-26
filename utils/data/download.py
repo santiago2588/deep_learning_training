@@ -29,6 +29,10 @@ def download_dataset(dataset_name: str, dest_path: str = None, extract: bool = F
     
     Returns:
         Path: Path to the downloaded dataset file or extracted directory
+        
+    Raises:
+        ValueError: If the requested dataset is not found in datasets.json
+        Exception: If download or extraction fails
     """
     # Load the dataset metadata from the JSON configuration file
     project_root = find_project_root()
@@ -143,6 +147,10 @@ def extract_files(f_path: str, dest_path: str, recursive: bool = False,
     
     Returns:
         Path: Path to the extracted directory
+        
+    Raises:
+        FileNotFoundError: If the compressed file does not exist
+        Exception: If extraction fails
     """
     # Convert paths to Path objects for consistent handling
     f_path = Path(f_path)

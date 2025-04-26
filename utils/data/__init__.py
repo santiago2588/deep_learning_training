@@ -5,6 +5,10 @@ This module provides functions and utilities for:
 1. Downloading datasets from various sources
 2. Extracting and processing datasets
 3. Working with specific datasets like UW-Madison GI Tract segmentation
+
+Key components:
+- download: Functions for downloading and extracting datasets
+- uwmgi: Utilities for processing the UW-Madison GI Tract image segmentation dataset
 """
 
 __all__ = []
