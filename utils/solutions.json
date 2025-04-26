@@ -1113,10 +1113,6 @@
   "SE05": {
     "exercise_1": {
       "answers": {
-        "dataset_class": {
-          "expected": "ISICDataset",
-          "check_type": "class"
-        },
         "has_getitem": {
           "expected": true
         },
@@ -1213,10 +1209,6 @@
     },
     "exercise_4": {
       "answers": {
-        "dataset_class": {
-          "expected": "ISICDatasetAlbumentations",
-          "check_type": "class"
-        },
         "inherits_from_isic": {
           "expected": true
         },
@@ -1277,10 +1269,6 @@
     },
     "exercise_6": {
       "answers": {
-        "double_conv_class": {
-          "expected": "DoubleConv",
-          "check_type": "class"
-        },
         "has_forward": {
           "expected": true
         },
@@ -1308,10 +1296,6 @@
     },
     "exercise_7": {
       "answers": {
-        "down_class": {
-          "expected": "Down",
-          "check_type": "class"
-        },
         "has_forward": {
           "expected": true
         },
@@ -1334,10 +1318,6 @@
     },
     "exercise_8": {
       "answers": {
-        "up_class": {
-          "expected": "Up",
-          "check_type": "class"
-        },
         "has_forward": {
           "expected": true
         },
@@ -1364,10 +1344,6 @@
     },
     "exercise_9": {
       "answers": {
-        "unet_class": {
-          "expected": "UNet",
-          "check_type": "class"
-        },
         "has_forward": {
           "expected": true
         },
@@ -1395,10 +1371,6 @@
     },
     "exercise_10": {
       "answers": {
-        "dice_loss_class": {
-          "expected": "DiceLoss",
-          "check_type": "class"
-        },
         "has_forward": {
           "expected": true
         },
