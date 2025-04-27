@@ -70,7 +70,7 @@ deactivate
 Install the necessary packages after activating your virtual environment:
 
 ```bash
-pip install matplotlib numpy pandas scikit-learn jupyter ipywidgets urllib3 requests tqdm 
+pip install matplotlib numpy pandas scikit-learn jupyter ipywidgets urllib3 requests tqdm albumentations networkx scipy
 ```
 
 For GPU support (NVIDIA GPUs only):
