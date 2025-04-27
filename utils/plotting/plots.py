@@ -1,4 +1,3 @@
-from zmq import device
 import scipy
 import random
 import torch
