@@ -7,7 +7,57 @@ from typing import Callable, Optional, Dict, Any, Union, Tuple
 
 from .plots import make_fig_pretty
 
-__all__ = ["create_interactive_neuron_visualizer", "se04_visualize_transformations"]
+__all__ = ["create_interactive_neuron_visualizer", "se04_visualize_transformations", "wake_cylinder"]
+
+def wake_cylinder(X_star:np.array, u_star:np.array, p_star:np.array, time:np.array):
+    
+    # Reshape grid
+    x_unique = np.unique(X_star[:,0])
+    y_unique = np.unique(X_star[:,1])
+    Nx, Ny = len(x_unique), len(y_unique)
+
+    assert Nx*Ny == X_star.shape[0], "Grid reshaping failed"
+
+    x = X_star[:,0].reshape(Ny, Nx)
+    y = X_star[:,1].reshape(Ny, Nx)
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+
+    cyl_rad = 0.1
+    cyl_center = (0.0, 0.0)
+
+    def refresh_plot(ix):
+        ax.clear()
+
+        u = u_star[:,0,ix].reshape(Ny, Nx)
+        v = u_star[:,1,ix].reshape(Ny, Nx)
+        p = p_star[:,ix].reshape(Ny, Nx)
+
+        ax.contourf(x, y, p, levels=20, cmap='viridis')
+        ax.streamplot(x, y, u, v, color='white', density=1.5)
+
+        circle = plt.Circle(cyl_center, cyl_rad, color='gray', alpha=0.6)
+        ax.add_patch(circle)
+
+        make_fig_pretty(
+            ax=ax,
+            title=f"Time: {time[ix,0]:.2f} s",
+            xlabel="X",
+            ylabel="Y",
+            xlim=(-10, 10),
+            ylim=(-3, 3),
+            legend=False,
+            grid=False
+        )
+
+        fig.canvas.draw()
+        fig.canvas.flush_events()
+        plt.show()
+
+    slider = widgets.IntSlider(0,0, u_star.shape[2]-1, step=1, description='Time Step')
+    widgets.interact(refresh_plot, ix=slider)
+    
+
 
 def _update_plot(
     w: float, 

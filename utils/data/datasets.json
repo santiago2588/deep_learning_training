@@ -11,6 +11,15 @@
         },
         "usage": "These datasets can be downloaded using the download_dataset function"
     },
+    "// PHYSICS DATASETS": {},
+    "cylinder": {
+        "url": "https://github.com/maziarraissi/PINNs/raw/refs/heads/master/main/Data/cylinder_nektar_wake.mat",
+        "description": "Cylinder dataset for predicting the drag coefficient of a cylinder in a flow field",
+        "website": "https://arxiv.org/pdf/1711.10566.pdf",
+        "authors": ["Maziar Raissi1", "Paris Perdikaris", "George Em Karniadakis"],
+        "year": 2017,
+        "category": "PINNs"
+    },
     
     "// IMAGE SEGMENTATION DATASETS": {},
     "skin lesions test": {
