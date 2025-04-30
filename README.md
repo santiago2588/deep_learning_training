@@ -113,7 +113,7 @@ pip install torch torchvision torchaudio
 
 ### Session 3: Training Neural Networks
 - PyTorch workflow for training models
-- Working with the ARKOMA robotics dataset
+- Working with the ARKOMA robotics dataset / PDE with Physics Informed Neural Networks
 - Data preparation and normalization
 - Activation functions and their purposes
 - Model architecture design
