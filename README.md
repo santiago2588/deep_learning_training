@@ -91,7 +91,7 @@ pip install torch torchvision torchaudio
 
 ## Workshop Schedule and Content ⏰
 
-### Session 1: Introduction to PyTorch
+### Session 1: Introduction to PyTorch (~0.5 hours)
 - PyTorch basics and tensors
 - Creating and manipulating tensors
 - Indexing and slicing tensors
@@ -102,7 +102,7 @@ pip install torch torchvision torchaudio
 - Working with data in PyTorch
 - Using GPUs for acceleration
 
-### Session 2: Artificial Neural Networks
+### Session 2: Artificial Neural Networks (~1 hour)
 - Understanding neurons and perceptrons
 - Forward and backward pass
 - Neural network components
@@ -111,7 +111,7 @@ pip install torch torchvision torchaudio
 - Training neural networks
 - Evaluation and prediction
 
-### Session 3: Training Neural Networks
+### Session 3: Training Neural Networks (~1.5 hours)
 - PyTorch workflow for training models
 - Working with the ARKOMA robotics dataset
 - Data preparation and normalization
@@ -123,7 +123,7 @@ pip install torch torchvision torchaudio
 - Handling overfitting and early stopping
 - Model evaluation techniques
 
-### Session 4: Convolutional Neural Networks
+### Session 4: Convolutional Neural Networks (~1.5 hours)
 - CNN fundamentals and operations
 - Convolution basics and filter design
 - Implementing custom filters
@@ -135,7 +135,7 @@ pip install torch torchvision torchaudio
 - CNN architectures (SimpleNet and TinyVGG)
 - Training and evaluating CNN models
 
-### Session 5: Transfer Learning
+### Session 5: Transfer Learning (~1.5 hours)
 - Transfer learning fundamentals
 - Medical image segmentation with ISIC dataset
 - Data preparation for segmentation tasks
