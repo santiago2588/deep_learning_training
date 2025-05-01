@@ -2,46 +2,132 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 import ipywidgets as widgets
-from ipywidgets import FloatSlider, interact, interactive, Layout,interactive_output
+from ipywidgets import FloatSlider, interact, interactive, Layout, interactive_output
 from typing import Callable, Optional, Dict, Any, Union, Tuple
 
-from .plots import make_fig_pretty
+from .plots import make_fig_pretty, load_font
 
-__all__ = ["create_interactive_neuron_visualizer", "se04_visualize_transformations", "wake_cylinder"]
+__all__ = ["create_interactive_neuron_visualizer",
+           "se04_visualize_transformations",
+           "wake_cylinder",
+           "visualize_flow_comparison"]
 
-def wake_cylinder(X_star:np.array, u_star:np.array, p_star:np.array, time:np.array):
-    
+
+def visualize_flow_comparison(x_star, u_true, v_true, p_true, u_pred, v_pred, p_pred, time, figsize=(16, 6)):
+    """
+    Visualize the comparison between ground truth and predicted flow fields.
+
+    Parameters:
+    -----------
+    x_star : np.ndarray
+        Spatial coordinates of shape (N, 2)
+    u_true, v_true : np.ndarray
+        True velocity components of shape (N, T)
+    p_true : np.ndarray
+        True pressure field of shape (N, T)
+    u_pred, v_pred : np.ndarray
+        Predicted velocity components of shape (N, T)
+    p_pred : np.ndarray
+        Predicted pressure field of shape (N, T)
+    time : np.ndarray
+        Time points of shape (T, 1)
+    figsize : tuple, optional
+        Figure size (width, height)
+
+    Returns:
+    --------
+    fig : matplotlib.figure.Figure
+        Figure object
+    axes : tuple
+        Tuple containing the two axis objects
+    """
     # Reshape grid
-    x_unique = np.unique(X_star[:,0])
-    y_unique = np.unique(X_star[:,1])
+    x_unique = np.unique(x_star[:, 0])
+    y_unique = np.unique(x_star[:, 1])
     Nx, Ny = len(x_unique), len(y_unique)
 
-    assert Nx*Ny == X_star.shape[0], "Grid reshaping failed"
+    x = x_star[:, 0].reshape(Ny, Nx)
+    y = x_star[:, 1].reshape(Ny, Nx)
 
-    x = X_star[:,0].reshape(Ny, Nx)
-    y = X_star[:,1].reshape(Ny, Nx)
+    # Create figure with two subplots
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=figsize)
 
-    fig, ax = plt.subplots(figsize=(8, 6))
+    # Create initial colorbars
+    im1 = ax1.imshow(np.zeros((Ny, Nx)), extent=[x_unique.min(), x_unique.max(),
+                                                 y_unique.min(), y_unique.max()], origin='lower', cmap='viridis', aspect='auto')
+    im2 = ax2.imshow(np.zeros((Ny, Nx)), extent=[x_unique.min(), x_unique.max(),
+                                                 y_unique.min(), y_unique.max()], origin='lower', cmap='viridis', aspect='auto')
 
-    cyl_rad = 0.1
-    cyl_center = (0.0, 0.0)
+    # Create colorbars with font formatting
+    fm = load_font()
+    cbar1 = plt.colorbar(im1, ax=ax1)
+    cbar2 = plt.colorbar(im2, ax=ax2)
+    
+    # Set colorbar labels with custom font
+    cbar1.set_label('PRESSURE', fontproperties=fm)
+    cbar2.set_label('PRESSURE', fontproperties=fm)
+
+    # Apply font to colorbar tick labels
+    for cbar in [cbar1, cbar2]:
+        cbar.ax.tick_params(labelsize=11)
+        for label in cbar.ax.get_yticklabels():
+            label.set_fontproperties(fm)
 
     def refresh_plot(ix):
-        ax.clear()
+        # Clear previous plots
+        for ax in [ax1, ax2]:
+            for artist in ax.lines:
+                artist.remove()
+            for collection in ax.collections:
+                collection.remove()
+            for patch in ax.patches:
+                patch.remove()
 
-        u = u_star[:,0,ix].reshape(Ny, Nx)
-        v = u_star[:,1,ix].reshape(Ny, Nx)
-        p = p_star[:,ix].reshape(Ny, Nx)
+        # Reshape current timestep data
+        u_t = u_true[:, ix].reshape(Ny, Nx)
+        v_t = v_true[:, ix].reshape(Ny, Nx)
+        p_t = p_true[:, ix].reshape(Ny, Nx)
 
-        ax.contourf(x, y, p, levels=20, cmap='viridis')
-        ax.streamplot(x, y, u, v, color='white', density=1.5)
+        u_p = u_pred[:, ix].reshape(Ny, Nx)
+        v_p = v_pred[:, ix].reshape(Ny, Nx)
+        p_p = p_pred[:, ix].reshape(Ny, Nx)
 
-        circle = plt.Circle(cyl_center, cyl_rad, color='gray', alpha=0.6)
-        ax.add_patch(circle)
+        # Update pressure fields
+        im1.set_array(p_t)
+        im2.set_array(p_p)
+
+        # Update color scale        
+        im1.set_clim(p_t.min(), p_t.max())
+        im2.set_clim(p_p.min(), p_p.max())
+
+        # Add streamplots
+        ax1.streamplot(x, y, u_t, v_t, color='white', density=1.5)
+        ax2.streamplot(x, y, u_p, v_p, color='white', density=1.5)
+
+        # Add circles for cylinder
+        circle1 = plt.Circle((0, 0), 0.1, color='gray', alpha=0.6)
+        circle2 = plt.Circle((0, 0), 0.1, color='gray', alpha=0.6)
+        ax1.add_patch(circle1)
+        ax2.add_patch(circle2)
+
+        # Update titles
+        t_val = time[ix, 0]
+        ax1.set_title(f"Ground Truth (t = {t_val:.2f}s)")
+        ax2.set_title(f"PINN Prediction (t = {t_val:.2f}s)")
 
         make_fig_pretty(
-            ax=ax,
-            title=f"Time: {time[ix,0]:.2f} s",
+            ax=ax1,
+            title="Ground Truth",
+            xlabel="X",
+            ylabel="Y",
+            xlim=(-10, 10),
+            ylim=(-3, 3),
+            legend=False,
+            grid=False
+        )
+        make_fig_pretty(
+            ax=ax2,
+            title="PINN Prediction",
             xlabel="X",
             ylabel="Y",
             xlim=(-10, 10),
@@ -50,30 +136,120 @@ def wake_cylinder(X_star:np.array, u_star:np.array, p_star:np.array, time:np.arr
             grid=False
         )
 
-        fig.canvas.draw()
-        fig.canvas.flush_events()
-        plt.show()
+        fig.canvas.draw_idle()
 
-    slider = widgets.IntSlider(0,0, u_star.shape[2]-1, step=1, description='Time Step')
+    slider = widgets.IntSlider(0, 0, u_true.shape[1]-1,
+                               step=1, description='Time Step')
     widgets.interact(refresh_plot, ix=slider)
-    
 
+    return fig, (ax1, ax2)
+
+
+def wake_cylinder(X_star: np.array, u_star: np.array, p_star: np.array, time: np.array, figsize=(8, 6)):
+    """
+    Visualize the wake behind a cylinder using imshow for pressure field and streamplot for velocity.
+    
+    Parameters:
+    -----------
+    X_star : np.ndarray
+        Spatial coordinates of shape (N, 2)
+    u_star : np.ndarray
+        Velocity components of shape (N, 2, T)
+    p_star : np.ndarray
+        Pressure field of shape (N, T)
+    time : np.ndarray
+        Time points of shape (T, 1)
+    figsize : tuple, optional
+        Figure size (width, height)
+    """
+    # Reshape grid
+    x_unique = np.unique(X_star[:, 0])
+    y_unique = np.unique(X_star[:, 1])
+    Nx, Ny = len(x_unique), len(y_unique)
+
+    assert Nx*Ny == X_star.shape[0], "Grid reshaping failed"
+
+    x = X_star[:, 0].reshape(Ny, Nx)
+    y = X_star[:, 1].reshape(Ny, Nx)
+
+    # Create figure
+    fig, ax = plt.subplots(figsize=figsize)
+
+    # Create initial colorbar
+    im = ax.imshow(np.zeros((Ny, Nx)), extent=[x_unique.min(), x_unique.max(),
+                                              y_unique.min(), y_unique.max()], 
+                   origin='lower', cmap='viridis', aspect='auto')
+    
+    # Add colorbar with font formatting
+    fm = load_font()
+    cbar = plt.colorbar(im, ax=ax)
+    cbar.set_label('PRESSURE', fontproperties=fm)
+    
+    # Apply font to colorbar tick labels
+    cbar.ax.tick_params(labelsize=11)
+    for label in cbar.ax.get_yticklabels():
+        label.set_fontproperties(fm)
+
+    def refresh_plot(ix):
+        # Clear previous streamplot
+        for artist in ax.lines:
+            artist.remove()
+        for collection in ax.collections:
+            collection.remove()
+        for patch in ax.patches:
+            patch.remove()
+
+        # Reshape current timestep data
+        u = u_star[:, 0, ix].reshape(Ny, Nx)
+        v = u_star[:, 1, ix].reshape(Ny, Nx)
+        p = p_star[:, ix].reshape(Ny, Nx)
+
+        # Update pressure field
+        im.set_array(p)
+        im.set_clim(p.min(), p.max())
+
+        # Add streamplot
+        ax.streamplot(x, y, u, v, color='white', density=1.5)
+
+        # Add cylinder
+        circle = plt.Circle((0, 0), 0.1, color='gray', alpha=0.6)
+        ax.add_patch(circle)
+
+        # Update title and make plot pretty
+        make_fig_pretty(
+            ax=ax,
+            title=f"Time: {time[ix, 0]:.2f} s",
+            xlabel="X",
+            ylabel="Y",
+            xlim=(-10, 10),
+            ylim=(-3, 3),
+            legend=False,
+            grid=False
+        )
+
+        fig.canvas.draw_idle()
+
+    slider = widgets.IntSlider(
+        0, 0, u_star.shape[2]-1, step=1, description='Time Step')
+    widgets.interact(refresh_plot, ix=slider)
+
+    return fig, ax
 
 def _update_plot(
-    w: float, 
-    b: float, 
-    X: torch.Tensor, 
-    y: torch.Tensor, 
-    X_mean: float, 
-    X_std: float, 
-    challenger_temp: float, 
-    neuron_class: type, 
+    w: float,
+    b: float,
+    X: torch.Tensor,
+    y: torch.Tensor,
+    X_mean: float,
+    X_std: float,
+    challenger_temp: float,
+    neuron_class: type,
     loss_function: Callable,
     out: widgets.Output
 ) -> None:
     """
     Internal function to update the visualization plot based on slider values.
-    
+
     Args:
         w: Weight parameter value
         b: Bias parameter value
@@ -88,51 +264,56 @@ def _update_plot(
     """
     with out:
         out.clear_output()
-        
+
         # Create a neuron with the specified parameters
         custom_model = neuron_class(n_features=1)
         with torch.no_grad():
             # Set the weights and bias to the specified values
             custom_model.weights.copy_(torch.tensor([w]))
             custom_model.bias.copy_(torch.tensor(b))
-        
+
         # Calculate predictions
         predictions = torch.zeros_like(y)
         X_normalized = X  # Assuming X is already normalized
-        
+
         for i in range(len(X_normalized)):
             predictions[i] = custom_model(X_normalized[i])
-        
+
         # Calculate loss
         loss = loss_function(predictions, y)
-        
+
         # Convert tensors to numpy for plotting
         temperatures = X.numpy().flatten() * X_std + X_mean  # De-normalize for plotting
         actual = y.numpy().flatten()
-        
+
         # Plot the results
         fig, ax = plt.subplots(figsize=(10, 5))
-        
+
         # Plot data points
         ax.scatter(temperatures, actual, color='None', edgecolor='k',
-                    s=100, alpha=0.7, label='Actual Data')
-        
+                   s=100, alpha=0.7, label='Actual Data')
+
         # Plot model predictions
-        temp_range = np.linspace(min(temperatures) - 2, max(temperatures) + 2, 100)
+        temp_range = np.linspace(
+            min(temperatures) - 2, max(temperatures) + 2, 100)
         temp_range_normalized = (temp_range - X_mean) / X_std
-        smooth_preds = np.array([custom_model(torch.tensor([t]).float()).item() for t in temp_range_normalized])
-        ax.plot(temp_range, smooth_preds, 'orange', linewidth=3, label='Model Prediction')
-        
+        smooth_preds = np.array(
+            [custom_model(torch.tensor([t]).float()).item() for t in temp_range_normalized])
+        ax.plot(temp_range, smooth_preds, 'orange',
+                linewidth=3, label='Model Prediction')
+
         # Add reference lines
         ax.axhline(y=0.5, color='gray', linestyle='--', alpha=0.7)
         ax.axvline(x=challenger_temp, color='black', linestyle='--', alpha=0.7)
-        ax.text(challenger_temp+0.5, 0.8, f'Challenger Launch: {challenger_temp:.1f}°C', rotation=90)
-        
+        ax.text(challenger_temp+0.5, 0.8,
+                f'Challenger Launch: {challenger_temp:.1f}°C', rotation=90)
+
         # Calculate error visually
         for i, (temp, true_val, pred_val) in enumerate(zip(temperatures, actual, predictions.detach().numpy())):
             if abs(true_val - pred_val.item()) > 0.05:  # Only show significant errors
-                ax.plot([temp, temp], [true_val, pred_val.item()], 'b-', alpha=0.3)
-        
+                ax.plot([temp, temp], [true_val, pred_val.item()],
+                        'b-', alpha=0.3)
+
         make_fig_pretty(
             ax=ax,
             title=f"O-Ring Failure Model (Loss: {loss.item():.4f})",
@@ -142,24 +323,25 @@ def _update_plot(
             legd_loc='upper right',
             grid=True
         )
-        
+
         plt.tight_layout()
         plt.show()
 
+
 def _train_model_callback(
-    b: widgets.Button, 
-    w_slider: widgets.FloatSlider, 
+    b: widgets.Button,
+    w_slider: widgets.FloatSlider,
     b_slider: widgets.FloatSlider,
-    X: torch.Tensor, 
-    y: torch.Tensor, 
-    neuron_class: type, 
+    X: torch.Tensor,
+    y: torch.Tensor,
+    neuron_class: type,
     loss_function: Callable,
     learning_rate: float = 0.1,
     epochs: int = 100
 ) -> None:
     """
     Callback function to train the model and update sliders.
-    
+
     Args:
         b: Button widget that triggered the callback
         w_slider: Slider for weight parameter
@@ -173,34 +355,36 @@ def _train_model_callback(
     """
     # Reset model
     new_model = neuron_class(n_features=1)
-    
+
     # Train for specified epochs
-    optimizer = torch.optim.SGD([new_model.weights, new_model.bias], lr=learning_rate)
+    optimizer = torch.optim.SGD(
+        [new_model.weights, new_model.bias], lr=learning_rate)
     for _ in range(epochs):
         # Forward pass
         predictions = torch.zeros_like(y)
         for i in range(len(X)):
             predictions[i] = new_model(X[i])
-        
+
         # Compute loss
         loss = loss_function(predictions, y)
-        
+
         # Backward pass
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-    
+
     # Update sliders to the trained values
     w_slider.value = float(new_model.weights.item())
     b_slider.value = float(new_model.bias.item())
 
+
 def create_interactive_neuron_visualizer(
-    X: torch.Tensor, 
-    y: torch.Tensor, 
-    X_mean: float, 
-    X_std: float, 
+    X: torch.Tensor,
+    y: torch.Tensor,
+    X_mean: float,
+    X_std: float,
     challenger_temp: float,
-    neuron_class: type, 
+    neuron_class: type,
     loss_function: Callable,
     initial_weight: Optional[float] = None,
     initial_bias: Optional[float] = None,
@@ -209,7 +393,7 @@ def create_interactive_neuron_visualizer(
 ) -> widgets.Widget:
     """
     Create an interactive visualization widget for exploring neuron parameters.
-    
+
     Args:
         X: Feature tensor (normalized)
         y: Target tensor
@@ -222,7 +406,7 @@ def create_interactive_neuron_visualizer(
         initial_bias: Initial bias value for the slider (default uses model's bias)
         learning_rate: Learning rate for the training button
         training_epochs: Number of epochs when training button is clicked
-        
+
     Returns:
         A widget containing sliders and a train button for interactive visualization
     """
@@ -239,58 +423,63 @@ def create_interactive_neuron_visualizer(
                 initial_bias = float(temp_model.bias.item())
             except:
                 initial_bias = 0.0
-    
+
     # Create output widget and parameter sliders
     out = widgets.Output()
-    w_slider = FloatSlider(value=initial_weight, min=-10.0, max=10.0, step=0.1, description='Weight:')
-    b_slider = FloatSlider(value=initial_bias, min=-10.0, max=10.0, step=0.1, description='Bias:')
+    w_slider = FloatSlider(value=initial_weight, min=-
+                           10.0, max=10.0, step=0.1, description='Weight:')
+    b_slider = FloatSlider(value=initial_bias, min=-10.0,
+                           max=10.0, step=0.1, description='Bias:')
     train_button = widgets.Button(description="Train Model")
-    
+
     # Wrap update_plot with fixed parameters
     def wrapped_update_plot(w, b):
-        _update_plot(w, b, X, y, X_mean, X_std, challenger_temp, neuron_class, loss_function, out)
-    
+        _update_plot(w, b, X, y, X_mean, X_std, challenger_temp,
+                     neuron_class, loss_function, out)
+
     # Connect callbacks
     train_button.on_click(lambda b: _train_model_callback(
         b, w_slider, b_slider, X, y, neuron_class, loss_function, learning_rate, training_epochs
     ))
-    
+
     # Create the interactive widget
-    inter_out = interactive_output(wrapped_update_plot, {'w':w_slider, 'b':b_slider})
-    
+    inter_out = interactive_output(
+        wrapped_update_plot, {'w': w_slider, 'b': b_slider})
+
     # Combine all widgets
     main_ui = widgets.VBox([
-        widgets.HBox([w_slider, b_slider, train_button]), 
+        widgets.HBox([w_slider, b_slider, train_button]),
         out
     ])
-    
+
     # Initial update
     wrapped_update_plot(w_slider.value, b_slider.value)
-    
+
     return main_ui, inter_out
+
 
 def se04_visualize_transformations(transformed_images):
     """Visualize the transformed images.
-    
+
     Args:
         transformed_images (dict): Dictionary of transformed images
     """
     _, axes = plt.subplots(3, 3, figsize=(8, 8))
     axes = axes.flatten()
-    
+
     for i, (title, img_tensor) in enumerate(transformed_images.items()):
         if title == 'Normalized':
             # Denormalize for visualization
             mean = torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
             std = torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
             img_tensor = img_tensor * std + mean
-            
+
         img_numpy = img_tensor.permute(1, 2, 0).numpy()
         img_numpy = np.clip(img_numpy, 0, 1)
-        
+
         axes[i].imshow(img_numpy)
         axes[i].set_title(title)
         axes[i].axis('off')
-    
+
     plt.tight_layout()
     plt.show()

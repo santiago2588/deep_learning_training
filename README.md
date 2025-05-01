@@ -5,7 +5,7 @@ This hands-on workshop will guide participants through the fundamentals of deep 
 
 - PyTorch's tensor operations and automatic differentiation
 - Building and training neural networks for various tasks
-- Implementing CNNs for computer vision and time series forecasting
+- Implementing CNNs for computer vision
 - Applying transfer learning with pre-trained models
 - Working with sequential data
 - Developing multi-class classification models
@@ -70,7 +70,7 @@ deactivate
 Install the necessary packages after activating your virtual environment:
 
 ```bash
-pip install matplotlib numpy pandas scikit-learn jupyter ipywidgets urllib3 requests tqdm albumentations networkx scipy
+pip install matplotlib numpy pandas scikit-learn jupyter ipywidgets ipympl ipykernel urllib3 requests tqdm albumentations networkx scipy
 ```
 
 For GPU support (NVIDIA GPUs only):
@@ -89,7 +89,7 @@ No GPU? No problem! PyTorch will automatically fall back to CPU. Install the CPU
 pip install torch torchvision torchaudio
 ```
 
-## Workshop Schedule and Content ⏰
+## Workshop Content 📖
 
 ### Session 1: Introduction to PyTorch
 - PyTorch basics and tensors
