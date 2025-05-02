@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
+from IPython.display import display
 import ipywidgets as widgets
 from ipywidgets import FloatSlider, interact, interactive, Layout, interactive_output
 from typing import Callable, Optional, Dict, Any, Union, Tuple
@@ -63,7 +64,7 @@ def visualize_flow_comparison(x_star, u_true, v_true, p_true, u_pred, v_pred, p_
     fm = load_font()
     cbar1 = plt.colorbar(im1, ax=ax1)
     cbar2 = plt.colorbar(im2, ax=ax2)
-    
+
     # Set colorbar labels with custom font
     cbar1.set_label('PRESSURE', fontproperties=fm)
     cbar2.set_label('PRESSURE', fontproperties=fm)
@@ -97,7 +98,7 @@ def visualize_flow_comparison(x_star, u_true, v_true, p_true, u_pred, v_pred, p_
         im1.set_array(p_t)
         im2.set_array(p_p)
 
-        # Update color scale        
+        # Update color scale
         im1.set_clim(p_t.min(), p_t.max())
         im2.set_clim(p_p.min(), p_p.max())
 
@@ -145,12 +146,11 @@ def visualize_flow_comparison(x_star, u_true, v_true, p_true, u_pred, v_pred, p_
 
     return fig, (ax1, ax2)
 
-
 def wake_cylinder(
-    X_star: np.array, 
-    u_star: np.array, 
-    p_star: np.array, 
-    time: np.array, 
+    X_star: np.array,
+    u_star: np.array,
+    p_star: np.array,
+    time: np.array,
     t_idx: int = 0,
     figsize: tuple = (8, 6),
     ax: Optional[plt.Axes] = None,
@@ -158,7 +158,7 @@ def wake_cylinder(
 ) -> Tuple[plt.Figure, plt.Axes]:
     """
     Visualize the wake behind a cylinder at a specific time step.
-    
+
     Parameters:
     -----------
     X_star : np.ndarray
@@ -177,7 +177,7 @@ def wake_cylinder(
         Matplotlib axes to plot on
     **kwargs : dict
         Additional arguments to pass to make_fig_pretty
-    
+
     Returns:
     --------
     fig : matplotlib.figure.Figure
@@ -189,32 +189,36 @@ def wake_cylinder(
     x_unique = np.unique(X_star[:, 0])
     y_unique = np.unique(X_star[:, 1])
     Nx, Ny = len(x_unique), len(y_unique)
-    
+
     x = X_star[:, 0].reshape(Ny, Nx)
     y = X_star[:, 1].reshape(Ny, Nx)
-    
+
     # Create figure if needed
     fig = None
     if ax is None:
         fig, ax = plt.subplots(figsize=figsize)
-    
+
     # Get current timestep data
     u = u_star[:, 0, t_idx].reshape(Ny, Nx)
     v = u_star[:, 1, t_idx].reshape(Ny, Nx)
     p = p_star[:, t_idx].reshape(Ny, Nx)
-    
-    # Plot pressure field
-    im = ax.imshow(p, extent=[x_unique.min(), x_unique.max(),
-                             y_unique.min(), y_unique.max()],
-                   origin='lower', cmap='viridis', aspect='auto')
-    
-    # Add streamplot
-    ax.streamplot(x, y, u, v, color='white', density=1.5)
-    
+
     # Add cylinder
     circle = plt.Circle((0, 0), 0.1, color='gray', alpha=0.6)
     ax.add_patch(circle)
-    
+
+    # set axis limits
+    ax.set_xlim(-2, 10)
+    ax.set_ylim(-3, 3)
+
+    # Plot pressure field
+    im = ax.imshow(p, extent=[x_unique.min(), x_unique.max(),
+                              y_unique.min(), y_unique.max()],
+                   origin='lower', cmap='viridis', aspect='auto')
+
+    # Add streamplot
+    ax.streamplot(x, y, u, v, color='white', density=1.5)
+
     # Add colorbar with font formatting
     fm = load_font()
     cbar = plt.colorbar(im, ax=ax)
@@ -222,42 +226,41 @@ def wake_cylinder(
     cbar.ax.tick_params(labelsize=11)
     for label in cbar.ax.get_yticklabels():
         label.set_fontproperties(fm)
-    
+
     # Make plot pretty
     make_fig_pretty(
         ax=ax,
         title=f"Time: {time[t_idx, 0]:.2f} s",
         xlabel="X",
         ylabel="Y",
-        xlim=(-10, 10),
-        ylim=(-3, 3),
         legend=False,
         grid=False,
         **kwargs
     )
-    
+
     if fig is not None:
         plt.tight_layout()
-    
+
     return fig, ax
 
-def wake_cylinder_interactive(X_star, u_star, p_star, time):
+
+def wake_cylinder_interactive(X_star, u_star, p_star, time, figsize=(8, 6)):
     """
     Create an interactive version of the wake cylinder visualization
     using IPython widgets.
     """
     output = widgets.Output()
-    
+
     @widgets.interact(t_idx=widgets.IntSlider(
         min=0, max=len(time)-1, step=1, description='Time Step'))
     def update(t_idx):
         with output:
             output.clear_output(wait=True)
-            wake_cylinder(X_star, u_star, p_star, time, t_idx=t_idx)
+            wake_cylinder(X_star, u_star, p_star, time,
+                          t_idx=t_idx, figsize=figsize)
             plt.show()
-    
-    display(output)
 
+    display(output)
 
 def _update_plot(
     w: float,
@@ -351,7 +354,6 @@ def _update_plot(
         plt.tight_layout()
         plt.show()
 
-
 def _train_model_callback(
     b: widgets.Button,
     w_slider: widgets.FloatSlider,
@@ -400,7 +402,6 @@ def _train_model_callback(
     # Update sliders to the trained values
     w_slider.value = float(new_model.weights.item())
     b_slider.value = float(new_model.bias.item())
-
 
 def create_interactive_neuron_visualizer(
     X: torch.Tensor,
@@ -480,7 +481,6 @@ def create_interactive_neuron_visualizer(
     wrapped_update_plot(w_slider.value, b_slider.value)
 
     return main_ui, inter_out
-
 
 def se04_visualize_transformations(transformed_images):
     """Visualize the transformed images.
