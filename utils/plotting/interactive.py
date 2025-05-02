@@ -12,10 +12,24 @@ __all__ = ["create_interactive_neuron_visualizer",
            "se04_visualize_transformations",
            "wake_cylinder",
            "wake_cylinder_interactive",
-           "visualize_flow_comparison"]
+           "visualize_flow_comparison",
+           "visualize_flow_comparison_interactive"]
 
 
-def visualize_flow_comparison(x_star, u_true, v_true, p_true, u_pred, v_pred, p_pred, time, figsize=(16, 6)):
+def visualize_flow_comparison(
+    x_star: np.ndarray,
+    u_true: np.ndarray,
+    v_true: np.ndarray,
+    p_true: np.ndarray,
+    u_pred: np.ndarray,
+    v_pred: np.ndarray,
+    p_pred: np.ndarray,
+    time: np.ndarray,
+    t_idx: int = 0,
+    figsize: tuple = (16, 6),
+    axes: Optional[Tuple[plt.Axes, plt.Axes]] = None,
+    **kwargs: Optional[dict]
+) -> Tuple[plt.Figure, Tuple[plt.Axes, plt.Axes]]:
     """
     Visualize the comparison between ground truth and predicted flow fields.
 
@@ -33,15 +47,21 @@ def visualize_flow_comparison(x_star, u_true, v_true, p_true, u_pred, v_pred, p_
         Predicted pressure field of shape (N, T)
     time : np.ndarray
         Time points of shape (T, 1)
+    t_idx : int
+        Time index to visualize
     figsize : tuple, optional
         Figure size (width, height)
+    axes : tuple, optional
+        Tuple containing two matplotlib axes to plot on
+    **kwargs : dict
+        Additional arguments to pass to make_fig_pretty
 
     Returns:
     --------
     fig : matplotlib.figure.Figure
-        Figure object
+        Figure object (None if axes is provided)
     axes : tuple
-        Tuple containing the two axis objects
+        Tuple containing the two axes objects
     """
     # Reshape grid
     x_unique = np.unique(x_star[:, 0])
@@ -51,100 +71,91 @@ def visualize_flow_comparison(x_star, u_true, v_true, p_true, u_pred, v_pred, p_
     x = x_star[:, 0].reshape(Ny, Nx)
     y = x_star[:, 1].reshape(Ny, Nx)
 
-    # Create figure with two subplots
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=figsize)
+    # Create figure if needed
+    fig = None
+    if axes is None:
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=figsize)
+    else:
+        ax1, ax2 = axes
 
-    # Create initial colorbars
-    im1 = ax1.imshow(np.zeros((Ny, Nx)), extent=[x_unique.min(), x_unique.max(),
-                                                 y_unique.min(), y_unique.max()], origin='lower', cmap='viridis', aspect='auto')
-    im2 = ax2.imshow(np.zeros((Ny, Nx)), extent=[x_unique.min(), x_unique.max(),
-                                                 y_unique.min(), y_unique.max()], origin='lower', cmap='viridis', aspect='auto')
+    # Get current timestep data
+    u_t = u_true[:, t_idx].reshape(Ny, Nx)
+    v_t = v_true[:, t_idx].reshape(Ny, Nx)
+    p_t = p_true[:, t_idx].reshape(Ny, Nx)
 
-    # Create colorbars with font formatting
+    u_p = u_pred[:, t_idx].reshape(Ny, Nx)
+    v_p = v_pred[:, t_idx].reshape(Ny, Nx)
+    p_p = p_pred[:, t_idx].reshape(Ny, Nx)
+
+    # Plot pressure fields
+    im1 = ax1.imshow(p_t, extent=[x_unique.min(), x_unique.max(),
+                                 y_unique.min(), y_unique.max()],
+                     origin='lower', cmap='viridis', aspect='auto')
+    im2 = ax2.imshow(p_p, extent=[x_unique.min(), x_unique.max(),
+                                 y_unique.min(), y_unique.max()],
+                     origin='lower', cmap='viridis', aspect='auto')
+
+    # Add streamplots
+    ax1.streamplot(x, y, u_t, v_t, color='white', density=1.5)
+    ax2.streamplot(x, y, u_p, v_p, color='white', density=1.5)
+
+    # Add cylinders
+    circle1 = plt.Circle((0, 0), 0.1, color='gray', alpha=0.6)
+    circle2 = plt.Circle((0, 0), 0.1, color='gray', alpha=0.6)
+    ax1.add_patch(circle1)
+    ax2.add_patch(circle2)
+
+    # Set axis limits
+    for ax in [ax1, ax2]:
+        ax.set_xlim(-2, 10)
+        ax.set_ylim(-3, 3)
+
+    # Add colorbars with font formatting
     fm = load_font()
-    cbar1 = plt.colorbar(im1, ax=ax1)
-    cbar2 = plt.colorbar(im2, ax=ax2)
-
-    # Set colorbar labels with custom font
-    cbar1.set_label('PRESSURE', fontproperties=fm)
-    cbar2.set_label('PRESSURE', fontproperties=fm)
-
-    # Apply font to colorbar tick labels
-    for cbar in [cbar1, cbar2]:
+    for ax, im, title in zip([ax1, ax2], [im1, im2], 
+                            ['Ground Truth', 'PINN Prediction']):
+        cbar = plt.colorbar(im, ax=ax)
+        cbar.set_label('PRESSURE', fontproperties=fm)
         cbar.ax.tick_params(labelsize=11)
         for label in cbar.ax.get_yticklabels():
             label.set_fontproperties(fm)
-
-    def refresh_plot(ix):
-        # Clear previous plots
-        for ax in [ax1, ax2]:
-            for artist in ax.lines:
-                artist.remove()
-            for collection in ax.collections:
-                collection.remove()
-            for patch in ax.patches:
-                patch.remove()
-
-        # Reshape current timestep data
-        u_t = u_true[:, ix].reshape(Ny, Nx)
-        v_t = v_true[:, ix].reshape(Ny, Nx)
-        p_t = p_true[:, ix].reshape(Ny, Nx)
-
-        u_p = u_pred[:, ix].reshape(Ny, Nx)
-        v_p = v_pred[:, ix].reshape(Ny, Nx)
-        p_p = p_pred[:, ix].reshape(Ny, Nx)
-
-        # Update pressure fields
-        im1.set_array(p_t)
-        im2.set_array(p_p)
-
-        # Update color scale
-        im1.set_clim(p_t.min(), p_t.max())
-        im2.set_clim(p_p.min(), p_p.max())
-
-        # Add streamplots
-        ax1.streamplot(x, y, u_t, v_t, color='white', density=1.5)
-        ax2.streamplot(x, y, u_p, v_p, color='white', density=1.5)
-
-        # Add circles for cylinder
-        circle1 = plt.Circle((0, 0), 0.1, color='gray', alpha=0.6)
-        circle2 = plt.Circle((0, 0), 0.1, color='gray', alpha=0.6)
-        ax1.add_patch(circle1)
-        ax2.add_patch(circle2)
-
-        # Update titles
-        t_val = time[ix, 0]
-        ax1.set_title(f"Ground Truth (t = {t_val:.2f}s)")
-        ax2.set_title(f"PINN Prediction (t = {t_val:.2f}s)")
-
+        
         make_fig_pretty(
-            ax=ax1,
-            title="Ground Truth",
+            ax=ax,
+            title=f"{title} (t = {time[t_idx, 0]:.2f}s)",
             xlabel="X",
             ylabel="Y",
-            xlim=(-10, 10),
-            ylim=(-3, 3),
             legend=False,
-            grid=False
-        )
-        make_fig_pretty(
-            ax=ax2,
-            title="PINN Prediction",
-            xlabel="X",
-            ylabel="Y",
-            xlim=(-10, 10),
-            ylim=(-3, 3),
-            legend=False,
-            grid=False
+            grid=False,
+            **kwargs
         )
 
-        fig.canvas.draw_idle()
-
-    slider = widgets.IntSlider(0, 0, u_true.shape[1]-1,
-                               step=1, description='Time Step')
-    widgets.interact(refresh_plot, ix=slider)
+    if fig is not None:
+        plt.tight_layout()
 
     return fig, (ax1, ax2)
+
+def visualize_flow_comparison_interactive(
+    x_star, u_true, v_true, p_true, 
+    u_pred, v_pred, p_pred, time, 
+    figsize=(16, 6)
+):
+    output = widgets.Output()
+
+    @widgets.interact(t_idx=widgets.IntSlider(
+        min=0, max=len(time)-1, step=1, description='Time Step'))
+    def update(t_idx):
+        with output:
+            output.clear_output(wait=True)
+            fig, _ = visualize_flow_comparison(
+                x_star, u_true, v_true, p_true,
+                u_pred, v_pred, p_pred, time,
+                t_idx=t_idx, figsize=figsize
+            )
+            plt.show()
+            plt.close(fig)
+
+    display(output)
 
 def wake_cylinder(
     X_star: np.array,
@@ -243,7 +254,6 @@ def wake_cylinder(
 
     return fig, ax
 
-
 def wake_cylinder_interactive(X_star, u_star, p_star, time, figsize=(8, 6)):
     """
     Create an interactive version of the wake cylinder visualization
@@ -256,9 +266,10 @@ def wake_cylinder_interactive(X_star, u_star, p_star, time, figsize=(8, 6)):
     def update(t_idx):
         with output:
             output.clear_output(wait=True)
-            wake_cylinder(X_star, u_star, p_star, time,
-                          t_idx=t_idx, figsize=figsize)
+            fig, _ = wake_cylinder(X_star, u_star, p_star, time,
+                                   t_idx=t_idx, figsize=figsize)
             plt.show()
+            plt.close(fig) 
 
     display(output)
 
