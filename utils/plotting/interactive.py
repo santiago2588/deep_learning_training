@@ -10,6 +10,7 @@ from .plots import make_fig_pretty, load_font
 __all__ = ["create_interactive_neuron_visualizer",
            "se04_visualize_transformations",
            "wake_cylinder",
+           "wake_cylinder_interactive",
            "visualize_flow_comparison"]
 
 
@@ -145,9 +146,18 @@ def visualize_flow_comparison(x_star, u_true, v_true, p_true, u_pred, v_pred, p_
     return fig, (ax1, ax2)
 
 
-def wake_cylinder(X_star: np.array, u_star: np.array, p_star: np.array, time: np.array, figsize=(8, 6)):
+def wake_cylinder(
+    X_star: np.array, 
+    u_star: np.array, 
+    p_star: np.array, 
+    time: np.array, 
+    t_idx: int = 0,
+    figsize: tuple = (8, 6),
+    ax: Optional[plt.Axes] = None,
+    **kwargs: Optional[dict]
+) -> Tuple[plt.Figure, plt.Axes]:
     """
-    Visualize the wake behind a cylinder using imshow for pressure field and streamplot for velocity.
+    Visualize the wake behind a cylinder at a specific time step.
     
     Parameters:
     -----------
@@ -159,81 +169,95 @@ def wake_cylinder(X_star: np.array, u_star: np.array, p_star: np.array, time: np
         Pressure field of shape (N, T)
     time : np.ndarray
         Time points of shape (T, 1)
+    t_idx : int
+        Time index to visualize
     figsize : tuple, optional
         Figure size (width, height)
+    ax : plt.Axes, optional
+        Matplotlib axes to plot on
+    **kwargs : dict
+        Additional arguments to pass to make_fig_pretty
+    
+    Returns:
+    --------
+    fig : matplotlib.figure.Figure
+        Figure object (None if ax is provided)
+    ax : matplotlib.axes.Axes
+        Axes object
     """
     # Reshape grid
     x_unique = np.unique(X_star[:, 0])
     y_unique = np.unique(X_star[:, 1])
     Nx, Ny = len(x_unique), len(y_unique)
-
-    assert Nx*Ny == X_star.shape[0], "Grid reshaping failed"
-
+    
     x = X_star[:, 0].reshape(Ny, Nx)
     y = X_star[:, 1].reshape(Ny, Nx)
-
-    # Create figure
-    fig, ax = plt.subplots(figsize=figsize)
-
-    # Create initial colorbar
-    im = ax.imshow(np.zeros((Ny, Nx)), extent=[x_unique.min(), x_unique.max(),
-                                              y_unique.min(), y_unique.max()], 
+    
+    # Create figure if needed
+    fig = None
+    if ax is None:
+        fig, ax = plt.subplots(figsize=figsize)
+    
+    # Get current timestep data
+    u = u_star[:, 0, t_idx].reshape(Ny, Nx)
+    v = u_star[:, 1, t_idx].reshape(Ny, Nx)
+    p = p_star[:, t_idx].reshape(Ny, Nx)
+    
+    # Plot pressure field
+    im = ax.imshow(p, extent=[x_unique.min(), x_unique.max(),
+                             y_unique.min(), y_unique.max()],
                    origin='lower', cmap='viridis', aspect='auto')
+    
+    # Add streamplot
+    ax.streamplot(x, y, u, v, color='white', density=1.5)
+    
+    # Add cylinder
+    circle = plt.Circle((0, 0), 0.1, color='gray', alpha=0.6)
+    ax.add_patch(circle)
     
     # Add colorbar with font formatting
     fm = load_font()
     cbar = plt.colorbar(im, ax=ax)
     cbar.set_label('PRESSURE', fontproperties=fm)
-    
-    # Apply font to colorbar tick labels
     cbar.ax.tick_params(labelsize=11)
     for label in cbar.ax.get_yticklabels():
         label.set_fontproperties(fm)
-
-    def refresh_plot(ix):
-        # Clear previous streamplot
-        for artist in ax.lines:
-            artist.remove()
-        for collection in ax.collections:
-            collection.remove()
-        for patch in ax.patches:
-            patch.remove()
-
-        # Reshape current timestep data
-        u = u_star[:, 0, ix].reshape(Ny, Nx)
-        v = u_star[:, 1, ix].reshape(Ny, Nx)
-        p = p_star[:, ix].reshape(Ny, Nx)
-
-        # Update pressure field
-        im.set_array(p)
-        im.set_clim(p.min(), p.max())
-
-        # Add streamplot
-        ax.streamplot(x, y, u, v, color='white', density=1.5)
-
-        # Add cylinder
-        circle = plt.Circle((0, 0), 0.1, color='gray', alpha=0.6)
-        ax.add_patch(circle)
-
-        # Update title and make plot pretty
-        make_fig_pretty(
-            ax=ax,
-            title=f"Time: {time[ix, 0]:.2f} s",
-            xlabel="X",
-            ylabel="Y",
-            xlim=(-10, 10),
-            ylim=(-3, 3),
-            legend=False,
-            grid=False
-        )
-
-        fig.canvas.draw_idle()
-
-    slider = widgets.IntSlider(
-        0, 0, u_star.shape[2]-1, step=1, description='Time Step')
-    widgets.interact(refresh_plot, ix=slider)
-
+    
+    # Make plot pretty
+    make_fig_pretty(
+        ax=ax,
+        title=f"Time: {time[t_idx, 0]:.2f} s",
+        xlabel="X",
+        ylabel="Y",
+        xlim=(-10, 10),
+        ylim=(-3, 3),
+        legend=False,
+        grid=False,
+        **kwargs
+    )
+    
+    if fig is not None:
+        plt.tight_layout()
+    
     return fig, ax
+
+def wake_cylinder_interactive(X_star, u_star, p_star, time):
+    """
+    Create an interactive version of the wake cylinder visualization
+    using IPython widgets.
+    """
+    output = widgets.Output()
+    
+    @widgets.interact(t_idx=widgets.IntSlider(
+        min=0, max=len(time)-1, step=1, description='Time Step'))
+    def update(t_idx):
+        with output:
+            output.clear_output(wait=True)
+            wake_cylinder(X_star, u_star, p_star, time, t_idx=t_idx)
+            plt.show()
+    
+    display(output)
+
 
 def _update_plot(
     w: float,
