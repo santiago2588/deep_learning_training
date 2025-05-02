@@ -12,82 +12,42 @@ This hands-on workshop will guide participants through the fundamentals of deep 
 
 ## Setting Up Your Development Environment 🛠️
 
-### Recommended IDE: Visual Studio Code
+### Recommended Platform: Google Colab
 
-We recommend using Visual Studio Code (VS Code) for this workshop as it provides excellent Python and Jupyter Notebook support.
+We recommend using [Google Colab](https://colab.research.google.com/) for this workshop as it provides a free cloud-based environment with GPU support for running Jupyter notebooks.
 
-#### Installing VS Code
-1. Download VS Code from the [official website](https://code.visualstudio.com/).
-2. Follow the installation instructions for your operating system.
-3. Install the following extensions for a better experience:
-   - Python
-   - Jupyter
-   - Pylance
-   - Python Indent
-   - IntelliCode
+### Prerequisites for Google Colab
 
-To install extensions in VS Code, click on the Extensions icon in the sidebar (or press `Ctrl+Shift+X`), search for each extension, and click "Install".
+- A Google account is required to access Google Colab.
+- Ensure you have a stable internet connection.
 
-### Why Use a Virtual Environment? 🔒
+### Running the Notebooks on Google Colab
 
-Using a virtual environment is essential for Python development because it:
+1. Open the workshop repository on GitHub.
+2. Click on the "Open in Colab" badge [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]() (if available) **or** manually upload the notebook:
+   - Download the notebook to your local machine.
+   - Go to [Google Colab](https://colab.research.google.com/).
+   - Click on "File > Upload Notebook" and select the downloaded notebook.
 
-- Isolates project dependencies, preventing conflicts between projects
-- Makes your project reproducible across different machines
-- Allows easy management of package versions
-- Keeps your global Python installation clean
+### Setting Up the GPU Environment on Colab
 
-### Setting Up a Virtual Environment 📦
+1. Open the notebook in Google Colab.
+2. Navigate to "Runtime > Change runtime type".
+3. In the "Hardware accelerator" dropdown, select "GPU".
+4. Click "Save" to apply the changes.
 
-#### Windows
+### Getting familiar with Google Colab
 
-```powershell
-# Create a virtual environment
-python -m venv dl_workshop_env
+- [Google Colab Tips and Tricks](https://colab.research.google.com/notebooks/basic_features_overview.ipynb) - Overview of basic features in Google Colab
+- [Google Colab FAQ](https://research.google.com/colaboratory/faq.html) - Frequently asked questions about Google Colab
 
-# Activate the environment
-dl_workshop_env\Scripts\activate
+⚠️ **Note**: Google Colab has a maximum session time limit of 12 hours. If your session times out, you may need to re-run the notebook from the beginning. Save your work frequently to avoid data loss.
 
-# Deactivate the environment when finished
-deactivate
-```
+### Installing Required Libraries in Colab
 
-#### Linux/macOS
+At the beginning of each notebook, ensure you run the firtst code cell to install the required libraries.
 
-```bash
-# Create a virtual environment
-python -m venv dl_workshop_env
-
-# Activate the environment
-source dl_workshop_env/bin/activate
-
-# Deactivate the environment when finished
-deactivate
-```
-
-### Required Libraries 📚
-
-Install the necessary packages after activating your virtual environment:
-
-```bash
-pip install matplotlib numpy pandas scikit-learn jupyter ipywidgets ipympl ipykernel urllib3 requests tqdm albumentations networkx scipy
-```
-
-For GPU support (NVIDIA GPUs only):
-
-```bash
-# Install the latest version of PyTorch with CUDA support
-
-pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu118
-
-# Note: Replace 'cu118' with the appropriate CUDA version for your system.
-```
-
-No GPU? No problem! PyTorch will automatically fall back to CPU. Install the CPU version of PyTorch using the command below:
-
-```bash
-pip install torch torchvision torchaudio
-```
+For GPU support, PyTorch will automatically utilize the GPU if available.
 
 ## Workshop Content 📖
 
@@ -277,109 +237,4 @@ To further enhance your learning experience, here are some valuable external res
 
 ## VS Code Setup Guide for Workshop Participants
 
-To ensure all participants have a consistent development environment, please follow these steps to set up Visual Studio Code:
-
-### 1. Install Visual Studio Code
-
-Download and install VS Code from [https://code.visualstudio.com/](https://code.visualstudio.com/)
-
-### 2. Install Required Extensions
-
-Launch VS Code and install these extensions:
-
-1. **Python**:
-   - Press `Ctrl+Shift+X` to open the Extensions panel
-   - Search for "Python"
-   - Install the one by Microsoft (most downloaded)
-
-2. **Jupyter**:
-   - Search for "Jupyter"
-   - Install the extension by Microsoft
-
-3. **Pylance**:
-   - Search for "Pylance"
-   - Install Microsoft's Pylance for enhanced Python language support
-
-4. **Python Indent**:
-   - Search for "Python Indent"
-   - Install to automatically fix Python indentation
-
-5. **IntelliCode**:
-   - Search for "IntelliCode"
-   - Install Microsoft's AI-assisted code completion tool
-
-### 3. Configure Workspace Settings
-
-Create workspace settings to ensure consistent behavior:
-
-1. In your workshop directory, create a folder called `.vscode` if it doesn't exist
-   - `mkdir .vscode`
-
-2. Inside the `.vscode` folder, create a file called `settings.json`
-   - Windows: `notepad .vscode\settings.json`
-   - Mac/Linux: `touch .vscode/settings.json`
-
-3. Copy these settings into the file:
-
-```json
-{
-    "python.linting.enabled": true,
-    "python.linting.pylintEnabled": true,
-    "python.formatting.provider": "autopep8",
-    "editor.formatOnSave": true,
-    "jupyter.notebookFileRoot": "${workspaceFolder}",
-    "python.envFile": "${workspaceFolder}/.env",
-    "editor.rulers": [88],
-    "editor.renderWhitespace": "all",
-    "python.linting.flake8Enabled": false,
-    "editor.tabSize": 4,
-    "editor.insertSpaces": true,
-    "files.trimTrailingWhitespace": true,
-    "files.autoSave": "afterDelay",
-    "files.autoSaveDelay": 1000,
-    "jupyter.widgetScriptSources": ["jsdelivr.com", "unpkg.com"]
-}
-```
-4. For Windows users, add this line to the settings.json file:
-```json
-"python.defaultInterpreterPath": "${workspaceFolder}\\dl_workshop_env\\Scripts\\python.exe",
-```
-5. For Mac/Linux users, add this line to the settings.json file:
-```json
-"python.defaultInterpreterPath": "${workspaceFolder}/dl_workshop_env/bin/python",
-```
-6. Save the file and close it.
-
-7. Configure Theme (Optional)
-For better readability of code and notebooks:
-
-- Press Ctrl+K Ctrl+T to open the theme selector
-- Select "Dark+" or "Monokai" for good syntax highlighting
-
-8. Additional VS Code Tips for This Workshop
-- Open Workshop Folder: Use File > Open Folder... to open the entire workshop directory
-- Explorer View: Use the Explorer view (Ctrl+Shift+E) to navigate between files
-- Integrated Terminal: Use the integrated terminal (Ctrl+`) to run commands
-- Interactive Window: Run Python code interactively with "Python: Create Interactive Window"
-- Split Editor: Drag a tab to split the editor and view multiple files side by side
-- Zen Mode: Use View > Appearance > Zen Mode (Ctrl+K Z) for distraction-free coding
-
-### VS Code Shortcuts
-
-- **Command Palette**: `Ctrl+Shift+P` (access all commands and settings)
-- **Open Terminal**: `Ctrl+` (backtick) (open integrated terminal)
-- **Run Cell**: `Shift+Enter` (execute the current cell in Jupyter Notebook)
-- **Format Document**: `Shift+Alt+F` (format the current document)
-- **Toggle Sidebar**: `Ctrl+B` (show/hide the sidebar)
-- **Switch Tabs**: `Ctrl+Tab` (cycle through open tabs)
-- **Search Files**: `Ctrl+P` (quickly open files by name)
-- **Comment/Uncomment Line**: `Ctrl+/` (toggle comment on the current line or selection)
-
-### Online tutorials for VS Code
-
-- [VS Code Documentation](https://code.visualstudio.com/docs) - Official documentation for VS Code
-- [VS Code Python Tutorial](https://code.visualstudio.com/docs/python/python-tutorial) - Getting started with Python in VS Code
-- [VS Code Jupyter Notebook Support](https://code.visualstudio.com/docs/datascience/jupyter-notebooks) - Working with Jupyter Notebooks in VS Code
-- [VS Code Extensions](https://code.visualstudio.com/docs/editor/extension-gallery) - Explore and install extensions for VS Code
-- [VS Code Keyboard Shortcuts](https://code.visualstudio.com/docs/getstarted/keybindings) - List of keyboard shortcuts for VS Code
-- [VS Code Themes](https://marketplace.visualstudio.com/search?target=VSCode&category=Themes) - Explore themes to customize the look of VS Code
+**Note**: The workshop now uses Google Colab as the primary platform. If you prefer using VS Code, refer to the archived instructions in the repository.
