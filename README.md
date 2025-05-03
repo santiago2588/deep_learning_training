@@ -82,8 +82,8 @@ UoM_fse_dl_workshop/
 ├── solutions/           # Completed notebooks
 ├── figs/                # Figures and diagrams
 ├── utils/               # Checker and data helpers
-│   ├── core.py
-│   ├── data.py
+│   ├── plotting/
+│   ├── data/
 │   ├── ml/
 │   └── solutions.json
 └── SE01_CA_Intro_to_pytorch.ipynb   # Code-along notebooks
