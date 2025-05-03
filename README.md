@@ -10,6 +10,7 @@ This hands-on workshop introduces the fundamentals of deep learning using PyTorc
 
 * Core PyTorch concepts (tensors, autograd, GPU usage)
 * Building and training neural networks
+* Creating Physics-Informed neural networks
 * Implementing CNNs for vision tasks
 * Applying transfer learning with pre-trained models
 * Working with real-world datasets
@@ -122,8 +123,8 @@ checker.display_hints(1)
 
 ## Prerequisites 📾
 
-* Basic Python
-* Introductory machine learning concepts
+* Basic Python skills
+* Some knowledge of basic machine learning concepts
 * Familiarity with linear algebra/calculus (optional)
 * No PyTorch experience required!
 
