@@ -1,240 +1,152 @@
-![](https://i.imgur.com/mTltzAc.png)
-## Workshop Overview 📋
+![Workshop Banner](https://i.imgur.com/mTltzAc.png)
 
-This hands-on workshop will guide participants through the fundamentals of deep learning with PyTorch, covering:
+# Deep Learning with PyTorch – Workshop
 
-- PyTorch's tensor operations and automatic differentiation
-- Building and training neural networks for various tasks
-- Implementing CNNs for computer vision
-- Applying transfer learning with pre-trained models
-- Working with sequential data
-- Developing multi-class classification models
+## Overview 📋
 
-## Setting Up Your Development Environment 🛠️
+This hands-on workshop introduces the fundamentals of deep learning using PyTorch. Participants will learn by building real models and solving practical tasks.
 
-### Recommended Platform: Google Colab
+### What You’ll Learn
 
-We recommend using [Google Colab](https://colab.research.google.com/) for this workshop as it provides a free cloud-based environment with GPU support for running Jupyter notebooks.
+* Core PyTorch concepts (tensors, autograd, GPU usage)
+* Building and training neural networks
+* Implementing CNNs for vision tasks
+* Applying transfer learning with pre-trained models
+* Working with real-world datasets
+* Designing classification and regression models
 
-### Prerequisites for Google Colab
+---
 
-- A Google account is required to access Google Colab.
-- Ensure you have a stable internet connection.
+## Getting Started 🛠️
 
-### Running the Notebooks on Google Colab
+### ✅ Recommended Platform: [Google Colab](https://colab.research.google.com/)
 
-1. Open the workshop repository on GitHub.
-2. Click on the "Open in Colab" badge [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]() (if available) **or** manually upload the notebook:
-   - Download the notebook to your local machine.
-   - Go to [Google Colab](https://colab.research.google.com/).
-   - Click on "File > Upload Notebook" and select the downloaded notebook.
+Colab provides a free, GPU-enabled environment—ideal for this workshop.
 
-### Setting Up the GPU Environment on Colab
+#### What You Need
 
-1. Open the notebook in Google Colab.
-2. Navigate to "Runtime > Change runtime type".
-3. In the "Hardware accelerator" dropdown, select "GPU".
-4. Click "Save" to apply the changes.
+* A Google account
+* Reliable internet connection
 
-### Getting familiar with Google Colab
+#### Running the Notebooks
 
-- [Google Colab Tips and Tricks](https://colab.research.google.com/notebooks/basic_features_overview.ipynb) - Overview of basic features in Google Colab
-- [Google Colab FAQ](https://research.google.com/colaboratory/faq.html) - Frequently asked questions about Google Colab
+1. Open the GitHub repo.
+2. Click the “Open in Colab” badge (if available), or:
 
-⚠️ **Note**: Google Colab has a maximum session time limit of 12 hours. If your session times out, you may need to re-run the notebook from the beginning. Save your work frequently to avoid data loss.
+   * Download the notebook locally.
+   * Open [Google Colab](https://colab.research.google.com/).
+   * Use **File > Upload Notebook** to run it.
 
-### Installing Required Libraries in Colab
+#### Enable GPU in Colab
 
-At the beginning of each notebook, ensure you run the firtst code cell to install the required libraries.
+1. **Runtime > Change runtime type**
+2. Set **Hardware Accelerator** to `GPU`
+3. Click **Save**
 
-For GPU support, PyTorch will automatically utilize the GPU if available.
+📘 [Colab Tips](https://colab.research.google.com/notebooks/basic_features_overview.ipynb) | [Colab FAQ](https://research.google.com/colaboratory/faq.html)
 
-## Workshop Content 📖
+#### Install Dependencies
 
-### Session 1: Introduction to PyTorch (~0.5 hours)
-- PyTorch basics and tensors
-- Creating and manipulating tensors
-- Indexing and slicing tensors
-- Tensor operations (arithmetic, matrix operations)
-- Broadcasting
-- Reshaping tensors
-- Automatic differentiation with autograd
-- Working with data in PyTorch
-- Using GPUs for acceleration
+Each notebook starts with a setup cell. Run it first to install all required libraries.
 
-### Session 2: Artificial Neural Networks (~1 hour)
-- Understanding neurons and perceptrons
-- Forward and backward pass
-- Neural network components
-- Case study: Space Shuttle Challenger disaster
-- Implementing a simple neural network from scratch
-- Training neural networks
-- Evaluation and prediction
+---
 
-### Session 3: Training Neural Networks (~1.5 hours)
-- PyTorch workflow for training models
-- Working with the ARKOMA robotics dataset / PDE with Physics Informed Neural Networks
-- Data preparation and normalization
-- Activation functions and their purposes
-- Model architecture design
-- Weight initialization techniques
-- Choosing optimizers and loss functions
-- Creating effective training loops
-- Handling overfitting and early stopping
-- Model evaluation techniques
+## Workshop Sessions 🧠
 
-### Session 4: Convolutional Neural Networks (~1.5 hours)
-- CNN fundamentals and operations
-- Convolution basics and filter design
-- Implementing custom filters
-- Image data preparation with transforms
-- Building CNN models from scratch
-- Historical Crack Dataset exploration
-- Using pooling layers
-- Regularization techniques
-- CNN architectures (SimpleNet and TinyVGG)
-- Training and evaluating CNN models
+| Session          | Topic                                | Duration |
+| ---------------- | ------------------------------------ | -------- |
+| **1**            | PyTorch Basics & Tensors             | \~1 hr |
+| **2**            | Artificial Neural Networks (ANNs)    | \~1.5 hr   |
+| **3**            | Model Training & Optimization        | \~1.5 hr |
+| **4**            | Convolutional Neural Networks (CNNs) | \~2 hr |
+| **5**            | Transfer Learning & U-Net            | \~2 hr |
 
-### Session 5: Transfer Learning (~1.5 hours)
-- Transfer learning fundamentals
-- Medical image segmentation with ISIC dataset
-- Data preparation for segmentation tasks
-- U-Net architecture implementation
-- Segmentation-specific loss functions (Dice loss)
-- Using pre-trained models as feature extractors
-- EfficientNet-based U-Net implementation
-- Comparing models trained from scratch vs. transfer learning
+---
 
-## Intended Learning Outcomes (ILOs) 🎯
+## Learning Outcomes 🎯
 
-By the end of the workshop, participants will be able to:
-- Implement deep learning models using PyTorch for diverse applications
-- Apply CNNs for image classification and segmentation tasks
-- Utilize transfer learning to adapt pre-trained models to specific problems
-- Work with real-world datasets to solve classification and regression problems
+By the end, you’ll be able to:
 
-## Workshop Materials Structure 📁
+* Build and train models in PyTorch
+* Apply CNNs to classification & segmentation
+* Fine-tune pre-trained models on new tasks
+* Use PyTorch effectively for real-world datasets
 
-### Repository Organization
+---
+
+## Repository Structure 📁
+
 ```
 UoM_fse_dl_workshop/
-├── datasets/                  # Dataset storage
-├── solutions/                 # Solved notebooks
-├── figs/                      # Workshop images and icons
-├── utils/                     # Utility functions and checkers
-│   ├── core.py                # Exercise checker implementation
-│   ├── data.py                # Data loading utilities
-│   ├── ml/                    # ML helper functions
-│   └── solutions.json         # Exercise solutions and hints
-└── SE01_CA_Intro_to_pytorch.ipynb    # Workshop notebooks
+├── datasets/            # Datasets used in sessions
+├── solutions/           # Completed notebooks
+├── figs/                # Figures and diagrams
+├── utils/               # Checker and data helpers
+│   ├── core.py
+│   ├── data.py
+│   ├── ml/
+│   └── solutions.json
+└── SE01_CA_Intro_to_pytorch.ipynb   # Code-along notebooks
 ```
 
-### Using the Exercise Checker 📝
+---
 
-Each workshop notebook contains exercises marked with 🎯. The exercise checker helps you verify your solutions and provides hints when needed.
+## Using the Exercise Checker ✅
 
-#### Checking Your Solutions
+Throughout the notebooks, you’ll find 🎯 exercises. Use the built-in checker to validate your answers.
+
 ```python
-# At the end of each exercise, there will be a check block:
-answer = {
-    'your_solution': your_tensor,
-    'another_part': another_result
-}
-checker.check_exercise(exercise_number, answer)
+answer = {'your_solution': result}
+checker.check_exercise(1, answer)
 ```
 
-#### Getting Hints
-If you're stuck, you can get hints for any exercise:
+### Requesting Hints 💡
+
 ```python
-# Display hints for exercise 1
 checker.display_hints(1)
 ```
 
-#### Exercise Feedback
-The checker provides immediate feedback:
-- ✅ Correct solutions are marked with a green checkmark
-- ❌ Incorrect solutions show what went wrong
-- 💡 Helpful hints appear when needed
+✔️ Correct = green check
+❌ Incorrect = feedback provided
+💬 Hints are tailored to the task
 
-### Common Workflows
+---
 
-1. **Starting an Exercise**:
-   - Read the exercise description carefully
-   - Implement your solution in the provided code cell
-   - Run the cell to see if it works
+## Common Workflows
 
-2. **Checking Your Work**:
-   - The checker automatically validates your solution
-   - Multiple aspects may be checked (values, shapes, types)
-   - All parts must be correct to pass
+1. Read the exercise and implement the solution.
+2. Use the checker to validate your work.
+3. Request hints if needed.
+4. Learn from any mistakes and try again.
 
-3. **Getting Help**:
-   - Use `checker.display_hints()` for guidance
-   - Hints are context-aware and specific to each exercise
-   - Multiple hints may be available per exercise
+---
 
-4. **Learning from Mistakes**:
-   - Pay attention to error messages
-   - Check tensor shapes and types when debugging
-   - Use print statements to understand intermediate results
+## Prerequisites 📾
 
-## Getting Started 🚀
+* Basic Python
+* Introductory machine learning concepts
+* Familiarity with linear algebra/calculus (optional)
+* No PyTorch experience required!
 
-1. Clone this repository
-2. Set up a virtual environment as described above
-3. Install the required dependencies
-4. Open the Jupyter notebooks in the repository to follow along with the workshop materials
-
-## Support 💬
-
-For issues or questions during the workshop, please reach out to the workshop instructors.
-
-## Prerequisites 📝
-
-- Basic Python programming knowledge
-- Familiarity with fundamental machine learning concepts
-- A laptop with Python 3.8+ installed
-- Basic understanding of linear algebra and calculus (optional but helpful)
-- Familiarity with Jupyter Notebooks (optional but helpful)
+---
 
 ## Additional Resources 📚
 
-To further enhance your learning experience, here are some valuable external resources:
+### PyTorch & Models
 
-### PyTorch Documentation
+* [PyTorch Docs](https://pytorch.org/docs/stable/)
+* [torchvision Models](https://pytorch.org/vision/stable/models.html)
+* [PyTorch Hub](https://pytorch.org/hub/)
+* [Hugging Face Models](https://huggingface.co/models)
 
-- [PyTorch Official Documentation](https://pytorch.org/docs/stable/index.html) - Comprehensive API reference and tutorials
-- [PyTorch Cheat Sheet](https://pytorch.org/tutorials/beginner/ptcheat.html) - Quick reference guide for common PyTorch operations
-- [PyTorch Examples Repository](https://github.com/pytorch/examples) - Official examples for various deep learning tasks
+### Visual Tools
 
-### Pre-trained Models & Transfer Learning
+* [CNN Explainer](https://poloclub.github.io/cnn-explainer/)
+* [Distill Feature Visualization](https://distill.pub/2017/feature-visualization/)
+* [TensorBoard for PyTorch](https://pytorch.org/docs/stable/tensorboard.html)
 
-- [torchvision.models](https://pytorch.org/vision/stable/models.html) - Documentation for pre-trained models in torchvision
-- [PyTorch Hub](https://pytorch.org/hub/) - Repository of pre-trained models ready for fine-tuning
-- [Hugging Face Models](https://huggingface.co/models) - Thousands of pre-trained models for various tasks
+### Courses & Books
 
-### Visual Learning Tools
-
-- [CNN Explainer](https://poloclub.github.io/cnn-explainer/) - Interactive visualization of convolutional neural networks
-- [Distill: Feature Visualization](https://distill.pub/2017/feature-visualization/) - Understanding neural networks through feature visualization
-- [TensorBoard](https://www.tensorflow.org/tensorboard) - Visualization toolkit compatible with PyTorch (via torch.utils.tensorboard)
-
-### Tutorials & Courses
-
-- [Deep Learning with PyTorch: A 60 Minute Blitz](https://pytorch.org/tutorials/beginner/deep_learning_60min_blitz.html) - Quick PyTorch introductory tutorial
-- [PyTorch Tutorials](https://pytorch.org/tutorials/) - Official collection of tutorials from basic to advanced topics
-- [Fast.ai Practical Deep Learning](https://course.fast.ai/) - Practical deep learning course using PyTorch
-
-### Papers & Research
-
-- [U-Net Paper](https://arxiv.org/abs/1505.04597) - Original U-Net architecture paper for biomedical image segmentation
-- [EfficientNet Paper](https://arxiv.org/abs/1905.11946) - Scaling up CNNs more efficiently
-- [Transfer Learning Survey](https://arxiv.org/abs/1911.02685) - Comprehensive survey on transfer learning
-
-### Books
-
-- [Dive into Deep Learning](https://d2l.ai/) - Interactive book with code examples in multiple frameworks including PyTorch
-
-## VS Code Setup Guide for Workshop Participants
-
-**Note**: The workshop now uses Google Colab as the primary platform. If you prefer using VS Code, refer to the archived instructions in the repository.
+* [Deep Learning with PyTorch (60-min Blitz)](https://pytorch.org/tutorials/beginner/deep_learning_60min_blitz.html)
+* [Fast.ai Course](https://course.fast.ai/)
+* [Dive into Deep Learning](https://d2l.ai/)
