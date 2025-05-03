@@ -78,7 +78,6 @@ By the end, you’ll be able to:
 
 ```
 UoM_fse_dl_workshop/
-├── datasets/            # Datasets used in sessions
 ├── solutions/           # Completed notebooks
 ├── figs/                # Figures and diagrams
 ├── utils/               # Checker and data helpers
