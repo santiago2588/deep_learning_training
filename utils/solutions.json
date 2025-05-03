@@ -720,6 +720,188 @@
       ]
     }
   },
+  "SE03P": {
+    "exercise_6": {
+      "answers": {
+        "x_train": {
+          "dtype": "torch.float32",
+          "shape": [5000, 1]
+        },
+        "y_train": {
+          "dtype": "torch.float32",
+          "shape": [5000, 1]
+        },
+        "t_train": {
+          "dtype": "torch.float32",
+          "shape": [5000, 1]
+        },
+        "u_train": {
+          "dtype": "torch.float32",
+          "shape": [5000, 1]
+        },
+        "v_train": {
+          "dtype": "torch.float32",
+          "shape": [5000, 1]
+        },
+        "data_shape": {
+          "min_val": 1,
+          "max_val": 10000
+        }
+      },
+      "hints": [
+        "Make sure to extract the x and y coordinates correctly from x_star",
+        "Use np.tile to repeat coordinates across timesteps",
+        "Remember to flatten arrays before creating tensors",
+        "Use torch.tensor() with dtype=torch.float32 to create tensors",
+        "Check that all tensors have the same number of samples"
+      ]
+    },
+    "exercise_7": {
+      "answers": {
+        "model": {
+          "architecture": "Module"
+        },
+        "hidden_size": {
+          "min_val": 10,
+          "max_val": 100
+        },
+        "input_size": {
+          "expected": 3
+        },
+        "output_size": {
+          "expected": 3
+        },
+        "num_layers": {
+          "min_val": 3,
+          "max_val": 20
+        }
+      },
+      "hints": [
+        "Create a PyTorch module by inheriting from torch.nn.Module",
+        "Initialize layers in __init__ with the specified hidden_size",
+        "Use Xavier initialization with torch.nn.init.xavier_normal_ for weights",
+        "Initialize biases to zero with torch.nn.init.zeros_",
+        "In the forward method, process inputs with torch.cat to combine x, y, and t",
+        "Apply tanh activation to all layers except the output layer",
+        "Split the output tensor into u, v, and p components"
+      ]
+    },
+    "exercise_8": {
+      "answers": {
+        "f_u_shape": {
+          "shape": [5, 1]
+        },
+        "f_v_shape": {
+          "shape": [5, 1]
+        },
+        "f_c_shape": {
+          "shape": [5, 1]
+        },
+        "has_gradients": {
+          "expected": true
+        }
+      },
+      "hints": [
+        "Enable gradients for x, y, and t with requires_grad_(True)",
+        "Use torch.autograd.grad() to compute derivatives",
+        "Set create_graph=True to enable higher-order derivatives",
+        "For first derivatives, differentiate with respect to x, y, or t",
+        "For second derivatives, differentiate the first derivatives",
+        "Compute the Navier-Stokes residuals using the model's viscosity (nu)",
+        "Check that residuals have the same shape as the inputs"
+      ]
+    },
+    "exercise_9": {
+      "answers": {
+        "function_code": {
+          "contains": [
+            "def train_pinn",
+            "Adam",
+            "LBFGS",
+            "closure",
+            "data_loss",
+            "physics_loss",
+            "backward()",
+            "step()"
+          ]
+        },
+        "has_adam": {
+          "expected": true
+        },
+        "has_lbfgs": {
+          "expected": true
+        },
+        "uses_closure": {
+          "expected": true
+        },
+        "has_data_loss": {
+          "expected": true
+        },
+        "has_physics_loss": {
+          "expected": true
+        },
+        "computes_residuals": {
+          "expected": true
+        },
+        "updates_weights": {
+          "expected": true
+        },
+        "uses_backpropagation": {
+          "expected": true
+        },
+        "learning_rate": {
+          "min_val": 0.0001,
+          "max_val": 0.01
+        },
+        "optimizer_params": {
+          "has_max_iter": {
+            "expected": true
+          },
+          "has_line_search": {
+            "expected": true
+          }
+        }
+      },
+      "hints": [
+        "Define a closure function that computes loss and gradients",
+        "Use torch.optim.Adam for the first phase of training",
+        "Use torch.optim.LBFGS for the second phase with appropriate parameters",
+        "Compute data loss using MSE between predictions and true values",
+        "Compute physics loss using the residuals from compute_ns_residuals",
+        "Combine data loss and physics loss for the total loss",
+        "Track progress using tqdm to display the loss during training",
+        "Make sure to zero gradients before computing loss",
+        "Remember to call backward() to compute gradients",
+        "Set appropriate max_iter and line_search_fn parameters for LBFGS",
+        "Use a learning rate between 0.0001 and 0.01 for Adam optimizer"
+      ]
+    },
+    "exercise_10": {
+      "answers": {
+        "u_pred_shape": {
+          "shape": [-1, -1]
+        },
+        "v_pred_shape": {
+          "shape": [-1, -1]
+        },
+        "p_pred_shape": {
+          "shape": [-1, -1]
+        },
+        "requires_grad_used": {
+          "expected": true
+        }
+      },
+      "hints": [
+        "Set the model to evaluation mode with model.eval()",
+        "Create input tensors with requires_grad=True for prediction",
+        "Use torch.enable_grad() to temporarily enable gradients during prediction",
+        "Append predictions to lists and then stack with np.stack()",
+        "Make sure predictions have the shape (N, T) where N is the number of spatial points and T is the number of time steps",
+        "Use detach() and cpu().numpy() to convert tensors to arrays",
+        "Make ground truth data match the same shape as predictions"
+      ]
+    }
+  },
   "SE04": {
     "exercise_1": {
       "answers": {
