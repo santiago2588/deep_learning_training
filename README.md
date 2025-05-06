@@ -1,4 +1,5 @@
 ![Workshop Banner](https://i.imgur.com/mTltzAc.png)
+[![GitHub Pages](https://img.shields.io/badge/View%20Site-GitHub%20Pages-blue?logo=github)](https://cldiego.github.io/uom_fse_dl_workshop/)
 
 # Deep Learning with PyTorch – Workshop
 
