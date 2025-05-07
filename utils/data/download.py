@@ -5,6 +5,7 @@ import zipfile
 import json
 from tqdm import tqdm
 from utils.core import find_project_root
+from urllib.parse import urlparse, unquote
 
 __all__ = ['download_dataset', 'extract_files']
 
@@ -67,7 +68,8 @@ def download_dataset(dataset_name: str, dest_path: str = None, extract: bool = F
 
     # Set up destination path
     dest_path = Path(dest_path) if dest_path else Path.cwd()
-    filename = Path(url).name
+    parsed_url = urlparse(url)
+    filename = Path(unquote(parsed_url.path)).name  # get the file name without query params
     f_path = dest_path / filename
 
     # Check if the file already exists to avoid re-downloading
