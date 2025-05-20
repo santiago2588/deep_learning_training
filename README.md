@@ -60,7 +60,7 @@ Each notebook starts with a setup cell. Run it first to install all required lib
 | **1**            | PyTorch Basics & Tensors             | \~1 hr |
 | **2**            | Artificial Neural Networks (ANNs)    | \~1.5 hr   |
 | **3**            | Model Training & Optimization        | \~0.5 hr |
-| **3B**           | Physics-Informed Neural Networks (PINNs) | \~0.5 hr |
+| **3B**           | Physics-Informed Neural Networks (PINNs) | \~1 hr |
 | **4**            | Convolutional Neural Networks (CNNs) | \~2 hr |
 | **5**            | Transfer Learning & U-Net            | \~2 hr |
 
