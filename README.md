@@ -1,5 +1,5 @@
 ![Workshop Banner](https://res.cloudinary.com/dtradpei6/image/upload/data_bfnxm8.jpg)
-[![GitHub Pages](https://img.shields.io/badge/View%20Site-GitHub%20Pages-blue?logo=github)[(https://santiago2588.github.io/deep_learning_training/)]
+[![GitHub Pages](https://img.shields.io/badge/View%20Site-GitHub%20Pages-blue?logo=github)](https://santiago2588.github.io/deep_learning_training/)
 
 # Deep Learning with PyTorch – Workshop
 
